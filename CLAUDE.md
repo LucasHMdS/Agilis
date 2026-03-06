@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Agilis is a cross-platform 2D game framework written in Swift 6.0+, targeting Windows, Linux, and macOS. It uses a backend-agnostic architecture with a vendored raylib backend. Zero external Swift package dependencies.
+Agilis is a cross-platform 2D game framework written in Swift 6.0+, targeting Windows, Linux, and macOS. It uses a backend-agnostic architecture with native backends (ANGLE for rendering, MiniAudio for audio, PlatformC for windowing/input). Zero external Swift package dependencies.
 
 ## Build & Test
 
@@ -25,21 +25,12 @@ Tests use Swift Testing (`import Testing`, `@Suite`, `@Test`, `#expect`), not XC
 ## Project Structure
 
 ```
-Sources/AgilisCore/           Backend-agnostic protocols and value types
-  Math/                      Vector2, Rect, Size, MathUtilities (lerp, clamp),
-                               EasingFunction
-  Graphics/                  RenderBackend protocol, Color, Sprite, Camera2D,
-                               TextureHandle, FontHandle, RenderTargetHandle,
-                               ShaderHandle, ImageData, BlendMode,
-                               Material2D, PostProcessEffect, ShaderUniform
-  Audio/                     AudioBackend protocol, SoundHandle, MusicHandle,
-                               AudioGroup
-  Input/                     InputBackend protocol, Key, MouseButton,
-                               GamepadButton, GamepadAxis, GamepadStick
-  Application/               WindowConfig
-  Debug/                     LogLevel, LogEntry, LogOutput protocol
-Sources/Agilis/               Main framework (re-exports AgilisCore + AgilisBackendRaylib)
-  Application/               Application, GameDelegate, BackendFactory
+Sources/PlatformC/            Native windowing and input (Win32/Cocoa/X11)
+Sources/AngleC/               ANGLE — EGL + OpenGL ES 3.0 (pre-built binaries)
+Sources/MiniaudioC/           MiniAudio — cross-platform audio (single-header)
+Sources/StbC/                 stb libraries — image loading, font rasterization
+Sources/Agilis/               Main framework (depends on all C targets above)
+  Application/               Application, GameDelegate
   Core/                      ECS: Entity, Component, System, World, Query,
                                SparseSet, ComponentStorage, CommandBuffer,
                                SystemContext, Prefab, EntityHierarchy, EntityMetadata,
@@ -49,8 +40,12 @@ Sources/Agilis/               Main framework (re-exports AgilisCore + AgilisBack
                                AnimationFrame, PlaybackMode, AnimationEvent,
                                AnimationStateMachine, AnimationStateMachineSystem,
                                Sprite→Component conformance
-  Graphics/                  TileMap, TileMapRendering, TextAlignment,
-                               SpriteBatch, RenderTargetDrawing, NinePatchSprite
+  Graphics/                  RenderBackend protocol, Renderer (ANGLE/GLES3),
+                               TileMap, TileMapRendering, TextAlignment,
+                               SpriteBatch, RenderTargetDrawing, NinePatchSprite,
+                               Color, Sprite, Camera2D, BlendMode, TextureHandle,
+                               FontHandle, RenderTargetHandle, ShaderHandle,
+                               ImageData, Material2D, PostProcessEffect, ShaderUniform
   Materials/                 MaterialLibrary, MaterialTemplate, MaterialShaders,
                                MaterialRendering (MaterialContext),
                                ShaderBuilder, ShaderIncludes,
@@ -64,11 +59,14 @@ Sources/Agilis/               Main framework (re-exports AgilisCore + AgilisBack
   Lighting/                  LightingSystem, Light2D, ShadowCaster2D,
                                ShadowGeometry, LightingShaders, LightingOptions,
                                LightingDebugRenderer, NormalMapData
-  Audio/                     AudioManager (group volumes, fading, crossfading)
-  Input/                     InputManager, action mapping (keyboard,
+  Audio/                     AudioBackend protocol, AudioEngine (MiniAudio),
+                               AudioManager (group volumes, fading, crossfading)
+  Input/                     InputBackend protocol, NativeInput (PlatformC),
+                               InputManager, action mapping (keyboard,
                                mouse, gamepad)
   Assets/                    AssetManager, pluggable loaders
-  Math/                      Matrix3
+  Math/                      Vector2, Rect, Size, Matrix3, MathUtilities,
+                               EasingFunction
   Physics/                   PhysicsWorld2D, NarrowPhase (SAT), SpatialHashGrid,
                                ImpulseResolver, ContactTracker, CollisionFilter,
                                PhysicsDebugRenderer, SpatialQuery, SweptCollision,
@@ -98,15 +96,12 @@ Sources/Agilis/               Main framework (re-exports AgilisCore + AgilisBack
                                UIDebugRenderer
   Plugin/                    Plugin protocol
   Time/                      Clock
-Sources/AgilisBackendRaylib/  Raylib backend (RaylibRenderer, RaylibAudioEngine,
-                               RaylibInputBackend) — depends on AgilisCore + RaylibC
 Sources/AgilisFormats/        Pure Swift parsers (LDtk, Tiled, TexturePacker, Aseprite)
                              Animation bridges: Aseprite→AnimationClip, TextureAtlas→AnimationClip
                              Tilemap bridges: Tiled→TileMap, LDtk→TileMap
-Sources/RaylibC/             Vendored raylib 5.5 C source + GLFW
 ```
 
-Users only need `import Agilis` — the module re-exports AgilisCore and AgilisBackendRaylib via `@_exported import`.
+Users only need `import Agilis` — the module contains all framework types.
 
 ## ECS Architecture
 
@@ -203,7 +198,7 @@ try await app.runAsync()
 - Scheduler guarantees systems in the same stage access disjoint `ComponentStore<T>` instances
 - Each system gets its own `CommandBuffer` — no contention
 - `@unchecked Sendable` wrappers (`UnsafeSystemRef`, `UnsafeBufferRef`) bridge non-Sendable types across TaskGroup boundaries
-- Raylib GPU calls remain on the main thread (rendering is never parallelized)
+- GPU calls (OpenGL ES via ANGLE) remain on the main thread (rendering is never parallelized)
 
 ## Physics & Collision
 
@@ -564,10 +559,10 @@ tweens.custom(entity, duration: 1.0, easing: .linear) { world, entity, t in
 
 ## Gamepad Input
 
-Supports up to 4 gamepads (raylib limit). Follows the same 3-layer architecture as keyboard/mouse input.
+Supports up to 4 gamepads. Follows the same 3-layer architecture as keyboard/mouse input.
 
 ### Architecture
-1. **AgilisCore enums** — `GamepadButton` (18 buttons), `GamepadAxis` (6 axes), `GamepadStick` (.left/.right)
+1. **Agilis enums** — `GamepadButton` (18 buttons), `GamepadAxis` (6 axes), `GamepadStick` (.left/.right)
 2. **InputBackend protocol** — 4 gamepad methods with default no-op implementations (backward compatible)
 3. **InputManager** — polls button state per-frame, tracks press/release transitions, applies dead zones to axes
 
@@ -590,7 +585,7 @@ Actions check gamepad 0 (player 1) for all action queries. Gamepad buttons use O
 
 ## Audio
 
-Two-layer architecture: `AudioBackend` protocol (AgilisCore) for platform abstraction, `AudioManager` (Agilis) for high-level features.
+Two-layer architecture: `AudioBackend` protocol for platform abstraction, `AudioManager` for high-level features.
 
 ### AudioBackend Protocol
 - Sound effects (in-memory): `loadSound`, `playSound`, `stopSound`, `unloadSound`
@@ -888,7 +883,7 @@ Opt-in draw call optimization. Collects sprites, sorts by blend mode then textur
 
 ### RenderBackend
 - **`drawSprites(_ sprites: [Sprite])`** — batch draw method with default fallback to `drawSprite` loop
-- RaylibRenderer overrides with cached texture lookups and blend mode state tracking for sorted sprite arrays
+- Renderer overrides with cached texture lookups and blend mode state tracking for sorted sprite arrays
 
 ### Usage
 ```swift
@@ -904,7 +899,7 @@ batch.flush(to: app.renderer)
 
 Per-sprite and scoped blend mode control for rendering effects.
 
-### BlendMode Enum (AgilisCore)
+### BlendMode Enum
 - **`.alpha`** — standard alpha blending (default)
 - **`.additive`** — adds source to destination (glow, fire, light effects)
 - **`.multiplied`** — multiplies source with destination (shadows, tinting)
@@ -933,7 +928,7 @@ Both methods have default no-op implementations for backward compatibility.
 
 Per-sprite shader materials with typed uniforms, built-in effects, shader composition, and GLSL include libraries.
 
-### Core Types (AgilisCore)
+### Core Types
 
 - **`UniformValue`** — enum: `.float`, `.vec2`, `.vec3`, `.vec4`, `.int`, `.color` (auto-converts 0-255→0.0-1.0), `.texture`
 - **`Material2D`** — struct: `shader` (ShaderHandle) + `uniforms` ([String: UniformValue]) + optional `blendMode` override. `sortKey` returns `shader.id` for batching.
@@ -1042,7 +1037,7 @@ Off-screen rendering to textures. Enables screen transitions, post-processing, m
 - **`drawRenderTarget(_:position:tint:)`** — draws RT contents with automatic Y-flip
 - **`drawRenderTarget(_:destination:tint:)`** — scaled version with Y-flip
 
-### RaylibRenderer Implementation
+### Renderer Implementation
 - Color buffer bridged into `textures` dictionary so `drawSprite`/`SpriteBatch` work unmodified
 - `destroyTexture` guards against double-free on RT-owned textures
 - `shutdown()` cleans up render targets before textures
@@ -1061,7 +1056,7 @@ app.renderer.drawRenderTarget(rt, position: .zero)
 
 Screen-space effect pipeline with ping-pong buffering. Captures the scene to a render target, applies a chain of effects, and composites to the screen.
 
-### PostProcessEffect Protocol (AgilisCore)
+### PostProcessEffect Protocol
 - **`name: String`** — identifier
 - **`isEnabled: Bool`** — disabled = zero cost (completely skipped)
 - **`order: Int`** — priority (lower runs first)
@@ -1155,7 +1150,7 @@ world.addComponent(ParticleEmitter(
 
 Dynamic 2D lighting with shadow volumes. Renders a light map to an off-screen render target using GLSL shaders, composited onto the scene with `BlendMode.multiplied`.
 
-### Shader Infrastructure (AgilisCore)
+### Shader Infrastructure
 
 Minimal shader API added to `RenderBackend` protocol:
 - **`loadShader(vertexSource:fragmentSource:)`** → `ShaderHandle`
@@ -1321,13 +1316,13 @@ renderer.drawNinePatch(patch, destination: Rect(x: 10, y: 10, width: 300, height
 Structured logging with level filtering and multiple output destinations.
 
 ### Log Levels
-`LogLevel` enum (AgilisCore): `.trace`, `.debug`, `.info`, `.warn`, `.error`. `Comparable` by severity.
+`LogLevel` enum: `.trace`, `.debug`, `.info`, `.warn`, `.error`. `Comparable` by severity.
 
 ### LogEntry
-`LogEntry` struct (AgilisCore): `level`, `category` (String), `message` (String), `timestamp` (Double, seconds since init).
+`LogEntry` struct: `level`, `category` (String), `message` (String), `timestamp` (Double, seconds since init).
 
 ### LogOutput Protocol
-`LogOutput` (AgilisCore): `minimumLevel: LogLevel` + `write(_: LogEntry)`. Implement for custom destinations.
+`LogOutput`: `minimumLevel: LogLevel` + `write(_: LogEntry)`. Implement for custom destinations.
 
 ### Built-in Outputs
 - **`ConsoleLogOutput`** — prints `[time] [LEVEL] [category] message` to stdout
@@ -1355,7 +1350,7 @@ Capture the framebuffer to file or memory.
 - **`takeScreenshot(path:)`** — saves framebuffer to PNG file
 - **`captureScreen() -> ImageData?`** — reads framebuffer pixels into `ImageData` (RGBA)
 
-Both have default no-op implementations. RaylibRenderer uses `TakeScreenshot()` and `LoadImageFromScreen()`.
+Both have default no-op implementations. The Renderer reads the OpenGL ES framebuffer via `glReadPixels`.
 
 ### Usage
 ```swift
@@ -1497,7 +1492,7 @@ class GameScene: Scene {
 - `internal` access for cross-file helpers within the Agilis module
 - `private` for state within a single file
 - No external Swift dependencies — everything is self-contained
-- Raylib + GLFW are vendored C sources, built via SPM C targets
+- ANGLE, MiniAudio, PlatformC, and stb are vendored C sources, built via SPM C targets
 - Windows linker flags: `/SUBSYSTEM:WINDOWS`, `/ENTRY:mainCRTStartup` on executables
 - C language standard: C99
 

@@ -67,13 +67,13 @@ How Agilis stacks up against competitors across major feature categories.
 Features that most competing frameworks provide and that significantly limit what games can be built with Agilis.
 
 ### 1. Touch & Gesture Input
-**Status:** Missing (raylib supports it, Agilis doesn't expose it)
+**Status:** Missing (PlatformC can be extended to support it)
 **Priority:** Highest
 **Competitors:** All major frameworks support touch input — Godot (InputEventScreenTouch + gestures), Unity (Touch API), Bevy (TouchInput events), Love2D (love.touch module), Defold (multi-touch via input bindings), MonoGame (TouchPanel + gestures), Macroquad (touches())
 
-Agilis has keyboard, mouse, and gamepad but no touch input. This blocks mobile deployment even if platform support were added. Raylib already has the underlying touch/gesture support — this is purely an exposure gap in the InputBackend protocol and InputManager.
+Agilis has keyboard, mouse, and gamepad but no touch input. This blocks mobile deployment even if platform support were added. PlatformC can be extended to support touch events — this requires platform-specific touch APIs in the InputBackend protocol and InputManager.
 
-**Scope:** Expose raylib's existing touch API through InputBackend, add touch state tracking to InputManager, integrate with action mapping.
+**Scope:** Add touch API to PlatformC and expose through InputBackend, add touch state tracking to InputManager, integrate with action mapping.
 
 ### 2. Web / Mobile Platform Support
 **Status:** Desktop only (Windows, macOS, Linux)
@@ -83,7 +83,7 @@ Agilis has keyboard, mouse, and gamepad but no touch input. This blocks mobile d
 - iOS/Android: Godot, Unity, Defold (first-class), MonoGame, Love2D (official ports), Macroquad (Android good)
 - Consoles: Unity, Defold, MonoGame/FNA (private access), Godot (third-party porting)
 
-Desktop-only limits audience reach significantly. Web export alone would be a major competitive improvement, especially since Macroquad (also raylib-inspired, Rust) has first-class WASM support. Swift's WASM story is still evolving but worth tracking.
+Desktop-only limits audience reach significantly. Web export alone would be a major competitive improvement, especially since Macroquad (Rust) has first-class WASM support. Swift's WASM story is still evolving but worth tracking.
 
 ---
 
@@ -98,7 +98,7 @@ Features expected in mid-level and above frameworks. Missing these creates frict
 
 No distance attenuation, stereo panning, or listener/source model. Agilis has group volumes, fading, and crossfading but no spatial awareness. Important for atmosphere and gameplay feedback. Most competitors except Defold have robust built-in spatial audio.
 
-**Scope:** Add AudioListener2D + AudioSource2D model, distance attenuation curves (linear, inverse, exponential), stereo panning based on relative position. Raylib has basic spatial audio support that could be leveraged.
+**Scope:** Add AudioListener2D + AudioSource2D model, distance attenuation curves (linear, inverse, exponential), stereo panning based on relative position. MiniAudio supports spatial audio that could be leveraged.
 
 ### 4. Audio Effects & Buses
 **Status:** Basic group volumes only
@@ -201,10 +201,10 @@ Agilis has action mapping but no built-in UI for players to rebind keys at runti
 **Remaining scope:** Memory profiling, entity inspector, Tracy or similar external profiler integration.
 
 ### 15. Texture Filtering & Mipmapping Control
-**Status:** Missing (raylib supports it, not exposed)
+**Status:** Missing (not yet exposed)
 **Priority:** Medium-Low
 
-No API to set per-texture filtering mode (nearest for pixel art, bilinear for smooth). Raylib supports this — Agilis just doesn't expose it. Small effort, useful for pixel art games that need crisp rendering.
+No API to set per-texture filtering mode (nearest for pixel art, bilinear for smooth). Expose PlatformC support — Agilis just doesn't expose it yet. Small effort, useful for pixel art games that need crisp rendering.
 
 ### 16. Rich Text / Bitmap Font Support
 **Status:** Basic TTF only
@@ -229,7 +229,7 @@ Polish features and advanced use cases. Low priority but worth tracking.
 | Feature | Notes | Top Competitor Reference |
 |---|---|---|
 | Animation blending / crossfade | Can't smoothly blend between two animation clips | Godot (AnimationTree blend trees, BlendSpace1D/2D) |
-| Immediate-mode UI option | Only retained-mode; raylib has raygui | Macroquad (built-in IMGUI), Bevy (bevy_egui) |
+| Immediate-mode UI option | Only retained-mode; no built-in immediate-mode UI | Macroquad (built-in IMGUI), Bevy (bevy_egui) |
 | Screen reader / accessibility | No AccessKit or screen reader support | Godot (basic focus navigation), Unity (UGUI accessibility) |
 | Asset packing / bundling | No way to pack assets into a single archive for distribution | Godot (PCK files), Defold (automatic bundling) |
 | Sprite atlasing tool | Must use external tools (TexturePacker); no built-in atlas packer | Godot (auto-import atlas), Defold (auto atlas packing) |
@@ -287,11 +287,11 @@ Prioritized by value unlocked vs. implementation effort:
 
 | Priority | Feature | Effort | Value | Notes |
 |---|---|---|---|---|
-| 1 | Touch input | Small | Very High | Expose raylib's existing touch support; unblocks mobile |
-| 2 | Texture filtering control | Small | Medium | Expose raylib's existing support; quick win for pixel art games |
+| 1 | Touch input | Small | Very High | Add touch support to PlatformC; unblocks mobile |
+| 2 | Texture filtering control | Small | Medium | Expose ANGLE texture filtering; quick win for pixel art games |
 | 3 | Object layers (Tiled/LDtk) | Small | Medium | Completes the level design pipeline |
 | 4 | Physics interpolation | Small | Medium | Smooth rendering between physics ticks; PreviousTransform2D already exists |
-| 5 | Spatial audio | Medium | High | Significant atmosphere improvement; leverage raylib support |
+| 5 | Spatial audio | Medium | High | Significant atmosphere improvement; leverage MiniAudio support |
 | 6 | Audio effects & buses | Medium | Medium-High | At minimum reverb + filter; large gap vs. Godot/Love2D |
 | 7 | Async asset loading | Medium | Medium | Background loading with progress; prevents frame drops |
 | 8 | HTTP networking | Medium | Medium | Leaderboards, auth, cloud saves |
@@ -358,7 +358,7 @@ Issues identified via deep codebase analysis. Organized by severity — critical
 | 17 | Silent state machine failures | `AnimationStateMachineSystem.swift:63-66` | Transitioning to a non-existent state name silently fails. Animator left with previous clip, corrupting game logic. |
 | 18 | AudioManager tracks invalid handles | `AudioManager.swift:141-142` | If `backend.playSound()` returns `.invalid`, the dead handle is still tracked, leaking memory. |
 | 19 | NaN from degenerate polygon normals | `NarrowPhase.swift:469` | Zero-length edge produces NaN normal via `.normalized`. Corrupts all subsequent SAT tests. |
-| 20 | Render target texture ownership confusion | `RaylibRenderer.swift:40-47,364-372` | RT textures bridged into `textures` dict. Double-free possible if `destroyTexture()` called before `destroyRenderTarget()`. Guard exists but is fragile. |
+| 20 | Render target texture ownership confusion | `Renderer.swift` | RT textures bridged into `textures` dict. Double-free possible if `destroyTexture()` called before `destroyRenderTarget()`. Guard exists but is fragile. |
 
 ### Medium — Antipatterns & Maintainability
 

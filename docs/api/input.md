@@ -96,9 +96,9 @@ let leftStick = app.input.gamepadStick(0, .left)
 
 ## Key
 
-`Sources/AgilisCore/Input/Key.swift`
+`Sources/Agilis/Input/Key.swift`
 
-All available keys (raw values match Raylib/GLFW key codes):
+All available keys (raw values match platform key codes):
 
 | Group | Keys |
 |-------|------|
@@ -119,7 +119,7 @@ Cases: `.left` (0), `.right` (1), `.middle` (2)
 
 ## GamepadButton
 
-`Sources/AgilisCore/Input/GamepadButton.swift`
+`Sources/Agilis/Input/GamepadButton.swift`
 
 18 standard buttons:
 
@@ -136,7 +136,7 @@ Cases: `.left` (0), `.right` (1), `.middle` (2)
 
 ## GamepadAxis
 
-`Sources/AgilisCore/Input/GamepadAxis.swift`
+`Sources/Agilis/Input/GamepadAxis.swift`
 
 6 axes: `.leftX`, `.leftY`, `.rightX`, `.rightY`, `.leftTrigger`, `.rightTrigger`
 
@@ -144,7 +144,7 @@ Cases: `.left` (0), `.right` (1), `.middle` (2)
 
 ## GamepadStick
 
-`Sources/AgilisCore/Input/GamepadStick.swift`
+`Sources/Agilis/Input/GamepadStick.swift`
 
 Cases: `.left`, `.right`
 
@@ -154,7 +154,7 @@ Used with `gamepadStick()` to get a `Vector2` for the stick position.
 
 ## InputBackend
 
-`Sources/AgilisCore/Input/InputBackend.swift`
+`Sources/Agilis/Input/InputBackend.swift`
 
 Protocol for raw input polling. Implement this to support a new platform:
 

@@ -2,7 +2,7 @@
 
 ## RenderBackend
 
-`Sources/AgilisCore/Graphics/RenderBackend.swift`
+`Sources/Agilis/Graphics/RenderBackend.swift`
 
 The abstraction over platform-specific rendering. All drawing goes through this protocol.
 
@@ -101,7 +101,7 @@ func setShaderTexture(_ handle: ShaderHandle, name: String, texture: TextureHand
 func destroyShader(_ handle: ShaderHandle)
 ```
 
-Default implementations are no-ops (backward compatible). Pass `nil` for `vertexSource` to use the default vertex shader. GLSL 330 (OpenGL 3.3). See [Lighting](lighting.md) for lighting shaders, [Materials](materials.md) for the material system and ShaderBuilder, and [Post-Processing](post-processing.md) for the post-processing pipeline.
+Default implementations are no-ops (backward compatible). Pass `nil` for `vertexSource` to use the default vertex shader. GLSL 300 es (OpenGL ES 3.0). See [Lighting](lighting.md) for lighting shaders, [Materials](materials.md) for the material system and ShaderBuilder, and [Post-Processing](post-processing.md) for the post-processing pipeline.
 
 ### Material Application (Extension)
 
@@ -218,7 +218,7 @@ Save the current frame to a file or capture it as raw pixel data. Default implem
 
 ## Sprite
 
-`Sources/AgilisCore/Graphics/Sprite.swift`
+`Sources/Agilis/Graphics/Sprite.swift`
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -240,7 +240,7 @@ Save the current frame to a file or capture it as raw pixel data. Default implem
 
 ## BlendMode
 
-`Sources/AgilisCore/Graphics/BlendMode.swift`
+`Sources/Agilis/Graphics/BlendMode.swift`
 
 Controls how source pixels are combined with destination pixels.
 
@@ -271,7 +271,7 @@ app.renderer.endBlendMode()
 
 ## Camera2D
 
-`Sources/AgilisCore/Graphics/Camera2D.swift`
+`Sources/Agilis/Graphics/Camera2D.swift`
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|

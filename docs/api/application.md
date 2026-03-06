@@ -26,8 +26,8 @@ The central engine object. Owns the game loop and all subsystems.
 ### Methods
 
 ```swift
-// Create with backends
-init(config: WindowConfig, renderer: RenderBackend, audio: AudioBackend, inputBackend: InputBackend)
+// Create with default native backends (ANGLE renderer, MiniAudio audio, PlatformC input)
+init(config: WindowConfig = WindowConfig())
 
 // Install a plugin (call before run())
 func install(_ plugin: Plugin)
@@ -44,22 +44,23 @@ func quit()
 
 `runAsync()` enables parallel system scheduling via Swift Concurrency. Systems that declare their `componentAccess` can run concurrently in the same stage. The sync `run()` always runs systems sequentially. See [ECS — Component Access & Parallel Scheduling](ecs.md#component-access--parallel-scheduling) for details.
 
-### Convenience Factory
+### Creating an Application
 
 ```swift
-// Creates Application with all Raylib backends
-let app = createApplication(config: WindowConfig(
+let app = Application(config: WindowConfig(
     title: "My Game",
     width: 800,
     height: 600
 ))
 ```
 
+An internal dependency-injection initializer `init(config:renderer:audio:inputBackend:)` is available for testing with mock backends.
+
 ---
 
 ## WindowConfig
 
-`Sources/AgilisCore/Application/Configuration.swift`
+`Sources/Agilis/Application/Configuration.swift`
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|

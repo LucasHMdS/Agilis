@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **Swift 6.0+** (Windows, macOS, or Linux)
-- No external dependencies — raylib is vendored and builds from source
+- No external Swift dependencies — all native backends (ANGLE, MiniAudio, PlatformC) are vendored and build from source
 
 ## Creating a New Project
 
@@ -54,7 +54,7 @@ final class MyScene: Scene {
     }
 }
 
-let app = createApplication(config: WindowConfig(
+let app = Application(config: WindowConfig(
     title: "My Game",
     width: 800,
     height: 600

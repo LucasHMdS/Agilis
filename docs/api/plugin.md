@@ -37,7 +37,7 @@ class DebugPlugin: Plugin {
 }
 
 // Usage
-let app = createApplication(config: config)
+let app = Application(config: config)
 app.install(DebugPlugin())
 try app.run()
 ```

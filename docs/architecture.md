@@ -2,16 +2,19 @@
 
 ## Layered Design
 
-Agilis is organized into four library targets:
+Agilis is organized into two Swift library targets plus four vendored C targets:
 
 ```
-AgilisCore              Backend protocols and value types (no platform deps)
-Agilis                  Main framework (re-exports AgilisCore + AgilisBackendRaylib)
-AgilisBackendRaylib     Raylib backend (rendering, audio, input)
+PlatformC               Native windowing and input (Win32/Cocoa/X11)
+AngleC                  ANGLE — EGL + OpenGL ES 3.0 (pre-built binaries)
+MiniaudioC              MiniAudio — cross-platform audio (single-header)
+StbC                    stb libraries — image loading, font rasterization
+
+Agilis                  Main framework (depends on all C targets above)
 AgilisFormats           Pure Swift file format parsers
 ```
 
-Game code only needs `import Agilis` — the module re-exports everything. Users never touch backend-specific types directly. This makes the core portable and testable without a window.
+Game code only needs `import Agilis` — the module contains everything. Users never touch backend-specific types directly. This makes the framework portable and testable without a window.
 
 ## Backend Protocols
 
@@ -21,7 +24,7 @@ All platform-specific behavior is abstracted behind three protocols:
 - **`AudioBackend`** — Sound effects (in-memory) and music (streaming)
 - **`InputBackend`** — Raw keyboard, mouse, and gamepad polling
 
-The raylib backend provides concrete implementations, but these can be swapped for Metal, WebGPU, SDL, or any other renderer.
+The native backends provide concrete implementations (ANGLE renderer, MiniAudio audio engine, PlatformC input), but these can be swapped for Metal, WebGPU, SDL, or any other platform.
 
 ## Application
 
@@ -35,10 +38,10 @@ The raylib backend provides concrete implementations, but these can be swapped f
 - The `timeScale` property (game speed multiplier)
 - FPS tracking
 
-A convenience factory creates a fully configured application:
+Create an application with the default native backends:
 
 ```swift
-let app = createApplication(config: WindowConfig(
+let app = Application(config: WindowConfig(
     title: "My Game",
     width: 800,
     height: 600
@@ -86,7 +89,7 @@ Agilis targets Swift 6 with strict concurrency checking:
 - **Opt-in parallel scheduling** — `world.parallelSchedulingEnabled = true` with `Application.runAsync()` enables concurrent system execution via Swift Concurrency (`async/await` + `TaskGroup`)
 - Systems declare `componentAccess` (reads/writes/mutatesEntities/emitsEvents) so the `SystemScheduler` can group non-conflicting systems into parallel stages
 - Thread safety is guaranteed by the scheduler (disjoint component access per stage), not by locks — no contention on `ComponentStore`
-- Raylib GPU calls remain on the main thread; only system logic is parallelized
+- GPU calls (OpenGL ES via ANGLE) remain on the main thread; only system logic is parallelized
 - `@unchecked Sendable` wrappers bridge non-Sendable types (System references, CommandBuffers) across `TaskGroup` boundaries
 
 ## Scene Management
@@ -256,7 +259,7 @@ Three pillars for runtime debugging:
 
 ### Structured Logging
 
-`Log` is a static facade that dispatches `LogEntry` messages to registered `LogOutput` destinations. Built-in outputs: `ConsoleLogOutput` (stdout), `FileLogOutput` (file), `RingBufferLogOutput` (circular buffer for on-screen display). The protocol and value types (`LogLevel`, `LogEntry`, `LogOutput`) live in AgilisCore for backend-agnostic use; concrete outputs live in Agilis.
+`Log` is a static facade that dispatches `LogEntry` messages to registered `LogOutput` destinations. Built-in outputs: `ConsoleLogOutput` (stdout), `FileLogOutput` (file), `RingBufferLogOutput` (circular buffer for on-screen display). All logging types (`LogLevel`, `LogEntry`, `LogOutput`) and concrete outputs live in the Agilis module.
 
 ### Debug Overlay
 

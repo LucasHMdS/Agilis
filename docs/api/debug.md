@@ -4,7 +4,7 @@
 
 ### LogLevel
 
-`Sources/AgilisCore/Debug/LogLevel.swift`
+`Sources/Agilis/Debug/LogLevel.swift`
 
 ```swift
 public enum LogLevel: Int, Comparable, Sendable, CustomStringConvertible {
@@ -22,7 +22,7 @@ Comparable by raw value. `description` returns the uppercase name (e.g. `"TRACE"
 
 ### LogEntry
 
-`Sources/AgilisCore/Debug/LogEntry.swift`
+`Sources/Agilis/Debug/LogEntry.swift`
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -35,7 +35,7 @@ Comparable by raw value. `description` returns the uppercase name (e.g. `"TRACE"
 
 ### LogOutput
 
-`Sources/AgilisCore/Debug/LogOutput.swift`
+`Sources/Agilis/Debug/LogOutput.swift`
 
 Protocol for log destinations.
 
@@ -155,11 +155,11 @@ func takeScreenshot(path: String)
 func captureScreen() -> ImageData?
 ```
 
-Default implementations are no-ops (returns `nil` for `captureScreen`). The raylib backend implements both using raylib's `TakeScreenshot` and `LoadImageFromScreen`.
+Default implementations are no-ops (returns `nil` for `captureScreen`). The native renderer implements both.
 
 ### ImageData
 
-`Sources/AgilisCore/Graphics/ImageData.swift`
+`Sources/Agilis/Graphics/ImageData.swift`
 
 | Property | Type | Description |
 |----------|------|-------------|

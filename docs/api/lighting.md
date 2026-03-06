@@ -330,7 +330,7 @@ static func transformVertices(_ vertices: [Vector2], position: Vector2, rotation
 
 ## Shader Infrastructure
 
-`Sources/AgilisCore/Graphics/ShaderHandle.swift`, `Sources/AgilisCore/Graphics/RenderBackend.swift`
+`Sources/Agilis/Graphics/ShaderHandle.swift`, `Sources/Agilis/Graphics/RenderBackend.swift`
 
 Minimal shader API on the `RenderBackend` protocol. Used internally by `LightingSystem`, `MaterialLibrary`, and `PostProcessPipeline`. For the full material and shader system, see [Materials](materials.md). For post-processing, see [Post-Processing](post-processing.md).
 

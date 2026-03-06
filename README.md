@@ -2,7 +2,7 @@
 
 A cross-platform 2D game framework written in Swift, targeting Windows, Linux, and macOS.
 
-Agilis provides a lightweight, backend-agnostic architecture with a built-in raylib backend for rendering, audio, and input. The core framework has zero platform-specific imports — all platform code lives behind swappable backend protocols.
+Agilis provides a lightweight, backend-agnostic architecture with native backends for rendering (ANGLE/OpenGL ES 3.0), audio (MiniAudio), and input (PlatformC). The core framework has zero external Swift dependencies — all platform code lives behind swappable backend protocols.
 
 ## Features
 
@@ -58,7 +58,7 @@ final class MyScene: Scene {
     }
 }
 
-let app = createApplication(config: WindowConfig(
+let app = Application(config: WindowConfig(
     title: "My Game",
     width: 800,
     height: 600
@@ -88,7 +88,7 @@ targets: [
 
 ## Building
 
-Requires **Swift 6.0+**. No external dependencies — raylib is vendored and builds from source.
+Requires **Swift 6.0+**. No external Swift dependencies — all native backends (ANGLE, MiniAudio, PlatformC) are vendored and build from source.
 
 ```
 swift build
@@ -101,29 +101,24 @@ swift run Pong
 
 ```
 Sources/
-  AgilisCore/              Backend-agnostic protocols and value types
-    Math/                   Vector2, Rect, Size, MathUtilities, EasingFunction
-    Graphics/               RenderBackend protocol, Color, Sprite, Camera2D,
-                              BlendMode, TextureHandle, FontHandle,
-                              RenderTargetHandle, ShaderHandle, ImageData,
-                              Material2D, PostProcessEffect, ShaderUniform
-    Audio/                  AudioBackend protocol, SoundHandle, MusicHandle,
-                              AudioGroup
-    Input/                  InputBackend protocol, Key, MouseButton,
-                              GamepadButton, GamepadAxis, GamepadStick
-    Application/            WindowConfig
-    Debug/                  LogLevel, LogEntry, LogOutput protocol
+  PlatformC/               Native windowing and input (Win32/Cocoa/X11)
+  AngleC/                  ANGLE — EGL + OpenGL ES 3.0 (pre-built binaries)
+  MiniaudioC/              MiniAudio — cross-platform audio (single-header)
+  StbC/                    stb libraries — image loading, font rasterization
 
-  Agilis/                  Main framework (re-exports AgilisCore + AgilisBackendRaylib)
-    Application/            Application, GameDelegate, BackendFactory
+  Agilis/                  Main framework
+    Application/            Application, GameDelegate
     Core/                   ECS: Entity, Component, System, World, Query,
                               CommandBuffer, Prefab, Hierarchy, Metadata,
                               Event, ComponentAccess, SystemScheduler
+    Graphics/               RenderBackend protocol, TileMap, TextAlignment,
+                              SpriteBatch, NinePatchSprite, RenderTargetDrawing,
+                              Color, Sprite, Camera2D, BlendMode, TextureHandle,
+                              FontHandle, RenderTargetHandle, ShaderHandle,
+                              ImageData, Material2D, PostProcessEffect
     Animation/              AnimationSystem, SpriteAnimator, AnimationClip,
                               AnimationFrame, PlaybackMode, AnimationEvent,
                               AnimationStateMachine, AnimationStateMachineSystem
-    Graphics/               TileMap, TextAlignment, SpriteBatch,
-                              NinePatchSprite, RenderTargetDrawing
     Materials/              MaterialLibrary, MaterialTemplate, MaterialShaders,
                               MaterialRendering (MaterialContext),
                               ShaderBuilder, ShaderIncludes,
@@ -135,10 +130,13 @@ Sources/
     Particles/              ParticleEmitter, ParticleSystem, EmissionShape
     Lighting/               LightingSystem, Light2D, ShadowCaster2D,
                               ShadowGeometry, LightingShaders, NormalMapData
-    Audio/                  AudioManager (group volumes, fading, crossfading)
-    Input/                  InputManager, action mapping (keyboard, mouse, gamepad)
+    Audio/                  AudioBackend protocol, AudioManager
+                              (group volumes, fading, crossfading)
+    Input/                  InputBackend protocol, InputManager,
+                              action mapping (keyboard, mouse, gamepad)
     Assets/                 AssetManager, pluggable loaders
-    Math/                   Matrix3
+    Math/                   Vector2, Rect, Size, Matrix3, EasingFunction,
+                              MathUtilities
     Physics/                PhysicsWorld2D, NarrowPhase (SAT), SpatialHashGrid,
                               ImpulseResolver, ContactTracker, CollisionFilter,
                               PhysicsDebugRenderer, SpatialQuery, SweptCollision,
@@ -157,11 +155,9 @@ Sources/
     Plugin/                 Plugin protocol
     Time/                   Clock
 
-  AgilisBackendRaylib/     Raylib backend implementation
   AgilisFormats/           Pure Swift file format parsers (LDtk, Tiled,
                             TexturePacker, Aseprite) with animation and
                             tilemap bridges
-  RaylibC/                Vendored raylib 5.5 C source
 
 Examples/
   UIDemo/                 UI widget showcase with all 12 widgets
@@ -178,15 +174,15 @@ Tests/
   AgilisFormatsTests/      Format parser tests
 ```
 
-Users only need `import Agilis` — the Agilis module re-exports everything via `@_exported import`.
+Users only need `import Agilis` — the module contains everything needed.
 
 ## Architecture
 
 The framework is built around protocol-based backends:
 
-- **`RenderBackend`** — All drawing goes through this protocol. The raylib backend implements it, but it can be swapped for Metal, WebGPU, or any other renderer.
-- **`AudioBackend`** — Sound and music playback abstraction.
-- **`InputBackend`** — Raw input polling abstraction (keyboard, mouse, gamepad).
+- **`RenderBackend`** — All drawing goes through this protocol. The native ANGLE backend implements it, but it can be swapped for Metal, WebGPU, or any other renderer.
+- **`AudioBackend`** — Sound and music playback abstraction. The native MiniAudio backend implements it.
+- **`InputBackend`** — Raw input polling abstraction (keyboard, mouse, gamepad). The native PlatformC backend implements it.
 
 Game code only touches framework types (`Sprite`, `Vector2`, `Color`, etc.) and never sees backend-specific types. This makes the core framework portable and testable without a window.
 

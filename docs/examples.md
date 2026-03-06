@@ -12,7 +12,7 @@ A UI demo that showcases the full widget system. It creates a single scene with 
 
 ### What It Demonstrates
 
-- **Application setup** — `WindowConfig`, `createApplication`, pushing an initial scene
+- **Application setup** — `WindowConfig`, `Application(config:)`, pushing an initial scene
 - **UI system** — `UIContext`, `UIScrollContainer` with vertical layout, widget tree
 - **Widgets** — `UILabel`, `UIButton`, `UISlider`, `UIToggle`, `UIProgressBar`, `UIDropdown`, `UIListView`, `UIModalDialog`, `UITextInput`, `UIImage`, `UIPanel`, `UIScrollContainer`
 - **Configurable input** — `UIInputConfig.keyboardAndGamepad` for keyboard + gamepad navigation
@@ -25,7 +25,7 @@ A UI demo that showcases the full widget system. It creates a single scene with 
 ### Structure
 
 ```
-createApplication(config)
+Application(config)
   └─ UIDemoScene
        ├─ UIContext (inputConfig: .keyboardAndGamepad)
        │   └─ UIScrollContainer (vertical, centered)

@@ -2,7 +2,7 @@
 
 ## Vector2
 
-`Sources/AgilisCore/Math/Vector2.swift`
+`Sources/Agilis/Math/Vector2.swift`
 
 2D floating-point vector.
 
@@ -37,7 +37,7 @@ func lerp(to target: Vector2, t: Float) -> Vector2
 
 ## Rect
 
-`Sources/AgilisCore/Math/Rect.swift`
+`Sources/Agilis/Math/Rect.swift`
 
 Axis-aligned rectangle.
 
@@ -71,7 +71,7 @@ func intersection(_ other: Rect) -> Rect?       // Returns overlap area or nil
 
 ## Size
 
-`Sources/AgilisCore/Math/Size.swift`
+`Sources/Agilis/Math/Size.swift`
 
 ```swift
 struct Size: Sendable, Equatable {
@@ -122,7 +122,7 @@ let worldPos = transform.transformPoint(localPos)
 
 ## Color
 
-`Sources/AgilisCore/Graphics/Color.swift`
+`Sources/Agilis/Graphics/Color.swift`
 
 RGBA color with 0-255 byte components.
 
@@ -141,7 +141,7 @@ init(rf: Float, gf: Float, bf: Float, af: Float = 1.0)   // Normalized floats 0.
 
 ## EasingFunction
 
-`Sources/AgilisCore/Math/Easing.swift`
+`Sources/Agilis/Math/Easing.swift`
 
 Standard easing functions for smooth interpolation. All functions map `t` in [0, 1] to an output value.
 
@@ -183,7 +183,7 @@ let eased = ease(.bounceOut, t: progress)
 
 ## Utility Functions
 
-`Sources/AgilisCore/Math/MathUtilities.swift`
+`Sources/Agilis/Math/MathUtilities.swift`
 
 ```swift
 func lerp(_ a: Float, _ b: Float, t: Float) -> Float

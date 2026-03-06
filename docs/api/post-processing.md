@@ -2,7 +2,7 @@
 
 ## PostProcessEffect Protocol
 
-`Sources/AgilisCore/Graphics/PostProcessEffect.swift`
+`Sources/Agilis/Graphics/PostProcessEffect.swift`
 
 The protocol for screen-space post-processing effects. Each effect processes a fullscreen render target with a fragment shader. Effects are managed by `PostProcessPipeline`.
 
@@ -296,7 +296,7 @@ private static let glsl = ShaderBuilder.createPostProcess(
 
 `Sources/Agilis/PostProcess/PostProcessShaders.swift`
 
-Embedded GLSL 330 fragment shaders used by the built-in effects. All use raylib's default vertex shader (pass `nil` for vertex source). Available as static string constants if you want to reference them directly:
+Embedded GLSL 330 fragment shaders used by the built-in effects. All use the default vertex shader (pass `nil` for vertex source). Available as static string constants if you want to reference them directly:
 
 | Constant | Effect |
 |----------|--------|

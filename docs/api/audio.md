@@ -2,7 +2,7 @@
 
 ## AudioBackend
 
-`Sources/AgilisCore/Audio/AudioBackend.swift`
+`Sources/Agilis/Audio/AudioBackend.swift`
 
 Abstraction over platform-specific audio playback. Two categories: **sound effects** (loaded entirely into memory, low latency) and **music** (streamed from disk, for longer tracks).
 

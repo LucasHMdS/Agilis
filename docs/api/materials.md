@@ -2,7 +2,7 @@
 
 ## Material2D
 
-`Sources/AgilisCore/Graphics/Material2D.swift`
+`Sources/Agilis/Graphics/Material2D.swift`
 
 A value type that pairs a shader program with typed uniform values. Assigned to sprites via `Sprite.material` for per-sprite visual effects.
 
@@ -163,7 +163,7 @@ materials.context.deltaTime = Float(dt)
 renderer.applyMaterial(material, context: materials.context)
 ```
 
-Shaders that don't declare these uniforms are unaffected (setting a uniform with an invalid location is a no-op in raylib).
+Shaders that don't declare these uniforms are unaffected (setting a uniform with an invalid location is a no-op).
 
 ---
 
@@ -211,7 +211,7 @@ let source = ShaderBuilder.createPostProcess(
 Both methods produce a shader with:
 1. `#version 330` header
 2. Standard inputs (`fragTexCoord`, `fragColor`)
-3. `texture0` sampler (raylib's built-in sprite texture)
+3. `texture0` sampler (the sprite texture bound by the renderer)
 4. Standard uniform declarations (`_time`, `_resolution`, `_deltaTime`)
 5. User uniform declarations (sorted alphabetically for deterministic output)
 6. Requested include libraries (sorted alphabetically)
