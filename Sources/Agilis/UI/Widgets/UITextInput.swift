@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A single-line text input field.
 public class UITextInput: UINode, @unchecked Sendable {
@@ -102,7 +102,7 @@ public class UITextInput: UINode, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
 
         // Background

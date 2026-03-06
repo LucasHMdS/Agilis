@@ -10,7 +10,7 @@ import Agilis
 ///  ggg
 /// e   c
 ///  ddd
-func drawDigit(_ digit: Int, at origin: Vector2, scale: Float, color: Color, renderer: RenderBackend) {
+func drawDigit(_ digit: Int, at origin: Vector2, scale: Float, color: Color, renderer: Renderer) {
     //                  abcdefg
     let segments: [UInt8] = [
         0b0111111,  // 0
@@ -63,7 +63,7 @@ func drawDigit(_ digit: Int, at origin: Vector2, scale: Float, color: Color, ren
     }
 }
 
-func drawScore(_ score: Int, centerX: Float, y: Float, scale: Float, color: Color, renderer: RenderBackend) {
+func drawScore(_ score: Int, centerX: Float, y: Float, scale: Float, color: Color, renderer: Renderer) {
     let digitW = Pong.digitWidth * scale
     let gap: Float = 4 * scale
     let digits = score < 10 ? [score] : [score / 10, score % 10]
@@ -76,7 +76,7 @@ func drawScore(_ score: Int, centerX: Float, y: Float, scale: Float, color: Colo
     }
 }
 
-func drawCourtDashes(renderer: RenderBackend, screenHeight: Float, centerX: Float) {
+func drawCourtDashes(renderer: Renderer, screenHeight: Float, centerX: Float) {
     var y: Float = 0
     let dashW = Pong.lineThickness
     let dashColor = Color(r: 80, g: 80, b: 80)
@@ -89,7 +89,7 @@ func drawCourtDashes(renderer: RenderBackend, screenHeight: Float, centerX: Floa
     }
 }
 
-func drawPongTitle(centerX: Float, y: Float, renderer: RenderBackend) {
+func drawPongTitle(centerX: Float, y: Float, renderer: Renderer) {
     let color = Color.white
     let t: Float = 5
     let lw: Float = 25

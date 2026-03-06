@@ -1,6 +1,6 @@
-/// Embedded GLSL 330 fragment shaders for built-in post-processing effects.
+/// Embedded GLSL ES 300 fragment shaders for built-in post-processing effects.
 ///
-/// All shaders use raylib's default vertex shader (pass `nil` for vertex source).
+/// All shaders use the engine's default vertex shader (pass `nil` for vertex source).
 /// The input render target texture is available as `texture0`.
 /// Fragment inputs `fragTexCoord` and `fragColor` come from the default vertex shader.
 enum PostProcessShaders {
@@ -13,7 +13,8 @@ enum PostProcessShaders {
     /// - `radius`: float (0-1) -- where vignette starts (distance from center)
     /// - `softness`: float (0-1) -- falloff width
     static let vignetteFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -40,7 +41,8 @@ enum PostProcessShaders {
     ///
     /// - `amount`: float -- offset in UV space (e.g. 0.003)
     static let chromaticAberrationFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -73,7 +75,8 @@ enum PostProcessShaders {
     /// - `gamma`: float (0.1-3, default 1) -- gamma correction
     /// - `tint`: vec3 (default 1,1,1) -- color multiply
     static let colorGradingFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -119,7 +122,8 @@ enum PostProcessShaders {
     /// - `curvature`: float (0-1) -- barrel distortion (default 0.0)
     /// - `resolution`: vec2 -- screen resolution in pixels
     static let scanlinesFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -164,7 +168,8 @@ enum PostProcessShaders {
     /// - `pixelSize`: float -- virtual pixel size in screen pixels (e.g. 4.0)
     /// - `resolution`: vec2 -- screen resolution in pixels
     static let pixelateFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -188,7 +193,8 @@ enum PostProcessShaders {
     /// - `threshold`: float -- brightness threshold for extraction (default 0.8)
     /// - `resolution`: vec2 -- render target resolution
     static let bloomExtractFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -234,7 +240,8 @@ enum PostProcessShaders {
     /// - `intensity`: float -- bloom strength multiplier (default 1.0)
     /// - `resolution`: vec2 -- render target resolution
     static let bloomCompositeFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;

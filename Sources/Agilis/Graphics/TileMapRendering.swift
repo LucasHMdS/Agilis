@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 #if canImport(Darwin)
 import Darwin
@@ -10,7 +10,7 @@ import CRT
 
 // MARK: - TileMap Rendering
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw all visible layers of a tilemap.
     ///

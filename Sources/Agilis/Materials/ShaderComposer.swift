@@ -65,12 +65,12 @@ public final class ShaderComposer: @unchecked Sendable {
         ))
     }
 
-    /// Build the final GLSL 330 fragment shader source.
+    /// Build the final GLSL ES 300 fragment shader source.
     ///
     /// All uniforms are merged (duplicates by name use the last-added type).
     /// All includes are deduplicated. Effects run in the order they were added.
     ///
-    /// - Returns: Complete GLSL 330 fragment shader source string.
+    /// - Returns: Complete GLSL ES 300 fragment shader source string.
     public func build() -> String {
         // Merge uniforms across all effects (last-added type wins for duplicates)
         var mergedUniforms: [String: String] = [:]

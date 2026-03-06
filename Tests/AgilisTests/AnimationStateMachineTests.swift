@@ -1,7 +1,7 @@
 import Testing
 import Foundation
 @testable import Agilis
-import AgilisCore
+import Agilis
 
 // MARK: - Test Helpers
 

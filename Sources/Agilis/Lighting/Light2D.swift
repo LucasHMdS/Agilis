@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// The type of a 2D light source.
 public enum LightType: Sendable, Codable, Equatable {

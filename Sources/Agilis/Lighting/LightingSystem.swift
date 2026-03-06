@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 #if canImport(Darwin)
 import Darwin
@@ -91,7 +91,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     private var shadowBlurVShader: ShaderHandle = .invalid
 
     // 1x1 white texture for drawing full-screen shader quads with proper UV mapping.
-    // drawRect uses raylib's shapes texture which doesn't produce 0-1 UVs across the quad.
+    // drawRect uses vertex colors without proper 0-1 UV mapping across the quad.
     private var shaderQuadTexture: TextureHandle = .invalid
 
     // Pre-computed radial gradient texture for rendering point lights without shaders.
@@ -154,7 +154,7 @@ public final class LightingSystem: System, @unchecked Sendable {
 
     /// Initialize GPU resources (shaders, render targets). Call once after the
     /// renderer is initialized, typically in `Scene.didEnter`.
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         guard !isInitialized else { return }
 
         // Load base shaders
@@ -173,7 +173,7 @@ public final class LightingSystem: System, @unchecked Sendable {
         lightMapHeight = max(1, Int(screenSize.height * options.lightMapScale))
         lightMapRT = renderer.createRenderTarget(width: lightMapWidth, height: lightMapHeight)
 
-        // 1x1 white texture for shader quads - drawRect uses raylib shapes
+        // 1x1 white texture for shader quads - drawRect uses the white pixel
         // texture which does not produce 0-1 UVs needed by light shaders.
         shaderQuadTexture = renderer.loadTextureFromImage(
             ImageData(width: 1, height: 1, pixels: [255, 255, 255, 255])
@@ -226,7 +226,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     }
 
     /// Initialize normal/specular mapping GPU resources.
-    private func initializeNormalMapping(renderer: any RenderBackend) {
+    private func initializeNormalMapping(renderer: Renderer) {
         guard !isNormalMappingInitialized else { return }
 
         // Load normal-lit light shaders
@@ -269,7 +269,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     }
 
     /// Clean up normal mapping GPU resources.
-    private func shutdownNormalMapping(renderer: any RenderBackend) {
+    private func shutdownNormalMapping(renderer: Renderer) {
         if normalLitPointShader != .invalid { renderer.destroyShader(normalLitPointShader) }
         if normalLitSpotShader != .invalid { renderer.destroyShader(normalLitSpotShader) }
         if specularPointShader != .invalid { renderer.destroyShader(specularPointShader) }
@@ -288,7 +288,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     }
 
     /// Initialize soft shadow GPU resources (blur shaders and render targets).
-    private func initializeSoftShadows(renderer: any RenderBackend) {
+    private func initializeSoftShadows(renderer: Renderer) {
         guard !isSoftShadowsInitialized else { return }
 
         shadowBlurHShader = renderer.loadShader(
@@ -311,7 +311,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     }
 
     /// Clean up soft shadow GPU resources.
-    private func shutdownSoftShadows(renderer: any RenderBackend) {
+    private func shutdownSoftShadows(renderer: Renderer) {
         if shadowBlurHShader != .invalid { renderer.destroyShader(shadowBlurHShader) }
         if shadowBlurVShader != .invalid { renderer.destroyShader(shadowBlurVShader) }
         if shadowBufferRT != .invalid { renderer.destroyRenderTarget(shadowBufferRT) }
@@ -324,7 +324,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     }
 
     /// Clean up GPU resources. Call in `Scene.willExit`.
-    public func shutdown(renderer: any RenderBackend) {
+    public func shutdown(renderer: Renderer) {
         shutdownNormalMapping(renderer: renderer)
         shutdownSoftShadows(renderer: renderer)
         if pointLightShader != .invalid { renderer.destroyShader(pointLightShader) }
@@ -404,7 +404,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     /// - Parameters:
     ///   - renderer: The render backend.
     ///   - camera: The camera used to draw the scene, or `nil` for no camera transform.
-    public func renderNormalBuffer(renderer: any RenderBackend, camera: Camera2D? = nil) {
+    public func renderNormalBuffer(renderer: Renderer, camera: Camera2D? = nil) {
         guard isInitialized, options.normalMappingEnabled else { return }
 
         // Lazy-initialize normal mapping resources if not yet done
@@ -504,7 +504,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     /// - Parameters:
     ///   - renderer: The render backend.
     ///   - camera: The camera used to draw the scene, or `nil` for no camera transform.
-    public func renderLightMap(renderer: any RenderBackend, camera: Camera2D? = nil) {
+    public func renderLightMap(renderer: Renderer, camera: Camera2D? = nil) {
         guard isInitialized, lightMapRT != .invalid, perLightRT != .invalid else { return }
                debugFrameCount += 1
         debugTotalShadowVolumes = 0
@@ -609,7 +609,7 @@ public final class LightingSystem: System, @unchecked Sendable {
             renderer.endBlendMode()
 
             // Draw shadow volumes as black triangles.
-            // IMPORTANT: Explicitly set alpha blend mode to flush raylib's render batch
+            // IMPORTANT: Explicitly set alpha blend mode to flush the render batch
             // and ensure we're NOT still in additive mode. With additive blending,
             // black (0,0,0) adds nothing and shadows would be invisible.
             renderer.beginBlendMode(.alpha)
@@ -685,7 +685,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     /// lit areas.
     ///
     /// - Parameter renderer: The render backend.
-    public func compositeLightMap(renderer: any RenderBackend) {
+    public func compositeLightMap(renderer: Renderer) {
         guard isInitialized, lightMapRT != .invalid else { return }
 
         let texture = renderer.renderTargetTexture(lightMapRT)
@@ -744,7 +744,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     /// Draw debug overlays: light map thumbnail, per-light thumbnail, stats text.
     ///
     /// Call after `compositeLightMap` in screen space.
-    public func drawDebugOverlay(renderer: any RenderBackend, font: FontHandle, camera: Camera2D?) {
+    public func drawDebugOverlay(renderer: Renderer, font: FontHandle, camera: Camera2D?) {
         let screenSize = renderer.screenSize
 
         // Thumbnail size (25% of screen)
@@ -874,8 +874,8 @@ public final class LightingSystem: System, @unchecked Sendable {
 
     /// Draw a full-screen textured quad for shader passes.
     /// Uses a 1x1 white texture so fragTexCoord maps 0-1 across the quad,
-    /// which drawRect cannot provide (raylib shapes texture has wrong UVs).
-    private func drawShaderQuad(renderer: any RenderBackend) {
+    /// which drawRect cannot provide (white pixel texture has wrong UVs).
+    private func drawShaderQuad(renderer: Renderer) {
         renderer.drawSprite(Sprite(
             texture: shaderQuadTexture,
             sourceRect: Rect(x: 0, y: 0, width: 1, height: 1),
@@ -894,7 +894,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     /// Uses triangle fan from projA (vertex 0). The shadow polygon is always
     /// star-shaped from projA because it is at the extremity of the shadow,
     /// with all other vertices visible from it.
-    private func drawShadowVolume(_ shadow: ShadowVolume, renderer: any RenderBackend, camera: Camera2D?) {
+    private func drawShadowVolume(_ shadow: ShadowVolume, renderer: Renderer, camera: Camera2D?) {
         let verts = shadow.vertices
         let count = verts.count
         guard count >= 4 else { return } // minimum: projA, wallA, wallB, projB
@@ -909,8 +909,8 @@ public final class LightingSystem: System, @unchecked Sendable {
     }
 
 
-    /// Draw a triangle with automatic CCW winding for raylib (GL_CULL_FACE enabled).
-    private func drawTriCCW(_ a: Vector2, _ b: Vector2, _ c: Vector2, renderer: any RenderBackend) {
+    /// Draw a triangle with automatic CCW winding (GL_CULL_FACE may be enabled).
+    private func drawTriCCW(_ a: Vector2, _ b: Vector2, _ c: Vector2, renderer: Renderer) {
         let cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
         if cross > 0 {
             debugTotalTriangles += 1
@@ -937,7 +937,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     /// - Green outlines: shadow volume polygons (what actually blocks light)
     /// - Red dots: shadow polygon vertices
     /// - Cyan outlines: corner shadow casters (small ones)
-    public func drawShadowDebug(renderer: any RenderBackend) {
+    public func drawShadowDebug(renderer: Renderer) {
         guard debugShadowVolumes else { return }
 
         // Draw occluder outlines

@@ -2,7 +2,7 @@ import Testing
 @testable import Agilis
 
 /// A mock input backend for testing. Allows programmatic control of key/mouse state.
-final class MockInputBackend: @unchecked Sendable, InputBackend {
+final class MockNativeInput: @unchecked Sendable, NativeInput {
     var keysDown: Set<Key> = []
     var mouseButtonsDown: Set<MouseButton> = []
     var currentMousePosition = Vector2.zero
@@ -30,7 +30,7 @@ struct InputManagerTests {
     // MARK: - Keyboard
 
     @Test func keyDown() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.keysDown = [.space]
@@ -41,7 +41,7 @@ struct InputManagerTests {
     }
 
     @Test func keyPressed() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         // Frame 1: nothing pressed
@@ -60,7 +60,7 @@ struct InputManagerTests {
     }
 
     @Test func keyReleased() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         // Frame 1: press space
@@ -79,7 +79,7 @@ struct InputManagerTests {
     }
 
     @Test func multipleKeysSimultaneously() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.keysDown = [.w, .a, .leftShift]
@@ -94,7 +94,7 @@ struct InputManagerTests {
     // MARK: - Mouse
 
     @Test func mouseButtonDown() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.mouseButtonsDown = [.left]
@@ -105,7 +105,7 @@ struct InputManagerTests {
     }
 
     @Test func mouseButtonPressed() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         input.update()
@@ -119,7 +119,7 @@ struct InputManagerTests {
     }
 
     @Test func mouseButtonReleased() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.mouseButtonsDown = [.left]
@@ -134,7 +134,7 @@ struct InputManagerTests {
     }
 
     @Test func mousePosition() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.currentMousePosition = Vector2(x: 400, y: 300)
@@ -142,7 +142,7 @@ struct InputManagerTests {
     }
 
     @Test func mouseDelta() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.currentMouseDelta = Vector2(x: 5, y: -3)
@@ -150,7 +150,7 @@ struct InputManagerTests {
     }
 
     @Test func mouseScrollDelta() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.currentScrollDelta = 2.5
@@ -160,7 +160,7 @@ struct InputManagerTests {
     // MARK: - Action Mapping
 
     @Test func actionWithKeyBinding() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         input.registerAction("jump", keys: [.space, .w])
 
@@ -178,7 +178,7 @@ struct InputManagerTests {
     }
 
     @Test func actionWithMouseBinding() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         input.registerAction("shoot", mouseButtons: [.left])
 
@@ -191,7 +191,7 @@ struct InputManagerTests {
     }
 
     @Test func actionWithMixedBindings() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         input.registerAction("fire", keys: [.space], mouseButtons: [.left])
 
@@ -210,7 +210,7 @@ struct InputManagerTests {
     }
 
     @Test func actionDeactivated() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         input.registerAction("jump", keys: [.space])
 
@@ -230,7 +230,7 @@ struct InputManagerTests {
     }
 
     @Test func unregisteredAction() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.keysDown = [.space]

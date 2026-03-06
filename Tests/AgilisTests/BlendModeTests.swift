@@ -87,12 +87,12 @@ struct SpriteBlendModeTests {
     }
 }
 
-// MARK: - RenderBackend Default BlendMode Implementation
+// MARK: - Renderer Default BlendMode Implementation
 
-@Suite("RenderBackend BlendMode Defaults")
-struct RenderBackendBlendModeDefaultTests {
+@Suite("Renderer BlendMode Defaults")
+struct RendererBlendModeDefaultTests {
 
-    final class BlendMinimalRenderer: @unchecked Sendable, RenderBackend {
+    final class BlendMinimalRenderer: @unchecked Sendable, Renderer {
         func initialize(config: WindowConfig) throws {}
         func shutdown() {}
         func shouldClose() -> Bool { false }
@@ -140,7 +140,7 @@ private func blendSprite(_ tex: TextureHandle, x: Float = 0, blend: BlendMode = 
 }
 
 /// Records drawn sprites for blend mode tests.
-private final class BlendSpyRenderer: @unchecked Sendable, RenderBackend {
+private final class BlendSpyRenderer: @unchecked Sendable, Renderer {
     var drawnSprites: [Sprite] = []
 
     func initialize(config: WindowConfig) throws {}

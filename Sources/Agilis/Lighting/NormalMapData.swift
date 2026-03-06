@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Per-entity normal and specular map data for the 2D lighting system.
 ///

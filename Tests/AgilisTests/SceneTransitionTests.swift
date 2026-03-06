@@ -1,6 +1,6 @@
 import Testing
 @testable import Agilis
-@testable import AgilisCore
+@testable import Agilis
 
 // MARK: - Test Helpers
 
@@ -24,7 +24,7 @@ private final class RecordingScene: Scene {
 }
 
 /// A minimal render backend that tracks drawRect calls for overlay verification.
-private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
+private final class OverlaySpyRenderer: @unchecked Sendable, Renderer {
     var _screenSize = Size(width: 800, height: 600)
     var drawnRects: [(rect: Rect, color: Color)] = []
 
@@ -56,7 +56,7 @@ private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
 }
 
 /// A stub audio backend (all no-ops).
-private final class StubAudioBackend: @unchecked Sendable, AudioBackend {
+private final class StubAudioEngine: @unchecked Sendable, AudioEngine {
     func initialize() throws {}
     func shutdown() {}
     func loadSound(from path: String) -> SoundHandle { .invalid }
@@ -74,7 +74,7 @@ private final class StubAudioBackend: @unchecked Sendable, AudioBackend {
 }
 
 /// A stub input backend (all no-ops).
-private final class StubInputBackend: @unchecked Sendable, InputBackend {
+private final class StubNativeInput: @unchecked Sendable, NativeInput {
     func isKeyDown(_ key: Key) -> Bool { false }
     func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
     func mousePosition() -> Vector2 { .zero }
@@ -85,8 +85,8 @@ private final class StubInputBackend: @unchecked Sendable, InputBackend {
 
 private func makeSceneTestApp() -> (Application, OverlaySpyRenderer) {
     let renderer = OverlaySpyRenderer()
-    let audio = StubAudioBackend()
-    let input = StubInputBackend()
+    let audio = StubAudioEngine()
+    let input = StubNativeInput()
     let config = WindowConfig(title: "Test", width: 800, height: 600)
     let app = Application(config: config, renderer: renderer, audio: audio, inputBackend: input)
     return (app, renderer)

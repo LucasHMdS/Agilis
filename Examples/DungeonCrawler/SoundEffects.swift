@@ -13,7 +13,7 @@ enum DungeonSounds {
         let footstep: SoundHandle
         let enemyAlert: SoundHandle
 
-        func unloadAll(audio: AudioBackend) {
+        func unloadAll(audio: AudioEngine) {
             audio.unloadSound(footstep)
             audio.unloadSound(enemyAlert)
         }
@@ -22,7 +22,7 @@ enum DungeonSounds {
     private static let sampleRate = 44100
     private static let pi = Float.pi
 
-    static func generate(audio: AudioBackend) -> SoundSet {
+    static func generate(audio: AudioEngine) -> SoundSet {
         SoundSet(
             footstep: audio.loadSoundFromData(generateFootstep()),
             enemyAlert: audio.loadSoundFromData(generateEnemyAlert())

@@ -3,7 +3,7 @@ import Testing
 
 // MARK: - Spy Renderer for Overlay
 
-private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
+private final class OverlaySpyRenderer: @unchecked Sendable, Renderer {
     var rectCalls: [(rect: Rect, color: Color)] = []
     var textCalls: [(text: String, position: Vector2, color: Color)] = []
     var lineCalls: [(from: Vector2, to: Vector2)] = []
@@ -45,7 +45,7 @@ private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
 
 // MARK: - Mock Application
 
-private final class MockAudioBackendO: @unchecked Sendable, AudioBackend {
+private final class MockAudioEngineO: @unchecked Sendable, AudioEngine {
     func initialize() throws {}
     func shutdown() {}
     func loadSound(from path: String) -> SoundHandle { .invalid }
@@ -62,7 +62,7 @@ private final class MockAudioBackendO: @unchecked Sendable, AudioBackend {
     func setMasterVolume(_ volume: Float) {}
 }
 
-private final class MockInputBackendO: @unchecked Sendable, InputBackend {
+private final class MockNativeInputO: @unchecked Sendable, NativeInput {
     func isKeyDown(_ key: Key) -> Bool { false }
     func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
     func mousePosition() -> Vector2 { .zero }
@@ -73,8 +73,8 @@ private final class MockInputBackendO: @unchecked Sendable, InputBackend {
 
 private func makeTestAppO() -> Application {
     let renderer = OverlaySpyRenderer()
-    let audio = MockAudioBackendO()
-    let input = MockInputBackendO()
+    let audio = MockAudioEngineO()
+    let input = MockNativeInputO()
     let config = WindowConfig(title: "Test", width: 800, height: 600)
     return Application(config: config, renderer: renderer, audio: audio, inputBackend: input)
 }

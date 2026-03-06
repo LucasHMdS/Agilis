@@ -3,7 +3,7 @@ import Foundation
 @testable import Agilis
 
 /// A mock renderer that tracks render target and shader operations for pipeline testing.
-private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
+private final class PipelineMockRenderer: @unchecked Sendable, Renderer {
     var nextRTId: UInt32 = 1
     var createdRTs: [UInt32] = []
     var destroyedRTs: [UInt32] = []
@@ -77,7 +77,7 @@ private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
         spritesDrawn.append(sprite)
     }
 
-    // Stub remaining RenderBackend methods
+    // Stub remaining Renderer methods
     func initialize(config: WindowConfig) throws {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
@@ -129,18 +129,18 @@ private final class SpyEffect: PostProcessEffect, @unchecked Sendable {
         self.order = order
     }
 
-    func initialize(renderer: any RenderBackend) {
+    func initialize(renderer: Renderer) {
         initialized = true
         shader = renderer.loadShader(vertexSource: nil, fragmentSource: "// test")
     }
 
-    func shutdown(renderer: any RenderBackend) {
+    func shutdown(renderer: Renderer) {
         shutdownCalled = true
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
 
-    func resize(width: Int, height: Int, renderer: any RenderBackend) {
+    func resize(width: Int, height: Int, renderer: Renderer) {
         resizeCount += 1
         lastResizeWidth = width
         lastResizeHeight = height
@@ -149,7 +149,7 @@ private final class SpyEffect: PostProcessEffect, @unchecked Sendable {
     func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: any RenderBackend,
+        renderer: Renderer,
         deltaTime: Float
     ) {
         applyCount += 1

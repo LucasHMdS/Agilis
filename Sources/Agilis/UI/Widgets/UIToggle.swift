@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A toggle (checkbox/switch) widget.
 public class UIToggle: UINode, @unchecked Sendable {
@@ -43,7 +43,7 @@ public class UIToggle: UINode, @unchecked Sendable {
         onChange?(isOn)
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw checkbox

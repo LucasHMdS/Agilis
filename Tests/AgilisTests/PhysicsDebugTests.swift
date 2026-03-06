@@ -4,7 +4,7 @@ import Testing
 // MARK: - Spy Renderer
 
 /// Records drawRectOutline, drawCircleOutline, drawLine, and drawCircle calls.
-private final class DebugSpyRenderer: @unchecked Sendable, RenderBackend {
+private final class DebugSpyRenderer: @unchecked Sendable, Renderer {
     struct RectOutlineCall: Equatable {
         let rect: Rect
         let color: Color
@@ -46,7 +46,7 @@ private final class DebugSpyRenderer: @unchecked Sendable, RenderBackend {
         circleCalls.append(CircleCall(center: center, radius: radius, color: color))
     }
 
-    // Unused RenderBackend stubs
+    // Unused Renderer stubs
     func drawRect(_ rect: Rect, color: Color) {}
     func drawSprite(_ sprite: Sprite) {}
     func initialize(config: WindowConfig) throws {}

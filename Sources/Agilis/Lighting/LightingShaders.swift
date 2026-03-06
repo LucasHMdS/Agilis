@@ -1,5 +1,5 @@
 /// Embedded GLSL shader source code for the 2D lighting system.
-/// Shaders target OpenGL 3.3 (GLSL 330), which is raylib's default.
+/// Shaders target OpenGL ES 3.0 (GLSL ES 300) via ANGLE.
 enum LightingShaders {
 
     /// Fragment shader for rendering a single point light into the light map.
@@ -13,7 +13,8 @@ enum LightingShaders {
     ///   - lightFalloff: float -- falloff exponent (1 = linear, 2 = quadratic)
     ///   - resolution: vec2 -- render target size in pixels
     static let pointLightFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -62,7 +63,8 @@ enum LightingShaders {
     ///   - lightDirection: vec2 -- normalized direction the spot faces
     ///   - lightConeAngle: float -- half-angle of the cone in radians
     static let spotLightFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -115,7 +117,8 @@ enum LightingShaders {
     ///   - lightZ: float -- virtual Z height for 3D light direction
     ///   - flipNormalY: int -- whether to flip normal Y (0 or 1)
     static let normalLitPointFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -174,7 +177,8 @@ enum LightingShaders {
     ///   - lightZ: float -- virtual Z height for 3D light direction
     ///   - flipNormalY: int -- whether to flip normal Y (0 or 1)
     static let normalLitSpotFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -247,7 +251,8 @@ enum LightingShaders {
     ///   - specularStrength: float -- per-light specular multiplier
     ///   - shininess: float -- Blinn-Phong exponent
     static let specularPointFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -314,7 +319,8 @@ enum LightingShaders {
     ///   - lightDirection: vec2 -- normalized spot direction
     ///   - lightConeAngle: float -- half-angle of the cone
     static let specularSpotFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -389,7 +395,8 @@ enum LightingShaders {
     /// Renders a sprite's normal map to the normal buffer.
     /// Simply samples texture0 (the normal map) and outputs the RGB.
     static let normalPassFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -412,7 +419,8 @@ enum LightingShaders {
     ///   - resolution: vec2 -- shadow buffer size in pixels
     ///   - blurRadius: float -- blur spread in pixels
     static let shadowBlurHorizontalFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -445,7 +453,8 @@ enum LightingShaders {
     ///   - resolution: vec2 -- shadow buffer size in pixels
     ///   - blurRadius: float -- blur spread in pixels
     static let shadowBlurVerticalFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;

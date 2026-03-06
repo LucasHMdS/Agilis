@@ -44,7 +44,7 @@ struct UIInputConfigTests {
     }
 
     @Test func isConfirmPressedKeyboard() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         let config = UIInputConfig.default
 
@@ -59,7 +59,7 @@ struct UIInputConfigTests {
     }
 
     @Test func isCancelPressedKeyboard() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         let config = UIInputConfig.default
 
@@ -69,7 +69,7 @@ struct UIInputConfigTests {
     }
 
     @Test func isUpDownPressed() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         let config = UIInputConfig.default
 
@@ -86,7 +86,7 @@ struct UIInputConfigTests {
     }
 
     @Test func isNextFocusPressedWithShift() {
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
         let config = UIInputConfig.default
 
@@ -107,7 +107,7 @@ struct UIInputConfigTests {
 
     @Test func disabledKeyboard() {
         let config = UIInputConfig(keyboard: nil, gamepad: nil)
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         backend.keysDown = [.enter]
@@ -120,7 +120,7 @@ struct UIInputConfigTests {
         kb.confirm = [.z]
         let config = UIInputConfig(keyboard: kb)
 
-        let backend = MockInputBackend()
+        let backend = MockNativeInput()
         let input = InputManager(backend: backend)
 
         // Enter should NOT confirm with custom binding
@@ -193,7 +193,7 @@ struct NinePatchSpriteTests {
     }
 
     @Test func drawNinePatchDraws9Sprites() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let patch = NinePatchSprite(
             texture: TextureHandle(id: 1),
             sourceRect: Rect(x: 0, y: 0, width: 48, height: 48),
@@ -206,7 +206,7 @@ struct NinePatchSpriteTests {
     }
 
     @Test func drawNinePatchTinyDestFallback() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let patch = NinePatchSprite(
             texture: TextureHandle(id: 1),
             sourceRect: Rect(x: 0, y: 0, width: 48, height: 48),
@@ -309,7 +309,7 @@ struct UIDropdownTests {
     }
 
     @Test func sizeThatFitsUsesWidestOption() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let dropdown = UIDropdown(options: ["A", "Longer Option", "B"], fontSize: 20)
 
@@ -329,7 +329,7 @@ struct UIDropdownTests {
     }
 
     @Test func renderDrawsButtonAndText() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -345,7 +345,7 @@ struct UIDropdownTests {
     }
 
     @Test func renderOverlayDrawsPopupWhenOpen() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -451,7 +451,7 @@ struct UIListViewTests {
     }
 
     @Test func renderDrawsItems() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -468,7 +468,7 @@ struct UIListViewTests {
     }
 
     @Test func renderDrawsSelectionHighlight() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -510,7 +510,7 @@ struct UIListViewTests {
     }
 
     @Test func emptyListRenders() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -599,7 +599,7 @@ struct UIModalDialogTests {
     }
 
     @Test func modalRenders() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -657,7 +657,7 @@ struct UIModalDialogTests {
     }
 
     @Test func dialogCentered() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -715,7 +715,7 @@ struct UIThemeWidgetPropertiesTests {
 struct RenderOverlayTests {
 
     @Test func nodeRenderOverlayIsNoOp() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -726,7 +726,7 @@ struct RenderOverlayTests {
     }
 
     @Test func containerRecursesRenderOverlay() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -744,7 +744,7 @@ struct RenderOverlayTests {
     }
 
     @Test func hiddenContainerSkipsOverlay() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -766,7 +766,7 @@ struct RenderOverlayTests {
 struct UIDemoDropdownReproduction {
 
     // Helper: create the UIDemo-like widget tree
-    private static func makeUIDemoWidgets(app: Application, renderer: MockRenderBackend) -> (UIContext, UIDropdown, UILabel, UIListView) {
+    private static func makeUIDemoWidgets(app: Application, renderer: MockRenderer) -> (UIContext, UIDropdown, UILabel, UIListView) {
         let font = renderer.loadDefaultFont()
         let ui = UIContext(font: font)
         ui.inputConfig = .keyboardAndGamepad

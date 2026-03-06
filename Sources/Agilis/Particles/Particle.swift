@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Internal per-particle simulation state.
 ///

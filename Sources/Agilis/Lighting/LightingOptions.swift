@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Quality level for soft shadow blur passes.
 public enum SoftShadowQuality: Int, Sendable, Codable {

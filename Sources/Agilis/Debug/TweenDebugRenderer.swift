@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Debug information for a single active tween.
 public struct TweenDebugInfo: Sendable {
@@ -43,7 +43,7 @@ public struct TweenDebugRendererOptions: Sendable {
     }
 }
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw debug overlays for active tweens.
     ///

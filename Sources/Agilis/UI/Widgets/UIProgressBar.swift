@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A display-only progress bar.
 public class UIProgressBar: UINode, @unchecked Sendable {
@@ -18,7 +18,7 @@ public class UIProgressBar: UINode, @unchecked Sendable {
         Size(width: min(available.width, 200), height: barHeight)
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
 
         // Track

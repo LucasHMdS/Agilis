@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Adjusts brightness, contrast, saturation, gamma, and color tint of the scene.
 ///
@@ -42,14 +42,14 @@ public final class ColorGradingEffect: PostProcessEffect, @unchecked Sendable {
         self.tint = tint
     }
 
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         shader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.colorGradingFragment
         )
     }
 
-    public func shutdown(renderer: any RenderBackend) {
+    public func shutdown(renderer: Renderer) {
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
@@ -57,7 +57,7 @@ public final class ColorGradingEffect: PostProcessEffect, @unchecked Sendable {
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: any RenderBackend,
+        renderer: Renderer,
         deltaTime: Float
     ) {
         guard shader != .invalid else { return }

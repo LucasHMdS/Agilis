@@ -1,6 +1,6 @@
-import AgilisCore
 
-/// Maximum number of gamepads supported (raylib supports 0–3).
+
+/// Maximum number of gamepads supported.
 private let maxGamepads = 4
 
 /// Manages input state with press/release detection and action mapping.
@@ -9,6 +9,11 @@ private let maxGamepads = 4
 /// frame before processing game logic. The manager tracks current and
 /// previous frame state to detect press/release transitions.
 ///
+/// Press/release transitions are accumulated across render frames and
+/// persist until consumed by `consumeTransitions()`, which should be
+/// called at the end of each fixed-timestep tick. This ensures quick
+/// presses are never lost even when frames run faster than the tick rate.
+///
 /// ## Action Mapping
 /// Register named actions bound to keys, mouse buttons, and/or gamepad buttons:
 /// ```swift
@@ -16,19 +21,20 @@ private let maxGamepads = 4
 /// if app.input.isActionJustActivated("jump") { ... }
 /// ```
 public final class InputManager: @unchecked Sendable {
-    private let backend: InputBackend
+    private var backend: NativeInput?
 
-    // Key state tracking
-    private var currentKeyState: Set<Key> = []
-    private var previousKeyState: Set<Key> = []
+    // Current "held" state (updated per frame via polling)
+    private var keyDownState: Set<Key> = []
+    private var mouseDownState: Set<MouseButton> = []
+    private var gamepadDownState: [Set<GamepadButton>] = Array(repeating: [], count: maxGamepads)
 
-    // Mouse button state tracking
-    private var currentMouseState: Set<MouseButton> = []
-    private var previousMouseState: Set<MouseButton> = []
-
-    // Gamepad button state tracking (per gamepad)
-    private var currentGamepadState: [Set<GamepadButton>] = Array(repeating: [], count: maxGamepads)
-    private var previousGamepadState: [Set<GamepadButton>] = Array(repeating: [], count: maxGamepads)
+    // Accumulated transitions (persist across frames until consumed by a tick)
+    private var pendingKeyPresses: Set<Key> = []
+    private var pendingKeyReleases: Set<Key> = []
+    private var pendingMousePresses: Set<MouseButton> = []
+    private var pendingMouseReleases: Set<MouseButton> = []
+    private var pendingGamepadPresses: [Set<GamepadButton>] = Array(repeating: [], count: maxGamepads)
+    private var pendingGamepadReleases: [Set<GamepadButton>] = Array(repeating: [], count: maxGamepads)
 
     // Action mapping
     private var actions: [String: InputAction] = [:]
@@ -37,7 +43,10 @@ public final class InputManager: @unchecked Sendable {
     /// below this threshold are reported as 0. Default: 0.1.
     public var gamepadDeadZone: Float = 0.1
 
-    public init(backend: InputBackend) {
+    public init() {}
+
+    /// Bind a native input backend. Called by Application after the window is created.
+    internal func bind(_ backend: NativeInput) {
         self.backend = backend
     }
 
@@ -45,87 +54,142 @@ public final class InputManager: @unchecked Sendable {
     public private(set) var charPressed: Character?
 
     /// Call once per frame before processing game logic.
+    /// Polls platform state and accumulates press/release transitions.
     public func update() {
-        // Keyboard
-        previousKeyState = currentKeyState
-        currentKeyState = []
+        guard let backend else { return }
+
+        // --- Keyboard ---
+        let oldKeyDown = keyDownState
+        keyDownState = []
         for key in Key.allCases {
             if backend.isKeyDown(key) {
-                currentKeyState.insert(key)
+                keyDownState.insert(key)
             }
         }
 
-        // Mouse
-        previousMouseState = currentMouseState
-        currentMouseState = []
+        // Detect transitions from polled state changes
+        for key in keyDownState where !oldKeyDown.contains(key) {
+            pendingKeyPresses.insert(key)
+        }
+        for key in oldKeyDown where !keyDownState.contains(key) {
+            pendingKeyReleases.insert(key)
+        }
+
+        // Also check platform-level pressed flags for DOWN+UP in same poll
+        for key in Key.allCases {
+            if backend.keyPressed(key) && !keyDownState.contains(key) {
+                // Key was pressed and released within this single poll
+                pendingKeyPresses.insert(key)
+                pendingKeyReleases.insert(key)
+            }
+        }
+
+        // --- Mouse ---
+        let oldMouseDown = mouseDownState
+        mouseDownState = []
         for button in MouseButton.allCases {
             if backend.isMouseButtonDown(button) {
-                currentMouseState.insert(button)
+                mouseDownState.insert(button)
             }
         }
 
-        // Gamepads
+        for button in mouseDownState where !oldMouseDown.contains(button) {
+            pendingMousePresses.insert(button)
+        }
+        for button in oldMouseDown where !mouseDownState.contains(button) {
+            pendingMouseReleases.insert(button)
+        }
+
+        for button in MouseButton.allCases {
+            if backend.mouseButtonPressed(button) && !mouseDownState.contains(button) {
+                pendingMousePresses.insert(button)
+                pendingMouseReleases.insert(button)
+            }
+        }
+
+        // --- Gamepads ---
         for gamepad in 0..<maxGamepads {
-            previousGamepadState[gamepad] = currentGamepadState[gamepad]
-            currentGamepadState[gamepad] = []
+            let oldDown = gamepadDownState[gamepad]
+            gamepadDownState[gamepad] = []
             guard backend.isGamepadAvailable(gamepad) else { continue }
             for button in GamepadButton.allCases {
                 if backend.isGamepadButtonDown(gamepad, button) {
-                    currentGamepadState[gamepad].insert(button)
+                    gamepadDownState[gamepad].insert(button)
                 }
+            }
+
+            for button in gamepadDownState[gamepad] where !oldDown.contains(button) {
+                pendingGamepadPresses[gamepad].insert(button)
+            }
+            for button in oldDown where !gamepadDownState[gamepad].contains(button) {
+                pendingGamepadReleases[gamepad].insert(button)
             }
         }
 
         charPressed = backend.charPressed()
     }
 
+    /// Clear accumulated press/release transitions after a fixed-timestep tick.
+    /// Called by Application at the end of each tick so transitions don't fire
+    /// on subsequent ticks.
+    internal func consumeTransitions() {
+        pendingKeyPresses.removeAll(keepingCapacity: true)
+        pendingKeyReleases.removeAll(keepingCapacity: true)
+        pendingMousePresses.removeAll(keepingCapacity: true)
+        pendingMouseReleases.removeAll(keepingCapacity: true)
+        for i in 0..<maxGamepads {
+            pendingGamepadPresses[i].removeAll(keepingCapacity: true)
+            pendingGamepadReleases[i].removeAll(keepingCapacity: true)
+        }
+    }
+
     // MARK: - Keyboard
 
     /// True while the key is held down.
     public func isKeyDown(_ key: Key) -> Bool {
-        currentKeyState.contains(key)
+        keyDownState.contains(key)
     }
 
     /// True only on the frame the key was first pressed.
     public func isKeyPressed(_ key: Key) -> Bool {
-        currentKeyState.contains(key) && !previousKeyState.contains(key)
+        pendingKeyPresses.contains(key)
     }
 
     /// True only on the frame the key was released.
     public func isKeyReleased(_ key: Key) -> Bool {
-        !currentKeyState.contains(key) && previousKeyState.contains(key)
+        pendingKeyReleases.contains(key)
     }
 
     // MARK: - Mouse
 
     /// True while the mouse button is held down.
     public func isMouseButtonDown(_ button: MouseButton) -> Bool {
-        currentMouseState.contains(button)
+        mouseDownState.contains(button)
     }
 
     /// True only on the frame the button was first pressed.
     public func isMouseButtonPressed(_ button: MouseButton) -> Bool {
-        currentMouseState.contains(button) && !previousMouseState.contains(button)
+        pendingMousePresses.contains(button)
     }
 
     /// True only on the frame the button was released.
     public func isMouseButtonReleased(_ button: MouseButton) -> Bool {
-        !currentMouseState.contains(button) && previousMouseState.contains(button)
+        pendingMouseReleases.contains(button)
     }
 
     /// Current mouse position in screen coordinates.
     public var mousePosition: Vector2 {
-        backend.mousePosition()
+        backend?.mousePosition() ?? .zero
     }
 
     /// Mouse movement since last frame.
     public var mouseDelta: Vector2 {
-        backend.mouseDelta()
+        backend?.mouseDelta() ?? .zero
     }
 
     /// Mouse scroll wheel delta.
     public var mouseScrollDelta: Float {
-        backend.mouseScrollDelta()
+        backend?.mouseScrollDelta() ?? 0
     }
 
     // MARK: - Gamepad
@@ -133,33 +197,31 @@ public final class InputManager: @unchecked Sendable {
     /// Whether a gamepad is connected at the given index (0–3).
     public func isGamepadConnected(_ gamepad: Int) -> Bool {
         guard gamepad >= 0 && gamepad < maxGamepads else { return false }
-        return backend.isGamepadAvailable(gamepad)
+        return backend?.isGamepadAvailable(gamepad) ?? false
     }
 
     /// Human-readable name of the connected gamepad, or nil if not connected.
     public func gamepadName(_ gamepad: Int) -> String? {
         guard gamepad >= 0 && gamepad < maxGamepads else { return nil }
-        return backend.gamepadName(gamepad)
+        return backend?.gamepadName(gamepad)
     }
 
     /// True while the gamepad button is held down.
     public func isGamepadButtonDown(_ gamepad: Int, _ button: GamepadButton) -> Bool {
         guard gamepad >= 0 && gamepad < maxGamepads else { return false }
-        return currentGamepadState[gamepad].contains(button)
+        return gamepadDownState[gamepad].contains(button)
     }
 
     /// True only on the frame the gamepad button was first pressed.
     public func isGamepadButtonPressed(_ gamepad: Int, _ button: GamepadButton) -> Bool {
         guard gamepad >= 0 && gamepad < maxGamepads else { return false }
-        return currentGamepadState[gamepad].contains(button)
-            && !previousGamepadState[gamepad].contains(button)
+        return pendingGamepadPresses[gamepad].contains(button)
     }
 
     /// True only on the frame the gamepad button was released.
     public func isGamepadButtonReleased(_ gamepad: Int, _ button: GamepadButton) -> Bool {
         guard gamepad >= 0 && gamepad < maxGamepads else { return false }
-        return !currentGamepadState[gamepad].contains(button)
-            && previousGamepadState[gamepad].contains(button)
+        return pendingGamepadReleases[gamepad].contains(button)
     }
 
     /// Returns the axis value for a gamepad, with dead zone applied.
@@ -168,7 +230,7 @@ public final class InputManager: @unchecked Sendable {
     /// Returns 0 if the gamepad is not connected.
     /// Stick axes range from -1.0 to 1.0. Trigger ranges vary by controller.
     public func gamepadAxis(_ gamepad: Int, _ axis: GamepadAxis) -> Float {
-        guard gamepad >= 0 && gamepad < maxGamepads else { return 0 }
+        guard let backend, gamepad >= 0 && gamepad < maxGamepads else { return 0 }
         guard backend.isGamepadAvailable(gamepad) else { return 0 }
         let raw = backend.gamepadAxisValue(gamepad, axis)
         return abs(raw) < gamepadDeadZone ? 0 : raw
@@ -231,10 +293,10 @@ public final class InputManager: @unchecked Sendable {
         let anyCurrentlyActive = action.keys.contains(where: { isKeyDown($0) })
             || action.mouseButtons.contains(where: { isMouseButtonDown($0) })
             || action.gamepadButtons.contains(where: { isGamepadButtonDown(0, $0) })
-        let anyPreviouslyActive = action.keys.contains(where: { previousKeyState.contains($0) })
-            || action.mouseButtons.contains(where: { previousMouseState.contains($0) })
-            || action.gamepadButtons.contains(where: { previousGamepadState[0].contains($0) })
-        return !anyCurrentlyActive && anyPreviouslyActive
+        let anyWasReleased = action.keys.contains(where: { isKeyReleased($0) })
+            || action.mouseButtons.contains(where: { isMouseButtonReleased($0) })
+            || action.gamepadButtons.contains(where: { isGamepadButtonReleased(0, $0) })
+        return !anyCurrentlyActive && anyWasReleased
     }
 }
 

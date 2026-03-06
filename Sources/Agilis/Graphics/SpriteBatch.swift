@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Controls how sprites are ordered when a SpriteBatch is flushed.
 public enum SpriteSortMode: Sendable {
@@ -65,7 +65,7 @@ public final class SpriteBatch: @unchecked Sendable {
     }
 
     /// Draw all queued sprites to the renderer and clear the batch.
-    public func flush(to renderer: RenderBackend) {
+    public func flush(to renderer: Renderer) {
         lastSpriteCount = entries.count
 
         guard !entries.isEmpty else {

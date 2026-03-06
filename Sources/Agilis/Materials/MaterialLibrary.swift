@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A library of built-in material effects with shader lifecycle management.
 ///
@@ -20,7 +20,7 @@ import AgilisCore
 /// ```
 public final class MaterialLibrary: @unchecked Sendable {
     private var shaderCache: [String: ShaderHandle] = [:]
-    private var renderer: (any RenderBackend)?
+    private var renderer: (Renderer)?
 
     public init() {}
 
@@ -28,7 +28,7 @@ public final class MaterialLibrary: @unchecked Sendable {
     ///
     /// Pre-loads all 6 built-in shaders to avoid hitches during gameplay.
     /// If not called, shaders are lazily loaded on first use.
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         self.renderer = renderer
 
         // Pre-load all built-in shaders

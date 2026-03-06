@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Describes how to animate between two scenes.
 ///

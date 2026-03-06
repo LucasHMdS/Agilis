@@ -1,10 +1,10 @@
-import AgilisCore
+
 
 /// The main application class. Owns the game loop and all engine subsystems.
 public final class Application: @unchecked Sendable {
     public let config: WindowConfig
-    public let renderer: RenderBackend
-    public let audio: AudioBackend
+    public let renderer: Renderer
+    public let audio: AudioEngine
     public let audioManager: AudioManager
     public let input: InputManager
     public let world: World
@@ -34,20 +34,14 @@ public final class Application: @unchecked Sendable {
     public private(set) var frameTime: Double = 0
     private var fpsAccumulator: Double = 0
     private var fpsFrameCount: Int = 0
-
     public weak var delegate: GameDelegate?
 
-    public init(
-        config: WindowConfig,
-        renderer: RenderBackend,
-        audio: AudioBackend,
-        inputBackend: InputBackend
-    ) {
+    public init(config: WindowConfig = WindowConfig()) {
         self.config = config
-        self.renderer = renderer
-        self.audio = audio
+        self.renderer = Renderer()
+        self.audio = AudioEngine()
         self.audioManager = AudioManager(backend: audio)
-        self.input = InputManager(backend: inputBackend)
+        self.input = InputManager()
         self.world = World()
         self.sceneManager = SceneManager()
         self.assets = AssetManager()
@@ -68,6 +62,11 @@ public final class Application: @unchecked Sendable {
         try renderer.initialize(config: config)
         try audio.initialize()
 
+        // Bind input backend now that the platform window exists
+        if let window = renderer.window {
+            input.bind(NativeInput(window: window))
+        }
+
         delegate?.gameDidStart(self)
         sceneManager.currentScene?.didEnter(app: self)
 
@@ -79,13 +78,16 @@ public final class Application: @unchecked Sendable {
         _ = clock.elapsed()
 
         while running && !renderer.shouldClose() {
+            // Poll platform events + clear framebuffer
+            renderer.beginFrame()
+
             let elapsed = clock.elapsed()
             let frameTime = min(elapsed, config.maxFrameTime)
             self.frameTime = elapsed
             accumulator += frameTime * max(timeScale, 0)
             updateFPSCounter(elapsed: elapsed)
 
-            // Poll input once per frame
+            // Read input state (after platform events are polled in beginFrame)
             input.update()
 
             // Advance audio fades and update music streams
@@ -104,16 +106,19 @@ public final class Application: @unchecked Sendable {
                 // Advance scene transitions after all updates
                 sceneManager.updateTransition(deltaTime: Float(fixedDT), app: self)
 
+                // Clear press/release transitions so they don't fire on subsequent ticks
+                input.consumeTransitions()
+
                 accumulator -= fixedDT
             }
 
             let interpolation = accumulator / fixedDT
 
-            // Render
-            renderer.beginFrame()
+            // Render (framebuffer was cleared in beginFrame)
             sceneManager.currentScene?.render(app: self, interpolation: interpolation)
             delegate?.gameWillRender(self, interpolation: interpolation)
             sceneManager.renderTransitionOverlay(renderer: renderer)
+
             renderer.endFrame()
         }
 
@@ -123,12 +128,17 @@ public final class Application: @unchecked Sendable {
     /// Async game loop. Enables parallel system scheduling when
     /// `world.parallelSchedulingEnabled` is true.
     ///
-    /// All raylib/GPU calls remain on the calling thread (which must be the main thread).
+    /// All GPU calls remain on the calling thread (which must be the main thread).
     /// `TaskGroup` inside `world.updateParallel` dispatches system work to the
     /// cooperative thread pool.
     public func runAsync() async throws {
         try renderer.initialize(config: config)
         try audio.initialize()
+
+        // Bind input backend now that the platform window exists
+        if let window = renderer.window {
+            input.bind(NativeInput(window: window))
+        }
 
         delegate?.gameDidStart(self)
         sceneManager.currentScene?.didEnter(app: self)
@@ -140,6 +150,9 @@ public final class Application: @unchecked Sendable {
         _ = clock.elapsed()
 
         while running && !renderer.shouldClose() {
+            // Poll platform events + clear framebuffer
+            renderer.beginFrame()
+
             let elapsed = clock.elapsed()
             let frameTime = min(elapsed, config.maxFrameTime)
             self.frameTime = elapsed
@@ -165,12 +178,14 @@ public final class Application: @unchecked Sendable {
 
                 sceneManager.updateTransition(deltaTime: Float(fixedDT), app: self)
 
+                input.consumeTransitions()
+
                 accumulator -= fixedDT
             }
 
             let interpolation = accumulator / fixedDT
 
-            renderer.beginFrame()
+            // Render (framebuffer was cleared in beginFrame)
             sceneManager.currentScene?.render(app: self, interpolation: interpolation)
             delegate?.gameWillRender(self, interpolation: interpolation)
             sceneManager.renderTransitionOverlay(renderer: renderer)

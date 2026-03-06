@@ -15,7 +15,7 @@ enum RPGSounds {
         let save: SoundHandle
         let load: SoundHandle
 
-        func unloadAll(audio: AudioBackend) {
+        func unloadAll(audio: AudioEngine) {
             audio.unloadSound(pickup)
             audio.unloadSound(chestOpen)
             audio.unloadSound(save)
@@ -26,7 +26,7 @@ enum RPGSounds {
     private static let sampleRate = 44100
     private static let pi = Float.pi
 
-    static func generate(audio: AudioBackend) -> SoundSet {
+    static func generate(audio: AudioEngine) -> SoundSet {
         SoundSet(
             pickup: audio.loadSoundFromData(generatePickup()),
             chestOpen: audio.loadSoundFromData(generateChestOpen()),

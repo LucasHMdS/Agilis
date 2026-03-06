@@ -4,7 +4,7 @@ import Testing
 // MARK: - Mock Render Target Backend
 
 /// A mock renderer that implements render target methods with in-memory tracking.
-final class MockRTRenderer: @unchecked Sendable, RenderBackend {
+final class MockRTRenderer: @unchecked Sendable, Renderer {
     private var nextId: UInt32 = 1
     private var targets: [UInt32: (width: Int, height: Int)] = [:]
     private var targetTextureIds: [UInt32: UInt32] = [:]
@@ -46,7 +46,7 @@ final class MockRTRenderer: @unchecked Sendable, RenderBackend {
         targetTextureIds.removeValue(forKey: handle.id)
     }
 
-    // RenderBackend stubs
+    // Renderer stubs
     func initialize(config: WindowConfig) throws {}
     func shutdown() {}
     func shouldClose() -> Bool { false }

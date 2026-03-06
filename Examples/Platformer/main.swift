@@ -8,7 +8,7 @@ let config = WindowConfig(
     resizable: false
 )
 
-let app = createApplication(config: config)
+let app = Application(config: config)
 app.renderer.setBackgroundColor(Mario.skyColor)
 app.world.parallelSchedulingEnabled = true
 app.sceneManager.push(MenuScene(), app: app)

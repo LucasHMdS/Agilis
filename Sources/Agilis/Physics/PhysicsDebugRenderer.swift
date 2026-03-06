@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 #if canImport(Darwin)
 import Darwin
@@ -115,9 +115,9 @@ public struct PhysicsDebugRendererOptions: Sendable {
     }
 }
 
-// MARK: - RenderBackend Extension
+// MARK: - Renderer Extension
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw physics debug overlays for all entities with colliders.
     ///

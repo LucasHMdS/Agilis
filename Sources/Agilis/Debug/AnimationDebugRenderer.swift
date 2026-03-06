@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Configuration for animation debug rendering.
 public struct AnimationDebugRendererOptions: Sendable {
@@ -28,7 +28,7 @@ public struct AnimationDebugRendererOptions: Sendable {
     }
 }
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw debug overlays for all animated sprites.
     ///

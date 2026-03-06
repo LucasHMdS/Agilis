@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Global logging facade. Dispatches log entries to registered outputs.
 ///
@@ -16,7 +16,7 @@ public enum Log {
     /// Registered log outputs.
     nonisolated(unsafe) public private(set) static var outputs: [LogOutput] = []
 
-    nonisolated(unsafe) private static let clock = Clock()
+    private static let clock = Clock()
     nonisolated(unsafe) private static var initialized = false
 
     /// Add a log output destination.

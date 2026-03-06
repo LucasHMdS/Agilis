@@ -1,6 +1,6 @@
-import AgilisCore
 
-extension RenderBackend {
+
+extension Renderer {
 
     /// Draw all active particles from an emitter.
     ///

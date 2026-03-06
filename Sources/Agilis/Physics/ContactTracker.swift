@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Tracks collision pairs across frames to generate began/ongoing/ended events.
 ///

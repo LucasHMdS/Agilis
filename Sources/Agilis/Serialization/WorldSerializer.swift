@@ -1,5 +1,5 @@
 import Foundation
-import AgilisCore
+
 
 /// Serializes and deserializes ECS world state to and from JSON.
 ///

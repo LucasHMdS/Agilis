@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Performs layout on a UI tree, measuring text and positioning children.
 public enum UILayoutEngine {
@@ -7,7 +7,7 @@ public enum UILayoutEngine {
     public static func performLayout(
         on container: UIContainer,
         in bounds: Rect,
-        renderer: RenderBackend,
+        renderer: Renderer,
         font: FontHandle
     ) {
         container.frame = bounds
@@ -45,7 +45,7 @@ public enum UILayoutEngine {
 
     private static func measureText(
         in node: UINode,
-        renderer: RenderBackend,
+        renderer: Renderer,
         font: FontHandle
     ) {
         if let label = node as? UILabel {

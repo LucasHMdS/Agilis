@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A modal dialog that overlays the entire screen with a dimmed background.
 ///
@@ -137,7 +137,7 @@ public class UIModalDialog: UINode, @unchecked Sendable {
     // MARK: - Modal Layout
 
     /// Called by UIContext to layout the modal centered on screen.
-    internal func layoutModal(renderer: RenderBackend, font: FontHandle, screenSize: Size, theme: UITheme) {
+    internal func layoutModal(renderer: Renderer, font: FontHandle, screenSize: Size, theme: UITheme) {
         // Measure title
         cachedTitleSize = renderer.measureText(title, font: font, size: titleFontSize)
 
@@ -183,7 +183,7 @@ public class UIModalDialog: UINode, @unchecked Sendable {
     // MARK: - Modal Rendering
 
     /// Called by UIContext to render the modal on top of everything.
-    internal func renderModal(renderer: RenderBackend, theme: UITheme, screenSize: Size) {
+    internal func renderModal(renderer: Renderer, theme: UITheme, screenSize: Size) {
         // Dim overlay
         let overlayRect = Rect(x: 0, y: 0, width: screenSize.width, height: screenSize.height)
         renderer.drawRect(overlayRect, color: overlayColor)
@@ -263,7 +263,7 @@ public class UIModalDialog: UINode, @unchecked Sendable {
         return modalFocusOrder[modalFocusIndex]
     }
 
-    private func measureAllText(in node: UINode, renderer: RenderBackend, font: FontHandle) {
+    private func measureAllText(in node: UINode, renderer: Renderer, font: FontHandle) {
         if let label = node as? UILabel {
             label.cachedTextSize = renderer.measureText(label.text, font: font, size: label.fontSize)
         } else if let button = node as? UIButton {

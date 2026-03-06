@@ -4,7 +4,7 @@ import Testing
 // MARK: - Mock Renderer for Particles
 
 /// Records drawCircle, drawRect, and drawSprite calls for verification.
-final class ParticleSpyRenderer: @unchecked Sendable, RenderBackend {
+final class ParticleSpyRenderer: @unchecked Sendable, Renderer {
     var drawnCircles: [(center: Vector2, radius: Float, color: Color)] = []
     var drawnRects: [(rect: Rect, color: Color)] = []
     var drawnSprites: [Sprite] = []
@@ -19,7 +19,7 @@ final class ParticleSpyRenderer: @unchecked Sendable, RenderBackend {
         drawnSprites.append(sprite)
     }
 
-    // RenderBackend stubs
+    // Renderer stubs
     func initialize(config: WindowConfig) throws {}
     func shutdown() {}
     func shouldClose() -> Bool { false }

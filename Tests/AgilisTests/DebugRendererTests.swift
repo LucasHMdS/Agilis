@@ -3,7 +3,7 @@ import Testing
 
 // MARK: - Spy Renderer
 
-private final class DebugRendererSpy: @unchecked Sendable, RenderBackend {
+private final class DebugRendererSpy: @unchecked Sendable, Renderer {
     struct RectOutlineCall {
         let rect: Rect
         let color: Color

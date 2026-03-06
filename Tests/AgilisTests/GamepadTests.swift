@@ -2,8 +2,8 @@ import Testing
 @testable import Agilis
 
 /// A mock input backend with gamepad support for testing.
-/// Extends the pattern from InputTests.swift's MockInputBackend.
-final class MockGamepadBackend: @unchecked Sendable, InputBackend {
+/// Extends the pattern from InputTests.swift's MockNativeInput.
+final class MockGamepadBackend: @unchecked Sendable, NativeInput {
     // Keyboard / mouse (minimal, for mixed action tests)
     var keysDown: Set<Key> = []
     var mouseButtonsDown: Set<MouseButton> = []
@@ -529,14 +529,14 @@ struct GamepadActionMappingTests {
     }
 }
 
-// MARK: - Default InputBackend Implementation Tests
+// MARK: - Default NativeInput Implementation Tests
 
-@Suite("InputBackend Default Gamepad Tests")
-struct InputBackendDefaultTests {
+@Suite("NativeInput Default Gamepad Tests")
+struct NativeInputDefaultTests {
 
     /// A minimal backend that only implements the original methods (no gamepad overrides).
     /// Tests that the default implementations return "no gamepad" state.
-    final class MinimalBackend: @unchecked Sendable, InputBackend {
+    final class MinimalBackend: @unchecked Sendable, NativeInput {
         func isKeyDown(_ key: Key) -> Bool { false }
         func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
         func mousePosition() -> Vector2 { .zero }

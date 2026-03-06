@@ -10,7 +10,7 @@ import CRT
 
 /// Generate a procedural nine-patch texture for panel backgrounds.
 /// Returns the texture handle and the source rect for the full texture.
-func generateNinePatchTexture(renderer: any RenderBackend) -> (TextureHandle, Rect) {
+func generateNinePatchTexture(renderer: Renderer) -> (TextureHandle, Rect) {
     let size = 48
     let border = 12
     var pixels = [UInt8](repeating: 0, count: size * size * 4)
@@ -51,7 +51,7 @@ func drawEasingCurve(
     rect: Rect,
     resolution: Int = 40,
     color: Color,
-    renderer: any RenderBackend
+    renderer: Renderer
 ) {
     let step = 1.0 / Float(resolution)
     for i in 0..<resolution {
@@ -75,7 +75,7 @@ func drawEasingCurve(
 }
 
 /// Draw a horizontal track line.
-func drawTrack(startX: Float, endX: Float, y: Float, color: Color, renderer: any RenderBackend) {
+func drawTrack(startX: Float, endX: Float, y: Float, color: Color, renderer: Renderer) {
     renderer.drawLine(
         from: Vector2(x: startX, y: y),
         to: Vector2(x: endX, y: y),

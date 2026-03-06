@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 #if canImport(Darwin)
 import Darwin
@@ -8,7 +8,7 @@ import Glibc
 import CRT
 #endif
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw debug overlays for the 2D lighting system.
     ///

@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A horizontal slider for adjusting a float value within a range.
 public class UISlider: UINode, @unchecked Sendable {
@@ -46,7 +46,7 @@ public class UISlider: UINode, @unchecked Sendable {
         if track.contains(mousePos) && input.isMouseButtonPressed(.left) {
             isDragging = true
         }
-        if input.isMouseButtonReleased(.left) {
+        if isDragging && !input.isMouseButtonDown(.left) {
             isDragging = false
         }
         if isDragging {
@@ -63,7 +63,7 @@ public class UISlider: UINode, @unchecked Sendable {
         onChange?(value)
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
         // Draw label
         let labelY = frame.y

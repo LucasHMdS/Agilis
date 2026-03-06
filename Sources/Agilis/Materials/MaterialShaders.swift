@@ -1,7 +1,7 @@
-/// Embedded GLSL 330 fragment shaders for built-in material effects.
+/// Embedded GLSL ES 300 fragment shaders for built-in material effects.
 ///
-/// All shaders use raylib's default vertex shader (pass `nil` for vertex source).
-/// The sprite texture is available as `texture0` (raylib's built-in sampler).
+/// All shaders use the engine's default vertex shader (pass `nil` for vertex source).
+/// The sprite texture is available as `texture0` (the engine's built-in sampler).
 /// Fragment inputs `fragTexCoord` and `fragColor` come from the default vertex shader.
 enum MaterialShaders {
 
@@ -13,7 +13,8 @@ enum MaterialShaders {
     /// - `flashColor`: vec4 — the flash color (RGBA, 0-1)
     /// - `flashAmount`: float — mix factor (0 = original, 1 = solid flash color)
     static let flashFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -39,7 +40,8 @@ enum MaterialShaders {
     /// Converts to grayscale using standard luminance coefficients.
     /// - `amount`: float — desaturation amount (0 = full color, 1 = full grayscale)
     static let grayscaleFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -67,7 +69,8 @@ enum MaterialShaders {
     /// - `edgeWidth`: float — width of the glowing edge band (0-1, default 0.05)
     /// - `edgeColor`: vec4 — color of the dissolve edge (RGBA, 0-1)
     static let dissolveFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -130,7 +133,8 @@ enum MaterialShaders {
     /// - `outlineWidth`: float — outline thickness in pixels
     /// - `textureSize`: vec2 — texture dimensions in pixels (for texel offset calculation)
     static let outlineFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -181,7 +185,8 @@ enum MaterialShaders {
     /// - `replacementColor`: vec3 — the new color (RGB, 0-1)
     /// - `tolerance`: float — how close a pixel must be to targetColor to be replaced (0-1)
     static let colorReplaceFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;
@@ -217,7 +222,8 @@ enum MaterialShaders {
     /// - `frequency`: float — number of wave cycles across the sprite (default 10)
     /// - `speed`: float — wave scroll speed (default 3)
     static let waveFragment = """
-    #version 330
+    #version 300 es
+    precision mediump float;
 
     in vec2 fragTexCoord;
     in vec4 fragColor;

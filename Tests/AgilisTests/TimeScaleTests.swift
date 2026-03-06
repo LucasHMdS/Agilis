@@ -162,9 +162,9 @@ struct TimeScaleTests {
     private func makeTestApp() -> Application {
         Application(
             config: WindowConfig(title: "Test"),
-            renderer: MockRenderBackend(),
-            audio: MockAudioBackend(),
-            inputBackend: MockInputBackend()
+            renderer: MockRenderer(),
+            audio: MockAudioEngine(),
+            inputBackend: MockNativeInput()
         )
     }
 }

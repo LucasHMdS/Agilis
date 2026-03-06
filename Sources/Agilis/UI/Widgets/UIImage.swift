@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A widget that displays a texture.
 public class UIImage: UINode, @unchecked Sendable {
@@ -24,7 +24,7 @@ public class UIImage: UINode, @unchecked Sendable {
         return Size(width: min(available.width, 64), height: min(available.height, 64))
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
 
         let texSize = renderer.textureSize(texture)

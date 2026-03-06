@@ -1,7 +1,7 @@
 import Testing
 import Foundation
 @testable import Agilis
-@testable import AgilisCore
+@testable import Agilis
 
 // MARK: - Codable Conformance Tests
 

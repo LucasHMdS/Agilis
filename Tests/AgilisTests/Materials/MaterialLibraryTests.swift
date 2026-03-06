@@ -3,7 +3,7 @@ import Foundation
 @testable import Agilis
 
 /// A mock renderer that tracks shader operations for testing MaterialLibrary.
-private final class MockShaderRenderer: @unchecked Sendable, RenderBackend {
+private final class MockShaderRenderer: @unchecked Sendable, Renderer {
     var loadedShaders: [UInt32: String] = [:]  // id -> fragment source
     var nextId: UInt32 = 1
     var destroyedShaders: [UInt32] = []
@@ -21,7 +21,7 @@ private final class MockShaderRenderer: @unchecked Sendable, RenderBackend {
         loadedShaders.removeValue(forKey: handle.id)
     }
 
-    // Stub all required RenderBackend methods
+    // Stub all required Renderer methods
     func initialize(config: WindowConfig) throws {}
     func shutdown() {}
     func shouldClose() -> Bool { false }

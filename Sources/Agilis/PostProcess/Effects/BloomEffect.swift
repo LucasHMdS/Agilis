@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Glow effect that extracts bright pixels, blurs them, and adds them back.
 ///
@@ -36,7 +36,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
         self.intensity = intensity
     }
 
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         extractShader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.bloomExtractFragment
@@ -47,7 +47,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
         )
     }
 
-    public func shutdown(renderer: any RenderBackend) {
+    public func shutdown(renderer: Renderer) {
         if extractShader != .invalid { renderer.destroyShader(extractShader) }
         if compositeShader != .invalid { renderer.destroyShader(compositeShader) }
         if intermediateRT != .invalid { renderer.destroyRenderTarget(intermediateRT) }
@@ -56,7 +56,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
         intermediateRT = .invalid
     }
 
-    public func resize(width: Int, height: Int, renderer: any RenderBackend) {
+    public func resize(width: Int, height: Int, renderer: Renderer) {
         currentWidth = width
         currentHeight = height
 
@@ -70,7 +70,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: any RenderBackend,
+        renderer: Renderer,
         deltaTime: Float
     ) {
         guard extractShader != .invalid,

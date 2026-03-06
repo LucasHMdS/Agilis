@@ -4,7 +4,7 @@ import Testing
 // MARK: - Mock Render Backend
 
 /// A minimal render backend for testing UI layout and text measurement.
-final class MockRenderBackend: @unchecked Sendable, RenderBackend {
+final class MockRenderer: @unchecked Sendable, Renderer {
     var _screenSize = Size(width: 800, height: 600)
     var drawCalls: [String] = []
     var fonts: [UInt32: Bool] = [:]
@@ -59,7 +59,7 @@ final class MockRenderBackend: @unchecked Sendable, RenderBackend {
 }
 
 /// A minimal audio backend for creating test Applications.
-final class MockAudioBackend: @unchecked Sendable, AudioBackend {
+final class MockAudioEngine: @unchecked Sendable, AudioEngine {
     func initialize() throws {}
     func shutdown() {}
     func loadSound(from path: String) -> SoundHandle { .invalid }
@@ -78,11 +78,11 @@ final class MockAudioBackend: @unchecked Sendable, AudioBackend {
 
 // MARK: - Helpers
 
-func makeTestApp(screenWidth: Float = 800, screenHeight: Float = 600) -> (Application, MockRenderBackend, MockInputBackend) {
-    let renderer = MockRenderBackend()
+func makeTestApp(screenWidth: Float = 800, screenHeight: Float = 600) -> (Application, MockRenderer, MockNativeInput) {
+    let renderer = MockRenderer()
     renderer._screenSize = Size(width: screenWidth, height: screenHeight)
-    let inputBackend = MockInputBackend()
-    let audio = MockAudioBackend()
+    let inputBackend = MockNativeInput()
+    let audio = MockAudioEngine()
     let config = WindowConfig(title: "Test", width: Int(screenWidth), height: Int(screenHeight))
     let app = Application(config: config, renderer: renderer, audio: audio, inputBackend: inputBackend)
     return (app, renderer, inputBackend)
@@ -211,7 +211,7 @@ struct UILabelTests {
     }
 
     @Test func renderDrawsText() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -226,7 +226,7 @@ struct UILabelTests {
     }
 
     @Test func hiddenLabelDoesNotRender() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -313,7 +313,7 @@ struct UIButtonTests {
     }
 
     @Test func renderDrawsRectAndText() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -329,7 +329,7 @@ struct UIButtonTests {
     }
 
     @Test func focusedButtonShowsOutline() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -357,7 +357,7 @@ struct UIButtonTests {
 struct UIPanelTests {
 
     @Test func renderDrawsBackground() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -371,7 +371,7 @@ struct UIPanelTests {
     }
 
     @Test func renderDrawsBorder() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -387,7 +387,7 @@ struct UIPanelTests {
     }
 
     @Test func panelRendersChildren() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -529,7 +529,7 @@ struct UIProgressBarTests {
     }
 
     @Test func renderDrawsTrackAndFill() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 
@@ -552,7 +552,7 @@ struct UIProgressBarTests {
 struct UILayoutEngineTests {
 
     @Test func verticalLayoutCentersChildren() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
 
         let container = UIContainer()
@@ -579,7 +579,7 @@ struct UILayoutEngineTests {
     }
 
     @Test func horizontalLayout() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
 
         let container = UIContainer()
@@ -598,7 +598,7 @@ struct UILayoutEngineTests {
     }
 
     @Test func paddingInsets() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
 
         let container = UIContainer()
@@ -616,7 +616,7 @@ struct UILayoutEngineTests {
     }
 
     @Test func hiddenChildrenSkipped() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
 
         let container = UIContainer()
@@ -764,7 +764,7 @@ struct UIThemeTests {
 struct UIScrollContainerTests {
 
     @Test func renderClips() {
-        let renderer = MockRenderBackend()
+        let renderer = MockRenderer()
         let font = renderer.loadDefaultFont()
         let theme = UITheme.dark(font: font)
 

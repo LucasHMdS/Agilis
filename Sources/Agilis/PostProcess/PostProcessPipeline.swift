@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Manages a chain of screen-space post-processing effects.
 ///
@@ -100,7 +100,7 @@ public final class PostProcessPipeline: @unchecked Sendable {
     /// is initialized, typically in `Scene.didEnter`.
     ///
     /// Also initializes all currently added effects.
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         guard !_isInitialized else { return }
         cachedRenderer = renderer
 
@@ -121,7 +121,7 @@ public final class PostProcessPipeline: @unchecked Sendable {
     /// Free all GPU resources. Call during teardown (e.g., `Scene.willExit`).
     ///
     /// Also shuts down all effects.
-    public func shutdown(renderer: any RenderBackend) {
+    public func shutdown(renderer: Renderer) {
         for effect in effects {
             effect.shutdown(renderer: renderer)
         }
@@ -137,7 +137,7 @@ public final class PostProcessPipeline: @unchecked Sendable {
     ///
     /// All draw calls after this are redirected to an off-screen buffer instead
     /// of the screen. Call `endCaptureAndApply` when scene rendering is complete.
-    public func beginCapture(renderer: any RenderBackend) {
+    public func beginCapture(renderer: Renderer) {
         guard _isInitialized else { return }
 
         // Check for screen resize
@@ -163,7 +163,7 @@ public final class PostProcessPipeline: @unchecked Sendable {
     ///   - renderer: The render backend.
     ///   - deltaTime: Frame delta time in seconds (passed to animated effects).
     public func endCaptureAndApply(
-        renderer: any RenderBackend,
+        renderer: Renderer,
         deltaTime: Float = 0
     ) {
         guard _isInitialized else { return }
@@ -200,15 +200,15 @@ public final class PostProcessPipeline: @unchecked Sendable {
     // MARK: - Private
 
     /// Weak reference to the renderer for late-adding effects.
-    private weak var cachedRenderer: (any RenderBackend)?
+    private weak var cachedRenderer: (Renderer)?
 
-    private func createRenderTargets(renderer: any RenderBackend) {
+    private func createRenderTargets(renderer: Renderer) {
         sceneRT = renderer.createRenderTarget(width: width, height: height)
         pingRT = renderer.createRenderTarget(width: width, height: height)
         pongRT = renderer.createRenderTarget(width: width, height: height)
     }
 
-    private func destroyRenderTargets(renderer: any RenderBackend) {
+    private func destroyRenderTargets(renderer: Renderer) {
         if sceneRT != .invalid { renderer.destroyRenderTarget(sceneRT) }
         if pingRT != .invalid { renderer.destroyRenderTarget(pingRT) }
         if pongRT != .invalid { renderer.destroyRenderTarget(pongRT) }
@@ -217,7 +217,7 @@ public final class PostProcessPipeline: @unchecked Sendable {
         pongRT = .invalid
     }
 
-    private func drawFullscreen(handle: RenderTargetHandle, renderer: any RenderBackend) {
+    private func drawFullscreen(handle: RenderTargetHandle, renderer: Renderer) {
         let texture = renderer.renderTargetTexture(handle)
         guard texture != .invalid else { return }
         let size = renderer.renderTargetSize(handle)

@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A nine-patch (nine-slice) sprite definition for scalable UI backgrounds.
 ///
@@ -64,9 +64,9 @@ public struct NinePatchSprite: Sendable {
     }
 }
 
-// MARK: - RenderBackend Extension
+// MARK: - Renderer Extension
 
-extension RenderBackend {
+extension Renderer {
     /// Draw a nine-patch sprite scaled to fill the destination rectangle.
     ///
     /// The 4 corners are drawn at their original size, edges are stretched along

@@ -3,7 +3,7 @@ import Foundation
 @testable import Agilis
 
 /// A mock renderer that records uniform set calls for verifying applyMaterial behavior.
-private final class UniformSpyRenderer: @unchecked Sendable, RenderBackend {
+private final class UniformSpyRenderer: @unchecked Sendable, Renderer {
     var floatUniforms: [(shader: UInt32, name: String, value: Float)] = []
     var vec2Uniforms: [(shader: UInt32, name: String, value: Vector2)] = []
     var vec3Uniforms: [(shader: UInt32, name: String, x: Float, y: Float, z: Float)] = []
@@ -50,7 +50,7 @@ private final class UniformSpyRenderer: @unchecked Sendable, RenderBackend {
         spritesDrawn.append(sprite)
     }
 
-    // Stub all other required RenderBackend methods
+    // Stub all other required Renderer methods
     func initialize(config: WindowConfig) throws {}
     func shutdown() {}
     func shouldClose() -> Bool { false }

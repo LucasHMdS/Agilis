@@ -1,8 +1,8 @@
-import AgilisCore
+
 
 /// Manages audio playback with group volumes, fading, and crossfading.
 ///
-/// Wraps an ``AudioBackend`` and provides higher-level audio features.
+/// Wraps an ``AudioEngine`` and provides higher-level audio features.
 /// Call ``update(deltaTime:)`` each frame to advance fades and update music streams.
 ///
 /// ## Volume Groups
@@ -18,7 +18,7 @@ import AgilisCore
 public final class AudioManager: @unchecked Sendable {
 
     /// The underlying audio backend.
-    public let backend: AudioBackend
+    public let backend: AudioEngine
 
     // MARK: - Group Volumes
 
@@ -86,7 +86,7 @@ public final class AudioManager: @unchecked Sendable {
     // MARK: - Init
 
     /// Create an audio manager wrapping the given backend.
-    public init(backend: AudioBackend) {
+    public init(backend: AudioEngine) {
         self.backend = backend
     }
 

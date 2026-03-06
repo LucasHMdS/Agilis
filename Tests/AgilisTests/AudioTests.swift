@@ -1,11 +1,11 @@
 import Testing
 @testable import Agilis
-@testable import AgilisCore
+@testable import Agilis
 
 // MARK: - Tracking Audio Backend
 
 /// A mock audio backend that records all calls and tracks playing state.
-final class TrackingAudioBackend: @unchecked Sendable, AudioBackend {
+final class TrackingAudioEngine: @unchecked Sendable, AudioEngine {
     // Call tracking
     var playSoundCalls: [(handle: SoundHandle, volume: Float, pitch: Float, looping: Bool)] = []
     var playMusicCalls: [(handle: MusicHandle, volume: Float, looping: Bool)] = []
@@ -130,7 +130,7 @@ struct AudioGroupTests {
 struct AudioManagerGroupVolumeTests {
     @Test("Default group volumes are 1.0")
     func defaultGroupVolumes() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
         #expect(manager.groupVolume(for: .music) == 1.0)
         #expect(manager.groupVolume(for: .sfx) == 1.0)
@@ -139,7 +139,7 @@ struct AudioManagerGroupVolumeTests {
 
     @Test("Set group volume")
     func setGroupVolume() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
         manager.setGroupVolume(.sfx, volume: 0.5)
         #expect(manager.groupVolume(for: .sfx) == 0.5)
@@ -148,7 +148,7 @@ struct AudioManagerGroupVolumeTests {
 
     @Test("Group volume clamps to 0-1")
     func groupVolumeClamps() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
         manager.setGroupVolume(.sfx, volume: -0.5)
         #expect(manager.groupVolume(for: .sfx) == 0.0)
@@ -158,7 +158,7 @@ struct AudioManagerGroupVolumeTests {
 
     @Test("Changing group volume updates active sounds")
     func changingGroupVolumeUpdatesSounds() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playSound(sfxHandle, volume: 0.75, group: .sfx)
@@ -172,7 +172,7 @@ struct AudioManagerGroupVolumeTests {
 
     @Test("Changing music group volume updates current music")
     func changingMusicGroupVolumeUpdatesMusic() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 0.75)
@@ -189,7 +189,7 @@ struct AudioManagerGroupVolumeTests {
 struct AudioManagerSoundTests {
     @Test("Play sound applies group volume")
     func playSoundAppliesGroupVolume() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.setGroupVolume(.sfx, volume: 0.5)
@@ -202,7 +202,7 @@ struct AudioManagerSoundTests {
 
     @Test("Play sound defaults to SFX group")
     func playSoundDefaultsToSfx() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.setGroupVolume(.sfx, volume: 0.5)
@@ -214,7 +214,7 @@ struct AudioManagerSoundTests {
 
     @Test("playUISound uses UI group")
     func playUISound() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.setGroupVolume(.ui, volume: 0.3)
@@ -225,7 +225,7 @@ struct AudioManagerSoundTests {
 
     @Test("isSoundPlaying delegates to backend")
     func isSoundPlayingDelegates() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         #expect(!manager.isSoundPlaying(sfxHandle))
@@ -235,7 +235,7 @@ struct AudioManagerSoundTests {
 
     @Test("Pitch is passed through")
     func pitchPassthrough() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playSound(sfxHandle, pitch: 1.5)
@@ -247,7 +247,7 @@ struct AudioManagerSoundTests {
 struct AudioManagerMusicTests {
     @Test("Play music basic")
     func playMusicBasic() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 0.7, looping: false)
@@ -259,7 +259,7 @@ struct AudioManagerMusicTests {
 
     @Test("Play music stops previous music")
     func playMusicStopsPrevious() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1)
@@ -271,7 +271,7 @@ struct AudioManagerMusicTests {
 
     @Test("Stop music")
     func stopMusic() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1)
@@ -283,7 +283,7 @@ struct AudioManagerMusicTests {
 
     @Test("Pause and resume music")
     func pauseResumeMusic() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1)
@@ -296,7 +296,7 @@ struct AudioManagerMusicTests {
 
     @Test("isMusicPlaying delegates to backend")
     func isMusicPlayingDelegates() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         #expect(!manager.isMusicPlaying())
@@ -306,7 +306,7 @@ struct AudioManagerMusicTests {
 
     @Test("Music group volume applied")
     func musicGroupVolumeApplied() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.setGroupVolume(.music, volume: 0.5)
@@ -319,7 +319,7 @@ struct AudioManagerMusicTests {
 
     @Test("Update calls updateMusicStream")
     func updateCallsMusicStream() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1)
@@ -334,7 +334,7 @@ struct AudioManagerMusicTests {
 struct AudioManagerFadeTests {
     @Test("Play music with fade-in starts at zero volume")
     func fadeInStartsAtZero() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0, fadeDuration: 2.0)
@@ -345,7 +345,7 @@ struct AudioManagerFadeTests {
 
     @Test("Fade-in progresses over time")
     func fadeInProgresses() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0, fadeDuration: 2.0)
@@ -359,7 +359,7 @@ struct AudioManagerFadeTests {
 
     @Test("Fade-in completes at target volume")
     func fadeInCompletes() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 0.8, fadeDuration: 1.0)
@@ -378,7 +378,7 @@ struct AudioManagerFadeTests {
 
     @Test("Fade out music")
     func fadeOut() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0)
@@ -396,7 +396,7 @@ struct AudioManagerFadeTests {
 
     @Test("Fade respects music group volume")
     func fadeRespectsGroupVolume() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.setGroupVolume(.music, volume: 0.5)
@@ -410,7 +410,7 @@ struct AudioManagerFadeTests {
 
     @Test("Zero duration fade plays at full volume immediately")
     func zeroDurationFade() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 0.8, fadeDuration: 0)
@@ -424,7 +424,7 @@ struct AudioManagerFadeTests {
 struct AudioManagerCrossfadeTests {
     @Test("Crossfade starts both streams")
     func crossfadeStartsBothStreams() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0)
@@ -438,7 +438,7 @@ struct AudioManagerCrossfadeTests {
 
     @Test("Crossfade outgoing fades out")
     func crossfadeOutgoingFadesOut() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0)
@@ -455,7 +455,7 @@ struct AudioManagerCrossfadeTests {
 
     @Test("Crossfade incoming fades in")
     func crossfadeIncomingFadesIn() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0)
@@ -472,7 +472,7 @@ struct AudioManagerCrossfadeTests {
 
     @Test("Crossfade completes: outgoing stops, incoming at full volume")
     func crossfadeCompletes() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0)
@@ -492,7 +492,7 @@ struct AudioManagerCrossfadeTests {
 
     @Test("Crossfade during crossfade stops old outgoing")
     func crossfadeDuringCrossfade() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         let musicHandle3 = MusicHandle(id: 3)
@@ -511,7 +511,7 @@ struct AudioManagerCrossfadeTests {
 
     @Test("Crossfade updates both music streams")
     func crossfadeUpdatesBothStreams() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playMusic(musicHandle1, volume: 1.0)
@@ -532,7 +532,7 @@ struct AudioManagerCrossfadeTests {
 struct AudioManagerUpdateTests {
     @Test("Update cleans up finished sounds")
     func updateCleansUpFinishedSounds() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.playSound(sfxHandle, volume: 0.5, group: .sfx)
@@ -554,7 +554,7 @@ struct AudioManagerUpdateTests {
 
     @Test("No music — update is safe")
     func noMusicUpdateSafe() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         // Should not crash
@@ -564,7 +564,7 @@ struct AudioManagerUpdateTests {
 
     @Test("Pause and resume with no music is safe")
     func pauseResumeNoMusic() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.pauseMusic()
@@ -575,7 +575,7 @@ struct AudioManagerUpdateTests {
 
     @Test("Fade out with no music is safe")
     func fadeOutNoMusic() {
-        let backend = TrackingAudioBackend()
+        let backend = TrackingAudioEngine()
         let manager = AudioManager(backend: backend)
 
         manager.fadeOutMusic(duration: 1.0)

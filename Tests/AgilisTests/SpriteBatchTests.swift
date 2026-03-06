@@ -4,7 +4,7 @@ import Testing
 // MARK: - Spy Renderer
 
 /// Records drawn sprites for verification.
-final class SpyRenderer: @unchecked Sendable, RenderBackend {
+final class SpyRenderer: @unchecked Sendable, Renderer {
     var drawnSprites: [Sprite] = []
     var drawSpriteCallCount: Int = 0
     var drawSpritesCallCount: Int = 0
@@ -329,11 +329,11 @@ struct SpriteBatchStatsTests {
 
 // MARK: - Default drawSprites Implementation
 
-@Suite("RenderBackend drawSprites Default")
+@Suite("Renderer drawSprites Default")
 struct DrawSpritesDefaultTests {
 
     /// A renderer that does NOT override drawSprites, using the default extension.
-    final class MinimalRenderer: @unchecked Sendable, RenderBackend {
+    final class MinimalRenderer: @unchecked Sendable, Renderer {
         var drawnSprites: [Sprite] = []
 
         func initialize(config: WindowConfig) throws {}

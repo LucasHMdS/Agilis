@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A visible container with a background and optional border.
 public class UIPanel: UIContainer, @unchecked Sendable {
@@ -12,7 +12,7 @@ public class UIPanel: UIContainer, @unchecked Sendable {
         self.padding = padding
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw background

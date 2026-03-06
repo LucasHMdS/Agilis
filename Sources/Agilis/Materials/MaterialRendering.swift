@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Standard uniforms automatically injected into materials that declare them.
 ///
@@ -38,7 +38,7 @@ public struct MaterialContext: Sendable {
     }
 }
 
-extension RenderBackend {
+extension Renderer {
     /// Apply a material with auto-injected standard uniforms.
     ///
     /// Standard uniforms (`_time`, `_resolution`, `_deltaTime`) are set

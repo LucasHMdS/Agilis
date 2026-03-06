@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Configuration for UI debug rendering.
 public struct UIDebugRendererOptions: Sendable {
@@ -20,7 +20,7 @@ public struct UIDebugRendererOptions: Sendable {
     }
 }
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw debug overlays for a UI context.
     ///

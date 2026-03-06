@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Defines what property a tween animates and the start/end values.
 ///

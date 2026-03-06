@@ -18,7 +18,7 @@ enum PongSounds {
         let winFanfare: SoundHandle
         let gameOver: SoundHandle
 
-        func unloadAll(audio: AudioBackend) {
+        func unloadAll(audio: AudioEngine) {
             audio.unloadSound(paddleHit)
             audio.unloadSound(wallBounce)
             audio.unloadSound(goalScored)
@@ -31,7 +31,7 @@ enum PongSounds {
     private static let sampleRate = 44100
     private static let pi = Float.pi
 
-    static func generate(audio: AudioBackend) -> SoundSet {
+    static func generate(audio: AudioEngine) -> SoundSet {
         SoundSet(
             paddleHit: audio.loadSoundFromData(generatePaddleHit()),
             wallBounce: audio.loadSoundFromData(generateWallBounce()),

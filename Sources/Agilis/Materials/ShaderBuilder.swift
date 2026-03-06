@@ -1,4 +1,4 @@
-/// Helpers for creating custom GLSL 330 fragment shaders with less boilerplate.
+/// Helpers for creating custom GLSL ES 300 fragment shaders with less boilerplate.
 ///
 /// Provides the standard preamble (version, inputs, sampler), optional include
 /// libraries (noise, easing, UV, color, math), and auto-injected standard uniform
@@ -34,9 +34,9 @@ public enum ShaderBuilder {
     /// Create a fragment shader source string for sprite rendering.
     ///
     /// The generated shader includes:
-    /// - `#version 330` header
+    /// - `#version 300 es` header with precision qualifier
     /// - Standard inputs (`fragTexCoord`, `fragColor`)
-    /// - `texture0` sampler (raylib's built-in sprite texture)
+    /// - `texture0` sampler (the engine's built-in sprite texture)
     /// - Standard auto-inject uniform declarations (`_time`, `_resolution`, `_deltaTime`)
     /// - All declared user uniforms
     /// - Requested include libraries
@@ -47,7 +47,7 @@ public enum ShaderBuilder {
     ///   - uniforms: Map of GLSL uniform name to type string (e.g. `["amount": "float"]`).
     ///   - includes: Set of built-in GLSL includes to inject.
     ///   - body: GLSL fragment body. Write to `finalColor`.
-    /// - Returns: Complete GLSL 330 fragment shader source.
+    /// - Returns: Complete GLSL ES 300 fragment shader source.
     public static func createFragment(
         uniforms: [String: String] = [:],
         includes: Set<ShaderInclude> = [],
@@ -70,7 +70,7 @@ public enum ShaderBuilder {
     ///   - uniforms: Map of GLSL uniform name to type string.
     ///   - includes: Set of built-in GLSL includes to inject.
     ///   - body: GLSL fragment body. Write to `finalColor`.
-    /// - Returns: Complete GLSL 330 fragment shader source.
+    /// - Returns: Complete GLSL ES 300 fragment shader source.
     public static func createPostProcess(
         uniforms: [String: String] = [:],
         includes: Set<ShaderInclude> = [],
@@ -92,7 +92,7 @@ public enum ShaderBuilder {
         body: String,
         sampleMultipliesTint: Bool
     ) -> String {
-        var source = "#version 330\n\n"
+        var source = "#version 300 es\nprecision mediump float;\n\n"
 
         // Standard inputs
         source += "in vec2 fragTexCoord;\n"

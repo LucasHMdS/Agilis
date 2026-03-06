@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 #if canImport(Darwin)
 import Darwin
@@ -32,7 +32,7 @@ public struct ParticleDebugRendererOptions: Sendable {
     }
 }
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw debug overlays for all particle emitters.
     ///

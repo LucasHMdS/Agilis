@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A scrollable container that clips its children to its bounds.
 public class UIScrollContainer: UIContainer, @unchecked Sendable {
@@ -39,13 +39,25 @@ public class UIScrollContainer: UIContainer, @unchecked Sendable {
             }
         }
 
-        // Update children with adjusted context
+        // Offset children to screen-space before update (matches render offset)
+        // so that hit tests compare screen-space mouse position against
+        // screen-space widget frames.
+        for child in children where child.isVisible {
+            offsetFrames(child, dy: -scrollOffset.y)
+        }
+
+        // Update children — hit tests now use screen-space frames
         for child in children where child.isVisible {
             child.update(context: context, deltaTime: deltaTime)
         }
+
+        // Restore children to logical positions
+        for child in children where child.isVisible {
+            offsetFrames(child, dy: scrollOffset.y)
+        }
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw background

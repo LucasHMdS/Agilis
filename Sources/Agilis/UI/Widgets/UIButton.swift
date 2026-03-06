@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// A clickable button with text.
 public class UIButton: UINode, @unchecked Sendable {
@@ -41,7 +41,7 @@ public class UIButton: UINode, @unchecked Sendable {
 
         if isHovered && input.isMouseButtonPressed(.left) {
             state = .pressed
-        } else if state == .pressed && input.isMouseButtonReleased(.left) {
+        } else if state == .pressed && !input.isMouseButtonDown(.left) {
             state = isHovered ? .hovered : .normal
             if isHovered { action() }
         } else if isHovered {
@@ -51,7 +51,7 @@ public class UIButton: UINode, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: RenderBackend, theme: UITheme) {
+    public override func render(renderer: Renderer, theme: UITheme) {
         guard isVisible else { return }
 
         let bgColor: Color

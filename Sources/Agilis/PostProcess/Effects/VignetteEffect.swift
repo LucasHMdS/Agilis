@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Darkens the edges of the screen for a cinematic look.
 ///
@@ -32,14 +32,14 @@ public final class VignetteEffect: PostProcessEffect, @unchecked Sendable {
         self.softness = softness
     }
 
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         shader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.vignetteFragment
         )
     }
 
-    public func shutdown(renderer: any RenderBackend) {
+    public func shutdown(renderer: Renderer) {
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
@@ -47,7 +47,7 @@ public final class VignetteEffect: PostProcessEffect, @unchecked Sendable {
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: any RenderBackend,
+        renderer: Renderer,
         deltaTime: Float
     ) {
         guard shader != .invalid else { return }

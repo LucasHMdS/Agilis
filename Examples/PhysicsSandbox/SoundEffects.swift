@@ -15,7 +15,7 @@ enum SandboxSounds {
         let jointBreak: SoundHandle
         let launch: SoundHandle
 
-        func unloadAll(audio: AudioBackend) {
+        func unloadAll(audio: AudioEngine) {
             audio.unloadSound(impact)
             audio.unloadSound(explosion)
             audio.unloadSound(jointBreak)
@@ -26,7 +26,7 @@ enum SandboxSounds {
     private static let sampleRate = 44100
     private static let pi = Float.pi
 
-    static func generate(audio: AudioBackend) -> SoundSet {
+    static func generate(audio: AudioEngine) -> SoundSet {
         SoundSet(
             impact: audio.loadSoundFromData(generateImpact()),
             explosion: audio.loadSoundFromData(generateExplosion()),

@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Configuration for tilemap debug rendering.
 public struct TileMapDebugRendererOptions: Sendable {
@@ -24,7 +24,7 @@ public struct TileMapDebugRendererOptions: Sendable {
     }
 }
 
-extension RenderBackend {
+extension Renderer {
 
     /// Draw debug overlays for a tilemap.
     ///

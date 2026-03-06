@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Prints log entries to stdout with level and category tags.
 ///

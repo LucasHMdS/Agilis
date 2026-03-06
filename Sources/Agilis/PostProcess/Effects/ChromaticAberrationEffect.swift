@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Offsets RGB color channels radially from the screen center for a lens distortion look.
 ///
@@ -20,14 +20,14 @@ public final class ChromaticAberrationEffect: PostProcessEffect, @unchecked Send
         self.amount = amount
     }
 
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         shader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.chromaticAberrationFragment
         )
     }
 
-    public func shutdown(renderer: any RenderBackend) {
+    public func shutdown(renderer: Renderer) {
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
@@ -35,7 +35,7 @@ public final class ChromaticAberrationEffect: PostProcessEffect, @unchecked Send
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: any RenderBackend,
+        renderer: Renderer,
         deltaTime: Float
     ) {
         guard shader != .invalid else { return }

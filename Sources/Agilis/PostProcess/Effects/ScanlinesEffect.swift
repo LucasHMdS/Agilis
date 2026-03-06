@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// CRT scanline simulation with optional barrel distortion.
 ///
@@ -34,19 +34,19 @@ public final class ScanlinesEffect: PostProcessEffect, @unchecked Sendable {
         self.curvature = curvature
     }
 
-    public func initialize(renderer: any RenderBackend) {
+    public func initialize(renderer: Renderer) {
         shader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.scanlinesFragment
         )
     }
 
-    public func shutdown(renderer: any RenderBackend) {
+    public func shutdown(renderer: Renderer) {
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
 
-    public func resize(width: Int, height: Int, renderer: any RenderBackend) {
+    public func resize(width: Int, height: Int, renderer: Renderer) {
         currentWidth = width
         currentHeight = height
     }
@@ -54,7 +54,7 @@ public final class ScanlinesEffect: PostProcessEffect, @unchecked Sendable {
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: any RenderBackend,
+        renderer: Renderer,
         deltaTime: Float
     ) {
         guard shader != .invalid else { return }

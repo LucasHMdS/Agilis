@@ -1,4 +1,4 @@
-import AgilisCore
+
 
 /// Manages the UI tree, focus state, and input dispatch for a scene.
 public final class UIContext: @unchecked Sendable {
@@ -88,7 +88,7 @@ public final class UIContext: @unchecked Sendable {
     }
 
     /// Call in the scene's render() method.
-    public func render(renderer: RenderBackend) {
+    public func render(renderer: Renderer) {
         root.render(renderer: renderer, theme: theme)
         let screenSize = lastScreenSize
         root.renderOverlay(renderer: renderer, theme: theme, screenSize: screenSize)

@@ -32,7 +32,7 @@ enum DungeonBuilder {
         }
     }
 
-    static func generate(renderer: any RenderBackend, world: World) -> DungeonData {
+    static func generate(renderer: Renderer, world: World) -> DungeonData {
         let cols = Dungeon.mapCols
         let rows = Dungeon.mapRows
         let ts = Dungeon.tileSize
