@@ -27,6 +27,11 @@ EGLSurface angle_create_window_surface(EGLDisplay display, EGLConfig config,
                                         void* native_window,
                                         const EGLint* attribs);
 
+/// Creates an EGL pbuffer surface for headless (off-screen) rendering.
+/// Used for snapshot testing without a platform window.
+EGLSurface angle_create_pbuffer_surface(EGLDisplay display, EGLConfig config,
+                                         EGLint width, EGLint height);
+
 #ifdef __cplusplus
 }
 #endif

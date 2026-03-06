@@ -35,3 +35,9 @@ EGLSurface angle_create_window_surface(EGLDisplay display, EGLConfig config,
 #endif
     return eglCreateWindowSurface(display, config, win, attribs);
 }
+
+EGLSurface angle_create_pbuffer_surface(EGLDisplay display, EGLConfig config,
+                                         EGLint width, EGLint height) {
+    EGLint attribs[] = { EGL_WIDTH, width, EGL_HEIGHT, height, EGL_NONE };
+    return eglCreatePbufferSurface(display, config, attribs);
+}
