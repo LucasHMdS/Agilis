@@ -392,11 +392,12 @@ struct GamepadAxisTests {
 @Suite("Gamepad Stick Tests")
 struct GamepadStickTests {
 
-    @Test("Left stick returns Vector2")
+    @Test("Left stick returns Vector2 (no dead zone)")
     func leftStick() {
         let backend = MockGamepadBackend()
         let input = InputManager()
         input.bind(backend)
+        input.gamepadDeadZone = 0 // Disable dead zone for raw readout test
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [.leftX: 0.7, .leftY: -0.3]
@@ -406,11 +407,12 @@ struct GamepadStickTests {
         #expect(abs(stick.y - (-0.3)) < 0.001)
     }
 
-    @Test("Right stick returns Vector2")
+    @Test("Right stick returns Vector2 (no dead zone)")
     func rightStick() {
         let backend = MockGamepadBackend()
         let input = InputManager()
         input.bind(backend)
+        input.gamepadDeadZone = 0 // Disable dead zone for raw readout test
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [.rightX: -0.5, .rightY: 1.0]
@@ -420,18 +422,52 @@ struct GamepadStickTests {
         #expect(abs(stick.y - 1.0) < 0.001)
     }
 
-    @Test("Stick applies dead zone per-axis")
-    func stickDeadZone() {
+    @Test("Stick radial dead zone filters when magnitude below threshold")
+    func stickRadialDeadZone() {
         let backend = MockGamepadBackend()
         let input = InputManager()
         input.bind(backend)
 
         backend.gamepadsAvailable = [0]
+        // Both axes small, combined magnitude = sqrt(0.05² + 0.05²) ≈ 0.071 < 0.1
+        backend.gamepadAxes[0] = [.leftX: 0.05, .leftY: 0.05]
+
+        let stick = input.gamepadStick(0, .left)
+        #expect(stick == .zero)
+    }
+
+    @Test("Stick radial dead zone preserves diagonal when magnitude above threshold")
+    func stickRadialDeadZoneDiagonal() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        backend.gamepadsAvailable = [0]
+        // X alone is below per-axis threshold, but combined magnitude above radial threshold
+        // magnitude = sqrt(0.05² + 0.5²) ≈ 0.502 > 0.1
         backend.gamepadAxes[0] = [.leftX: 0.05, .leftY: 0.5]
 
         let stick = input.gamepadStick(0, .left)
-        #expect(stick.x == 0)             // Below dead zone
-        #expect(abs(stick.y - 0.5) < 0.001) // Above dead zone
+        // With radial dead zone, both axes should be non-zero
+        #expect(stick.x != 0) // Would be zero with per-axis dead zone
+        #expect(stick.y != 0)
+    }
+
+    @Test("Stick radial dead zone rescales correctly")
+    func stickRadialDeadZoneRescaling() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.gamepadDeadZone = 0.2
+
+        backend.gamepadsAvailable = [0]
+        // Pure X axis, magnitude = 0.6
+        // Expected: rescaled = (0.6 - 0.2) / (1.0 - 0.2) = 0.4 / 0.8 = 0.5
+        backend.gamepadAxes[0] = [.leftX: 0.6, .leftY: 0.0]
+
+        let stick = input.gamepadStick(0, .left)
+        #expect(abs(stick.x - 0.5) < 0.001)
+        #expect(abs(stick.y) < 0.001)
     }
 
     @Test("Stick for disconnected gamepad returns zero")
@@ -562,6 +598,287 @@ struct GamepadActionMappingTests {
         backend.keysDown = [.space]
         input.update()
         #expect(input.isActionActive("jump"))
+    }
+
+    @Test("Per-player gamepad action checks specified gamepad")
+    func perPlayerGamepad() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        // Player 1 jump on gamepad 0, player 2 jump on gamepad 1
+        input.registerAction("p1_jump", gamepadButtons: [.faceDown], gamepad: 0)
+        input.registerAction("p2_jump", gamepadButtons: [.faceDown], gamepad: 1)
+
+        backend.gamepadsAvailable = [0, 1]
+        backend.gamepadButtons[0] = [.faceDown]
+
+        input.update()
+
+        #expect(input.isActionActive("p1_jump"))
+        #expect(!input.isActionActive("p2_jump"))
+
+        backend.gamepadButtons[0] = []
+        backend.gamepadButtons[1] = [.faceDown]
+        input.update()
+
+        #expect(!input.isActionActive("p1_jump"))
+        #expect(input.isActionActive("p2_jump"))
+    }
+
+    @Test("Per-player gamepad just activated and deactivated")
+    func perPlayerGamepadTransitions() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.registerAction("p2_fire", gamepadButtons: [.rightTrigger], gamepad: 1)
+
+        backend.gamepadsAvailable = [0, 1]
+
+        // Frame 1: nothing
+        input.update()
+        input.consumeTransitions()
+
+        // Frame 2: press on gamepad 1
+        backend.gamepadButtons[1] = [.rightTrigger]
+        input.update()
+        #expect(input.isActionJustActivated("p2_fire"))
+        input.consumeTransitions()
+
+        // Frame 3: still held
+        input.update()
+        #expect(input.isActionActive("p2_fire"))
+        #expect(!input.isActionJustActivated("p2_fire"))
+        input.consumeTransitions()
+
+        // Frame 4: release
+        backend.gamepadButtons[1] = []
+        input.update()
+        #expect(input.isActionJustDeactivated("p2_fire"))
+    }
+}
+
+// MARK: - Axis Action Tests
+
+@Suite("Axis Action Tests")
+struct AxisActionTests {
+
+    @Test("Keyboard axis action with positive and negative keys")
+    func keyboardAxis() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.registerAxisAction("moveX", positiveKeys: [.d], negativeKeys: [.a])
+
+        // No keys pressed
+        input.update()
+        #expect(input.axisValue("moveX") == 0)
+
+        // Positive key
+        backend.keysDown = [.d]
+        input.update()
+        #expect(input.axisValue("moveX") == 1)
+
+        // Negative key
+        backend.keysDown = [.a]
+        input.update()
+        #expect(input.axisValue("moveX") == -1)
+
+        // Both keys cancel out
+        backend.keysDown = [.a, .d]
+        input.update()
+        #expect(input.axisValue("moveX") == 0)
+    }
+
+    @Test("Gamepad axis action returns analog value")
+    func gamepadAxis() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.registerAxisAction("moveX", gamepadAxis: .leftX)
+
+        backend.gamepadsAvailable = [0]
+        backend.gamepadAxes[0] = [.leftX: 0.75]
+
+        #expect(abs(input.axisValue("moveX") - 0.75) < 0.001)
+    }
+
+    @Test("Combined keyboard + gamepad axis: larger value wins")
+    func combinedAxisLargerWins() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.registerAxisAction("moveX", positiveKeys: [.d], negativeKeys: [.a], gamepadAxis: .leftX)
+
+        backend.gamepadsAvailable = [0]
+
+        // Gamepad at 0.3, no keys → gamepad wins
+        backend.gamepadAxes[0] = [.leftX: 0.3]
+        input.update()
+        #expect(abs(input.axisValue("moveX") - 0.3) < 0.001)
+
+        // Gamepad at 0.3, positive key held → key wins (1.0 > 0.3)
+        backend.keysDown = [.d]
+        input.update()
+        #expect(input.axisValue("moveX") == 1)
+
+        // Gamepad at -0.9, negative key held → gamepad wins (-0.9 > -1.0 in abs)
+        backend.keysDown = [.a]
+        backend.gamepadAxes[0] = [.leftX: -0.9]
+        input.update()
+        // abs(keyValue=-1) >= abs(gpValue=-0.9) → key wins
+        #expect(input.axisValue("moveX") == -1)
+    }
+
+    @Test("Axis action with per-player gamepad")
+    func axisPerPlayer() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.registerAxisAction("p1_moveX", gamepadAxis: .leftX, gamepad: 0)
+        input.registerAxisAction("p2_moveX", gamepadAxis: .leftX, gamepad: 1)
+
+        backend.gamepadsAvailable = [0, 1]
+        backend.gamepadAxes[0] = [.leftX: 0.5]
+        backend.gamepadAxes[1] = [.leftX: -0.8]
+
+        #expect(abs(input.axisValue("p1_moveX") - 0.5) < 0.001)
+        #expect(abs(input.axisValue("p2_moveX") - (-0.8)) < 0.001)
+    }
+
+    @Test("Unregistered axis action returns 0")
+    func unregisteredAxis() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        #expect(input.axisValue("nonexistent") == 0)
+    }
+
+    @Test("Axis action with dead zone")
+    func axisDeadZone() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.registerAxisAction("moveX", gamepadAxis: .leftX)
+
+        backend.gamepadsAvailable = [0]
+        backend.gamepadAxes[0] = [.leftX: 0.05] // Below dead zone
+
+        #expect(input.axisValue("moveX") == 0)
+    }
+
+    @Test("Trigger axis action")
+    func triggerAxis() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+        input.registerAxisAction("accelerate", gamepadAxis: .rightTrigger)
+
+        backend.gamepadsAvailable = [0]
+        backend.gamepadAxes[0] = [.rightTrigger: 0.6]
+
+        #expect(abs(input.axisValue("accelerate") - 0.6) < 0.001)
+    }
+}
+
+// MARK: - Hot-Plug Callback Tests
+
+@Suite("Gamepad Hot-Plug Tests")
+struct GamepadHotPlugTests {
+
+    @Test("onGamepadConnected fires when gamepad becomes available")
+    func connected() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        var connectedIndex: Int? = nil
+        var connectedName: String? = nil
+        input.onGamepadConnected = { index, name in
+            connectedIndex = index
+            connectedName = name
+        }
+
+        // First update: no gamepads
+        input.update()
+        #expect(connectedIndex == nil)
+
+        // Second update: gamepad 0 appears
+        backend.gamepadsAvailable = [0]
+        backend.gamepadNames[0] = "Test Controller"
+        input.update()
+        #expect(connectedIndex == 0)
+        #expect(connectedName == "Test Controller")
+    }
+
+    @Test("onGamepadDisconnected fires when gamepad is removed")
+    func disconnected() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        var disconnectedIndex: Int? = nil
+        input.onGamepadDisconnected = { index in
+            disconnectedIndex = index
+        }
+
+        // Connect
+        backend.gamepadsAvailable = [0]
+        backend.gamepadNames[0] = "Controller"
+        input.update()
+
+        // Disconnect
+        backend.gamepadsAvailable = []
+        input.update()
+        #expect(disconnectedIndex == 0)
+    }
+
+    @Test("Callbacks not fired when state unchanged")
+    func noCallback() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        var callCount = 0
+        input.onGamepadConnected = { _, _ in callCount += 1 }
+        input.onGamepadDisconnected = { _ in callCount += 1 }
+
+        backend.gamepadsAvailable = [0]
+        backend.gamepadNames[0] = "Controller"
+        input.update() // connect fires
+        let initialCount = callCount
+
+        input.update() // no change
+        input.update() // no change
+        #expect(callCount == initialCount)
+    }
+}
+
+// MARK: - Vibration Tests
+
+@Suite("Gamepad Vibration Tests")
+struct GamepadVibrationTests {
+
+    @Test("Vibration out of range is no-op")
+    func vibrationOutOfRange() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        // Should not crash
+        input.setGamepadVibration(-1, leftMotor: 1.0, rightMotor: 1.0)
+        input.setGamepadVibration(4, leftMotor: 1.0, rightMotor: 1.0)
+    }
+
+    @Test("Vibration within range does not crash")
+    func vibrationInRange() {
+        let backend = MockGamepadBackend()
+        let input = InputManager()
+        input.bind(backend)
+
+        // Should not crash (backend default is no-op)
+        input.setGamepadVibration(0, leftMotor: 0.5, rightMotor: 0.8)
     }
 }
 

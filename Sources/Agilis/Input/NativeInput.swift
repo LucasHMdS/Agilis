@@ -49,6 +49,24 @@ final class NativeInput: @unchecked Sendable {
         platform_mouse_scroll(window)
     }
 
+    // MARK: - Cursor & Mouse Capture
+
+    func setCursorVisible(_ visible: Bool) {
+        platform_show_cursor(window, visible)
+    }
+
+    func isCursorVisible() -> Bool {
+        platform_is_cursor_visible(window)
+    }
+
+    func setMouseCaptured(_ captured: Bool) {
+        platform_set_mouse_captured(window, captured)
+    }
+
+    func isMouseCaptured() -> Bool {
+        platform_is_mouse_captured(window)
+    }
+
     // MARK: - Gamepad
 
     func isGamepadAvailable(_ gamepad: Int) -> Bool {
@@ -59,6 +77,10 @@ final class NativeInput: @unchecked Sendable {
         platform_is_gamepad_button_down(Int32(gamepad), Int32(button.rawValue))
     }
 
+    func gamepadButtonPressed(_ gamepad: Int, _ button: GamepadButton) -> Bool {
+        platform_gamepad_button_pressed(Int32(gamepad), Int32(button.rawValue))
+    }
+
     func gamepadAxisValue(_ gamepad: Int, _ axis: GamepadAxis) -> Float {
         platform_gamepad_axis(Int32(gamepad), Int32(axis.rawValue))
     }
@@ -66,5 +88,9 @@ final class NativeInput: @unchecked Sendable {
     func gamepadName(_ gamepad: Int) -> String? {
         guard let name = platform_gamepad_name(Int32(gamepad)) else { return nil }
         return String(cString: name)
+    }
+
+    func setGamepadVibration(_ gamepad: Int, leftMotor: Float, rightMotor: Float) {
+        platform_gamepad_set_vibration(Int32(gamepad), leftMotor, rightMotor)
     }
 }

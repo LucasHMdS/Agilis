@@ -42,6 +42,8 @@ var platformCLinkerSettings: [LinkerSetting] {
     settings.append(.linkedLibrary("xinput", .when(platforms: [.windows])))
     // Linux: X11
     settings.append(.linkedLibrary("X11", .when(platforms: [.linux])))
+    // macOS: GameController framework for gamepad support
+    settings.append(.linkedFramework("GameController", .when(platforms: [.macOS])))
     return settings
 }
 
