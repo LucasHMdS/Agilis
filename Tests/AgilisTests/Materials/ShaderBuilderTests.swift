@@ -10,7 +10,7 @@ struct ShaderBuilderTests {
     @Test("createFragment includes version header")
     func fragmentVersion() {
         let source = ShaderBuilder.createFragment(body: "finalColor = vec4(1.0);")
-        #expect(source.contains("#version 330"))
+        #expect(source.contains("#version 300 es"))
     }
 
     @Test("createFragment includes standard inputs")
@@ -96,7 +96,7 @@ struct ShaderBuilderTests {
             includes: [.math],
             body: "finalColor = vec4(1.0);"
         )
-        #expect(source.contains("#version 330"))
+        #expect(source.contains("#version 300 es"))
         #expect(source.contains("uniform float strength;"))
         #expect(source.contains("remap"))
         #expect(source.contains("void main() {"))

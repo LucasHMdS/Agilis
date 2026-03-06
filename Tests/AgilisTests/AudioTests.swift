@@ -5,7 +5,7 @@ import Testing
 // MARK: - Tracking Audio Backend
 
 /// A mock audio backend that records all calls and tracks playing state.
-final class TrackingAudioEngine: @unchecked Sendable, AudioEngine {
+final class TrackingAudioEngine: @unchecked Sendable, AudioBackend {
     // Call tracking
     var playSoundCalls: [(handle: SoundHandle, volume: Float, pitch: Float, looping: Bool)] = []
     var playMusicCalls: [(handle: MusicHandle, volume: Float, looping: Bool)] = []

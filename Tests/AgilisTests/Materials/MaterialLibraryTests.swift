@@ -3,7 +3,7 @@ import Foundation
 @testable import Agilis
 
 /// A mock renderer that tracks shader operations for testing MaterialLibrary.
-private final class MockShaderRenderer: @unchecked Sendable, Renderer {
+private final class MockShaderRenderer: @unchecked Sendable, RenderBackend {
     var loadedShaders: [UInt32: String] = [:]  // id -> fragment source
     var nextId: UInt32 = 1
     var destroyedShaders: [UInt32] = []

@@ -18,7 +18,7 @@ enum ShooterSounds {
         let playerHurt: SoundHandle
         let waveStart: SoundHandle
 
-        func unloadAll(audio: AudioEngine) {
+        func unloadAll(audio: any AudioBackend) {
             audio.unloadSound(pistolFire)
             audio.unloadSound(shotgunFire)
             audio.unloadSound(laserFire)
@@ -32,7 +32,7 @@ enum ShooterSounds {
     private static let sampleRate = 44100
     private static let pi = Float.pi
 
-    static func generate(audio: AudioEngine) -> SoundSet {
+    static func generate(audio: any AudioBackend) -> SoundSet {
         SoundSet(
             pistolFire: audio.loadSoundFromData(genPistol()),
             shotgunFire: audio.loadSoundFromData(genShotgun()),

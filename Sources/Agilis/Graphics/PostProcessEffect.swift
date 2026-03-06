@@ -13,17 +13,17 @@
 ///
 ///     private var shader: ShaderHandle = .invalid
 ///
-///     func initialize(renderer: Renderer) {
+///     func initialize(renderer: any RenderBackend) {
 ///         shader = renderer.loadShader(vertexSource: nil, fragmentSource: myGLSL)
 ///     }
 ///
-///     func shutdown(renderer: Renderer) {
+///     func shutdown(renderer: any RenderBackend) {
 ///         if shader != .invalid { renderer.destroyShader(shader) }
 ///         shader = .invalid
 ///     }
 ///
 ///     func apply(input: RenderTargetHandle, output: RenderTargetHandle,
-///                renderer: Renderer, deltaTime: Float) {
+///                renderer: any RenderBackend, deltaTime: Float) {
 ///         renderer.setShaderFloat(shader, name: "myParam", value: 0.5)
 ///         renderer.beginRenderTarget(output)
 ///         renderer.beginShader(shader)
@@ -62,15 +62,15 @@ public protocol PostProcessEffect: AnyObject, Sendable {
     /// Called once when the effect is added to an initialized pipeline,
     /// or when the pipeline is initialized. Load shaders and allocate
     /// GPU resources here.
-    func initialize(renderer: Renderer)
+    func initialize(renderer: any RenderBackend)
 
     /// Called when the pipeline is shut down or the effect is removed.
     /// Free GPU resources here.
-    func shutdown(renderer: Renderer)
+    func shutdown(renderer: any RenderBackend)
 
     /// Called when the screen size changes. Recreate size-dependent resources
     /// (e.g., intermediate render targets for multi-pass effects).
-    func resize(width: Int, height: Int, renderer: Renderer)
+    func resize(width: Int, height: Int, renderer: any RenderBackend)
 
     /// Apply the effect. Read from `input` render target, write to `output`.
     ///
@@ -90,7 +90,7 @@ public protocol PostProcessEffect: AnyObject, Sendable {
     func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: Renderer,
+        renderer: any RenderBackend,
         deltaTime: Float
     )
 }
@@ -98,6 +98,6 @@ public protocol PostProcessEffect: AnyObject, Sendable {
 // MARK: - Default Implementations
 
 extension PostProcessEffect {
-    public func shutdown(renderer: Renderer) {}
-    public func resize(width: Int, height: Int, renderer: Renderer) {}
+    public func shutdown(renderer: any RenderBackend) {}
+    public func resize(width: Int, height: Int, renderer: any RenderBackend) {}
 }

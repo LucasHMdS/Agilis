@@ -3,7 +3,7 @@ import Testing
 
 // MARK: - Mock Renderer for Screenshot Tests
 
-private final class ScreenshotMockRenderer: @unchecked Sendable, Renderer {
+private final class ScreenshotMockRenderer: @unchecked Sendable, RenderBackend {
     var screenshotPaths: [String] = []
     var captureCallCount = 0
     var captureResult: ImageData? = nil
@@ -90,7 +90,7 @@ struct ScreenshotProtocolTests {
 struct ScreenshotDefaultTests {
 
     /// A minimal renderer that only implements required methods, using defaults for screenshots.
-    private final class MinimalRenderer: @unchecked Sendable, Renderer {
+    private final class MinimalRenderer: @unchecked Sendable, RenderBackend {
         func initialize(config: WindowConfig) throws {}
         func shutdown() {}
         func shouldClose() -> Bool { false }

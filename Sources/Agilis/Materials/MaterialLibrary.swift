@@ -20,7 +20,7 @@
 /// ```
 public final class MaterialLibrary: @unchecked Sendable {
     private var shaderCache: [String: ShaderHandle] = [:]
-    private var renderer: (Renderer)?
+    private var renderer: (any RenderBackend)?
 
     public init() {}
 
@@ -28,7 +28,7 @@ public final class MaterialLibrary: @unchecked Sendable {
     ///
     /// Pre-loads all 6 built-in shaders to avoid hitches during gameplay.
     /// If not called, shaders are lazily loaded on first use.
-    public func initialize(renderer: Renderer) {
+    public func initialize(renderer: any RenderBackend) {
         self.renderer = renderer
 
         // Pre-load all built-in shaders

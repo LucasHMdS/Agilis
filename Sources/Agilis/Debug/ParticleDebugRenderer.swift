@@ -32,7 +32,7 @@ public struct ParticleDebugRendererOptions: Sendable {
     }
 }
 
-extension Renderer {
+extension RenderBackend {
 
     /// Draw debug overlays for all particle emitters.
     ///

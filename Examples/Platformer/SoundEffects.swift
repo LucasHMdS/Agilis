@@ -19,7 +19,7 @@ enum MarioSounds {
         let levelComplete: SoundHandle
         let gameOver: SoundHandle
 
-        func unloadAll(audio: AudioEngine) {
+        func unloadAll(audio: any AudioBackend) {
             audio.unloadSound(jump)
             audio.unloadSound(coin)
             audio.unloadSound(stomp)
@@ -33,7 +33,7 @@ enum MarioSounds {
     private static let sampleRate = 44100
     private static let pi = Float.pi
 
-    static func generate(audio: AudioEngine) -> SoundSet {
+    static func generate(audio: any AudioBackend) -> SoundSet {
         SoundSet(
             jump: audio.loadSoundFromData(generateJump()),
             coin: audio.loadSoundFromData(generateCoin()),

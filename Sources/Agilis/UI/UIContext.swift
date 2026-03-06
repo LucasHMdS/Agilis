@@ -88,7 +88,7 @@ public final class UIContext: @unchecked Sendable {
     }
 
     /// Call in the scene's render() method.
-    public func render(renderer: Renderer) {
+    public func render(renderer: any RenderBackend) {
         root.render(renderer: renderer, theme: theme)
         let screenSize = lastScreenSize
         root.renderOverlay(renderer: renderer, theme: theme, screenSize: screenSize)

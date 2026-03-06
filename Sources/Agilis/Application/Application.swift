@@ -3,8 +3,8 @@
 /// The main application class. Owns the game loop and all engine subsystems.
 public final class Application: @unchecked Sendable {
     public let config: WindowConfig
-    public let renderer: Renderer
-    public let audio: AudioEngine
+    public let renderer: any RenderBackend
+    public let audio: any AudioBackend
     public let audioManager: AudioManager
     public let input: InputManager
     public let world: World
@@ -47,6 +47,24 @@ public final class Application: @unchecked Sendable {
         self.assets = AssetManager()
     }
 
+    /// Dependency-injection initializer for testing.
+    internal init(
+        config: WindowConfig,
+        renderer: any RenderBackend,
+        audio: any AudioBackend,
+        inputBackend: any InputBackend
+    ) {
+        self.config = config
+        self.renderer = renderer
+        self.audio = audio
+        self.audioManager = AudioManager(backend: audio)
+        self.input = InputManager()
+        self.world = World()
+        self.sceneManager = SceneManager()
+        self.assets = AssetManager()
+        input.bind(inputBackend)
+    }
+
     // MARK: - Plugins
 
     /// Install a plugin. Call before `run()`.
@@ -63,7 +81,7 @@ public final class Application: @unchecked Sendable {
         try audio.initialize()
 
         // Bind input backend now that the platform window exists
-        if let window = renderer.window {
+        if let nativeRenderer = renderer as? Renderer, let window = nativeRenderer.window {
             input.bind(NativeInput(window: window))
         }
 
@@ -136,7 +154,7 @@ public final class Application: @unchecked Sendable {
         try audio.initialize()
 
         // Bind input backend now that the platform window exists
-        if let window = renderer.window {
+        if let nativeRenderer = renderer as? Renderer, let window = nativeRenderer.window {
             input.bind(NativeInput(window: window))
         }
 

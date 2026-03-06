@@ -2,7 +2,7 @@ import Testing
 @testable import Agilis
 
 /// A mock input backend for testing. Allows programmatic control of key/mouse state.
-final class MockNativeInput: @unchecked Sendable, NativeInput {
+final class MockNativeInput: @unchecked Sendable, InputBackend {
     var keysDown: Set<Key> = []
     var mouseButtonsDown: Set<MouseButton> = []
     var currentMousePosition = Vector2.zero
@@ -31,7 +31,8 @@ struct InputManagerTests {
 
     @Test func keyDown() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.keysDown = [.space]
         input.update()
@@ -42,16 +43,19 @@ struct InputManagerTests {
 
     @Test func keyPressed() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         // Frame 1: nothing pressed
         input.update()
         #expect(!input.isKeyPressed(.space))
+        input.consumeTransitions()
 
         // Frame 2: space pressed
         backend.keysDown = [.space]
         input.update()
         #expect(input.isKeyPressed(.space))  // just pressed this frame
+        input.consumeTransitions()
 
         // Frame 3: space still held
         input.update()
@@ -61,17 +65,20 @@ struct InputManagerTests {
 
     @Test func keyReleased() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         // Frame 1: press space
         backend.keysDown = [.space]
         input.update()
+        input.consumeTransitions()
 
         // Frame 2: release space
         backend.keysDown = []
         input.update()
         #expect(input.isKeyReleased(.space))
         #expect(!input.isKeyDown(.space))
+        input.consumeTransitions()
 
         // Frame 3: still released (no longer "just released")
         input.update()
@@ -80,7 +87,8 @@ struct InputManagerTests {
 
     @Test func multipleKeysSimultaneously() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.keysDown = [.w, .a, .leftShift]
         input.update()
@@ -95,7 +103,8 @@ struct InputManagerTests {
 
     @Test func mouseButtonDown() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.mouseButtonsDown = [.left]
         input.update()
@@ -106,13 +115,16 @@ struct InputManagerTests {
 
     @Test func mouseButtonPressed() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         input.update()
+        input.consumeTransitions()
 
         backend.mouseButtonsDown = [.right]
         input.update()
         #expect(input.isMouseButtonPressed(.right))
+        input.consumeTransitions()
 
         input.update()
         #expect(!input.isMouseButtonPressed(.right)) // held, not just pressed
@@ -120,14 +132,17 @@ struct InputManagerTests {
 
     @Test func mouseButtonReleased() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.mouseButtonsDown = [.left]
         input.update()
+        input.consumeTransitions()
 
         backend.mouseButtonsDown = []
         input.update()
         #expect(input.isMouseButtonReleased(.left))
+        input.consumeTransitions()
 
         input.update()
         #expect(!input.isMouseButtonReleased(.left))
@@ -135,7 +150,8 @@ struct InputManagerTests {
 
     @Test func mousePosition() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.currentMousePosition = Vector2(x: 400, y: 300)
         #expect(input.mousePosition == Vector2(x: 400, y: 300))
@@ -143,7 +159,8 @@ struct InputManagerTests {
 
     @Test func mouseDelta() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.currentMouseDelta = Vector2(x: 5, y: -3)
         #expect(input.mouseDelta == Vector2(x: 5, y: -3))
@@ -151,7 +168,8 @@ struct InputManagerTests {
 
     @Test func mouseScrollDelta() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.currentScrollDelta = 2.5
         #expect(input.mouseScrollDelta == 2.5)
@@ -161,16 +179,19 @@ struct InputManagerTests {
 
     @Test func actionWithKeyBinding() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("jump", keys: [.space, .w])
 
         input.update()
         #expect(!input.isActionActive("jump"))
+        input.consumeTransitions()
 
         backend.keysDown = [.space]
         input.update()
         #expect(input.isActionActive("jump"))
         #expect(input.isActionJustActivated("jump"))
+        input.consumeTransitions()
 
         input.update()
         #expect(input.isActionActive("jump"))
@@ -179,7 +200,8 @@ struct InputManagerTests {
 
     @Test func actionWithMouseBinding() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("shoot", mouseButtons: [.left])
 
         input.update()
@@ -192,7 +214,8 @@ struct InputManagerTests {
 
     @Test func actionWithMixedBindings() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("fire", keys: [.space], mouseButtons: [.left])
 
         input.update()
@@ -211,18 +234,21 @@ struct InputManagerTests {
 
     @Test func actionDeactivated() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("jump", keys: [.space])
 
         // Press
         backend.keysDown = [.space]
         input.update()
+        input.consumeTransitions()
 
         // Release
         backend.keysDown = []
         input.update()
         #expect(input.isActionJustDeactivated("jump"))
         #expect(!input.isActionActive("jump"))
+        input.consumeTransitions()
 
         // Next frame: no longer "just" deactivated
         input.update()
@@ -231,7 +257,8 @@ struct InputManagerTests {
 
     @Test func unregisteredAction() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.keysDown = [.space]
         input.update()

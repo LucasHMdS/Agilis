@@ -256,7 +256,7 @@ struct MaterialContextTests {
 
 // MARK: - Mock Renderers
 
-private final class TemplateMockRenderer: @unchecked Sendable, Renderer {
+private final class TemplateMockRenderer: @unchecked Sendable, RenderBackend {
     var nextId: UInt32 = 1
 
     func loadShader(vertexSource: String?, fragmentSource: String) -> ShaderHandle {
@@ -293,7 +293,7 @@ private final class TemplateMockRenderer: @unchecked Sendable, Renderer {
     var screenSize: Size { .zero }
 }
 
-private final class ContextSpyRenderer: @unchecked Sendable, Renderer {
+private final class ContextSpyRenderer: @unchecked Sendable, RenderBackend {
     var floatUniforms: [(shader: UInt32, name: String, value: Float)] = []
     var vec2Uniforms: [(shader: UInt32, name: String, value: Vector2)] = []
 

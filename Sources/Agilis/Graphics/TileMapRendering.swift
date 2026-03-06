@@ -10,7 +10,7 @@ import CRT
 
 // MARK: - TileMap Rendering
 
-extension Renderer {
+extension RenderBackend {
 
     /// Draw all visible layers of a tilemap.
     ///

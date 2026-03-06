@@ -109,7 +109,7 @@ public final class DebugOverlay: @unchecked Sendable {
     }
 
     /// Draw the debug overlay. Call at the end of `render()`, outside any camera block.
-    public func render(renderer: Renderer, app: Application) {
+    public func render(renderer: any RenderBackend, app: Application) {
         guard isVisible else { return }
 
         let padding: Float = 6

@@ -25,7 +25,7 @@ public struct ShaderUniform: Hashable, Sendable {
 
 // MARK: - Renderer Typed Uniform Setters
 
-extension Renderer {
+extension RenderBackend {
     /// Set a float uniform using a typed `ShaderUniform` key.
     public func setShaderFloat(_ handle: ShaderHandle, uniform: ShaderUniform, value: Float) {
         setShaderFloat(handle, name: uniform.name, value: value)

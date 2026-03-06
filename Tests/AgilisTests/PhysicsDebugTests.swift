@@ -4,7 +4,7 @@ import Testing
 // MARK: - Spy Renderer
 
 /// Records drawRectOutline, drawCircleOutline, drawLine, and drawCircle calls.
-private final class DebugSpyRenderer: @unchecked Sendable, Renderer {
+private final class DebugSpyRenderer: @unchecked Sendable, RenderBackend {
     struct RectOutlineCall: Equatable {
         let rect: Rect
         let color: Color

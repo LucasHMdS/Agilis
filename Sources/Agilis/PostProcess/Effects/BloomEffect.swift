@@ -36,7 +36,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
         self.intensity = intensity
     }
 
-    public func initialize(renderer: Renderer) {
+    public func initialize(renderer: any RenderBackend) {
         extractShader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.bloomExtractFragment
@@ -47,7 +47,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
         )
     }
 
-    public func shutdown(renderer: Renderer) {
+    public func shutdown(renderer: any RenderBackend) {
         if extractShader != .invalid { renderer.destroyShader(extractShader) }
         if compositeShader != .invalid { renderer.destroyShader(compositeShader) }
         if intermediateRT != .invalid { renderer.destroyRenderTarget(intermediateRT) }
@@ -56,7 +56,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
         intermediateRT = .invalid
     }
 
-    public func resize(width: Int, height: Int, renderer: Renderer) {
+    public func resize(width: Int, height: Int, renderer: any RenderBackend) {
         currentWidth = width
         currentHeight = height
 
@@ -70,7 +70,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: Renderer,
+        renderer: any RenderBackend,
         deltaTime: Float
     ) {
         guard extractShader != .invalid,

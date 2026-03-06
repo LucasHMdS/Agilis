@@ -117,7 +117,7 @@ public struct PhysicsDebugRendererOptions: Sendable {
 
 // MARK: - Renderer Extension
 
-extension Renderer {
+extension RenderBackend {
 
     /// Draw physics debug overlays for all entities with colliders.
     ///

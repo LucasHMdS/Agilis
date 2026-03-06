@@ -1,6 +1,6 @@
 
 
-extension Renderer {
+extension RenderBackend {
     /// Draw a render target's contents to the screen at the given position.
     /// Handles the Y-flip automatically (OpenGL framebuffer textures are Y-inverted).
     public func drawRenderTarget(

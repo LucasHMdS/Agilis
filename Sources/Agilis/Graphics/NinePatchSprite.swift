@@ -66,7 +66,7 @@ public struct NinePatchSprite: Sendable {
 
 // MARK: - Renderer Extension
 
-extension Renderer {
+extension RenderBackend {
     /// Draw a nine-patch sprite scaled to fill the destination rectangle.
     ///
     /// The 4 corners are drawn at their original size, edges are stretched along

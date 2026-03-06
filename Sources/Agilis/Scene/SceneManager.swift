@@ -115,7 +115,7 @@ public final class SceneManager: @unchecked Sendable {
 
     /// Render the transition overlay on top of the current scene.
     /// Called after scene render, before endFrame.
-    internal func renderTransitionOverlay(renderer: Renderer) {
+    internal func renderTransitionOverlay(renderer: any RenderBackend) {
         guard let state = activeTransition else { return }
         let alpha = state.overlayAlpha
         guard alpha > 0 else { return }

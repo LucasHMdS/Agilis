@@ -27,7 +27,7 @@ private func makeSprite(texture: TextureHandle, source: Rect,
 // MARK: - Player Drawing
 
 func drawPlayer(pos: Vector2, player: Player, gameTime: Float,
-                atlas: MarioSprites.Atlas, renderer: Renderer) {
+                atlas: MarioSprites.Atlas, renderer: any RenderBackend) {
     // Blink when invincible
     if player.isInvincible {
         let blink = Int(player.invincibleTimer * 10) % 2
@@ -57,7 +57,7 @@ func drawPlayer(pos: Vector2, player: Player, gameTime: Float,
 // MARK: - Tile Drawing
 
 func drawTile(pos: Vector2, tile: Tile, atlas: MarioSprites.Atlas,
-              renderer: Renderer) {
+              renderer: any RenderBackend) {
     let s = Mario.tileSize
 
     switch tile.tileType {
@@ -118,7 +118,7 @@ func drawTile(pos: Vector2, tile: Tile, atlas: MarioSprites.Atlas,
 // MARK: - Question Block Drawing
 
 func drawQuestionBlock(pos: Vector2, block: QuestionBlock,
-                       atlas: MarioSprites.Atlas, renderer: Renderer) {
+                       atlas: MarioSprites.Atlas, renderer: any RenderBackend) {
     let s = Mario.tileSize
     let isActive = block.state == .active || block.state == .bouncing
     let rectName = isActive ? "qblock_active" : "qblock_used"
@@ -133,7 +133,7 @@ func drawQuestionBlock(pos: Vector2, block: QuestionBlock,
 // MARK: - Enemy Drawing
 
 func drawGoomba(pos: Vector2, enemy: Enemy, gameTime: Float,
-                atlas: MarioSprites.Atlas, renderer: Renderer) {
+                atlas: MarioSprites.Atlas, renderer: any RenderBackend) {
     if enemy.isDead {
         let sprite = makeSprite(
             texture: atlas.texture, source: atlas.rect("goomba_squished"),
@@ -157,7 +157,7 @@ func drawGoomba(pos: Vector2, enemy: Enemy, gameTime: Float,
 // MARK: - Coin Drawing
 
 func drawCoin(pos: Vector2, time: Float, atlas: MarioSprites.Atlas,
-              renderer: Renderer) {
+              renderer: any RenderBackend) {
     let frame = Int(time * 6) % 4
     let rectName = "coin_\(frame)"
     let coinSize: Float = Mario.coinRadius * 2
@@ -172,7 +172,7 @@ func drawCoin(pos: Vector2, time: Float, atlas: MarioSprites.Atlas,
 // MARK: - Flagpole Drawing
 
 func drawFlagpole(pos: Vector2, atlas: MarioSprites.Atlas,
-                  renderer: Renderer) {
+                  renderer: any RenderBackend) {
     let baseY = Float(Mario.groundRow) * Mario.tileSize
     let topY = Float(Mario.groundRow - 8) * Mario.tileSize
 
@@ -199,7 +199,7 @@ func drawFlagpole(pos: Vector2, atlas: MarioSprites.Atlas,
 // MARK: - Background Drawing
 
 func drawBackground(cameraTargetX: Float, screenSize: Size,
-                    atlas: MarioSprites.Atlas, renderer: Renderer) {
+                    atlas: MarioSprites.Atlas, renderer: any RenderBackend) {
     // Parallax hills using sprites
     let parallaxX = cameraTargetX * 0.3
     for i in 0..<8 {
@@ -232,7 +232,7 @@ func drawBackground(cameraTargetX: Float, screenSize: Size,
 // MARK: - HUD Drawing
 
 func drawHUD(score: Int, lives: Int, coins: Int, font: FontHandle,
-             renderer: Renderer) {
+             renderer: any RenderBackend) {
     let y: Float = 8
 
     renderer.drawText("SCORE", position: Vector2(x: 16, y: y),

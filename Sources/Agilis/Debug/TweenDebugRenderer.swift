@@ -43,7 +43,7 @@ public struct TweenDebugRendererOptions: Sendable {
     }
 }
 
-extension Renderer {
+extension RenderBackend {
 
     /// Draw debug overlays for active tweens.
     ///

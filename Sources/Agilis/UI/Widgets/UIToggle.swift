@@ -43,7 +43,7 @@ public class UIToggle: UINode, @unchecked Sendable {
         onChange?(isOn)
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw checkbox

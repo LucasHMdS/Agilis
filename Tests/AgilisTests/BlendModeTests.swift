@@ -92,7 +92,7 @@ struct SpriteBlendModeTests {
 @Suite("Renderer BlendMode Defaults")
 struct RendererBlendModeDefaultTests {
 
-    final class BlendMinimalRenderer: @unchecked Sendable, Renderer {
+    final class BlendMinimalRenderer: @unchecked Sendable, RenderBackend {
         func initialize(config: WindowConfig) throws {}
         func shutdown() {}
         func shouldClose() -> Bool { false }
@@ -140,7 +140,7 @@ private func blendSprite(_ tex: TextureHandle, x: Float = 0, blend: BlendMode = 
 }
 
 /// Records drawn sprites for blend mode tests.
-private final class BlendSpyRenderer: @unchecked Sendable, Renderer {
+private final class BlendSpyRenderer: @unchecked Sendable, RenderBackend {
     var drawnSprites: [Sprite] = []
 
     func initialize(config: WindowConfig) throws {}

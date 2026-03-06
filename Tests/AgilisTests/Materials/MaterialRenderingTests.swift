@@ -3,7 +3,7 @@ import Foundation
 @testable import Agilis
 
 /// A mock renderer that records uniform set calls for verifying applyMaterial behavior.
-private final class UniformSpyRenderer: @unchecked Sendable, Renderer {
+private final class UniformSpyRenderer: @unchecked Sendable, RenderBackend {
     var floatUniforms: [(shader: UInt32, name: String, value: Float)] = []
     var vec2Uniforms: [(shader: UInt32, name: String, value: Vector2)] = []
     var vec3Uniforms: [(shader: UInt32, name: String, x: Float, y: Float, z: Float)] = []

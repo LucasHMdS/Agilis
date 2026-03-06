@@ -3,7 +3,7 @@ import Foundation
 @testable import Agilis
 
 /// A mock renderer that tracks render target and shader operations for pipeline testing.
-private final class PipelineMockRenderer: @unchecked Sendable, Renderer {
+private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
     var nextRTId: UInt32 = 1
     var createdRTs: [UInt32] = []
     var destroyedRTs: [UInt32] = []
@@ -129,18 +129,18 @@ private final class SpyEffect: PostProcessEffect, @unchecked Sendable {
         self.order = order
     }
 
-    func initialize(renderer: Renderer) {
+    func initialize(renderer: any RenderBackend) {
         initialized = true
         shader = renderer.loadShader(vertexSource: nil, fragmentSource: "// test")
     }
 
-    func shutdown(renderer: Renderer) {
+    func shutdown(renderer: any RenderBackend) {
         shutdownCalled = true
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
 
-    func resize(width: Int, height: Int, renderer: Renderer) {
+    func resize(width: Int, height: Int, renderer: any RenderBackend) {
         resizeCount += 1
         lastResizeWidth = width
         lastResizeHeight = height
@@ -149,7 +149,7 @@ private final class SpyEffect: PostProcessEffect, @unchecked Sendable {
     func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: Renderer,
+        renderer: any RenderBackend,
         deltaTime: Float
     ) {
         applyCount += 1

@@ -36,11 +36,11 @@ public class UINode: @unchecked Sendable {
     public func update(context: UIContext, deltaTime: Double) {}
 
     /// Called each frame. Override to draw.
-    public func render(renderer: Renderer, theme: UITheme) {}
+    public func render(renderer: any RenderBackend, theme: UITheme) {}
 
     /// Called after the main render pass. Override to draw overlays (e.g. dropdown popups)
     /// that need to appear above sibling nodes.
-    public func renderOverlay(renderer: Renderer, theme: UITheme, screenSize: Size) {}
+    public func renderOverlay(renderer: any RenderBackend, theme: UITheme, screenSize: Size) {}
 
     /// Returns the size this node would like to occupy, given available space.
     public func sizeThatFits(_ available: Size) -> Size {

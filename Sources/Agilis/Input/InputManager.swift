@@ -21,7 +21,7 @@ private let maxGamepads = 4
 /// if app.input.isActionJustActivated("jump") { ... }
 /// ```
 public final class InputManager: @unchecked Sendable {
-    private var backend: NativeInput?
+    private var backend: (any InputBackend)?
 
     // Current "held" state (updated per frame via polling)
     private var keyDownState: Set<Key> = []
@@ -45,8 +45,8 @@ public final class InputManager: @unchecked Sendable {
 
     public init() {}
 
-    /// Bind a native input backend. Called by Application after the window is created.
-    internal func bind(_ backend: NativeInput) {
+    /// Bind an input backend. Called by Application after the window is created.
+    internal func bind(_ backend: any InputBackend) {
         self.backend = backend
     }
 

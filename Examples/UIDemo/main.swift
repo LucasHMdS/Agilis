@@ -173,7 +173,7 @@ final class UIDemoScene: Scene {
 }
 
 /// Creates a small procedural texture (a colored diamond icon).
-private func createIconTexture(renderer: Renderer) -> TextureHandle {
+private func createIconTexture(renderer: any RenderBackend) -> TextureHandle {
     let size = 32
     var pixels = [UInt8](repeating: 0, count: size * size * 4)
     for y in 0..<size {

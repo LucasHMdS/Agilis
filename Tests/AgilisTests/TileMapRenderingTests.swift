@@ -4,7 +4,7 @@ import Testing
 // MARK: - Spy Renderer
 
 /// Records drawSprite calls for tilemap rendering verification.
-private final class TileSpyRenderer: @unchecked Sendable, Renderer {
+private final class TileSpyRenderer: @unchecked Sendable, RenderBackend {
     var drawnSprites: [Sprite] = []
 
     func drawSprite(_ sprite: Sprite) {

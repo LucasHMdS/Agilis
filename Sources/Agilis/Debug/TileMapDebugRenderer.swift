@@ -24,7 +24,7 @@ public struct TileMapDebugRendererOptions: Sendable {
     }
 }
 
-extension Renderer {
+extension RenderBackend {
 
     /// Draw debug overlays for a tilemap.
     ///

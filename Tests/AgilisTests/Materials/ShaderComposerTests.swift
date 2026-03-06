@@ -13,7 +13,7 @@ struct ShaderComposerTests {
         composer.addEffect("grayscale", body: "color.rgb = vec3(dot(color.rgb, vec3(0.3)));")
         let source = composer.build()
 
-        #expect(source.contains("#version 330"))
+        #expect(source.contains("#version 300 es"))
         #expect(source.contains("void main()"))
         #expect(source.contains("sampleTexture(fragTexCoord)"))
         #expect(source.contains("finalColor = color;"))
@@ -174,7 +174,7 @@ struct ShaderComposerTests {
         let composer = ShaderComposer()
         let source = composer.build()
 
-        #expect(source.contains("#version 330"))
+        #expect(source.contains("#version 300 es"))
         #expect(source.contains("void main()"))
         #expect(source.contains("sampleTexture(fragTexCoord)"))
         #expect(source.contains("finalColor = color;"))

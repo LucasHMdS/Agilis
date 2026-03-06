@@ -4,7 +4,7 @@ import Testing
 // MARK: - Mock Renderer for Particles
 
 /// Records drawCircle, drawRect, and drawSprite calls for verification.
-final class ParticleSpyRenderer: @unchecked Sendable, Renderer {
+final class ParticleSpyRenderer: @unchecked Sendable, RenderBackend {
     var drawnCircles: [(center: Vector2, radius: Float, color: Color)] = []
     var drawnRects: [(rect: Rect, color: Color)] = []
     var drawnSprites: [Sprite] = []

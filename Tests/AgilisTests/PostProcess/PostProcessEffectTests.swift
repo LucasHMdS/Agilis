@@ -3,7 +3,7 @@ import Foundation
 @testable import Agilis
 
 /// A mock renderer for testing individual effects.
-private final class EffectMockRenderer: @unchecked Sendable, Renderer {
+private final class EffectMockRenderer: @unchecked Sendable, RenderBackend {
     var nextRTId: UInt32 = 100
     var nextShaderId: UInt32 = 1
     var loadedShaders: [UInt32] = []

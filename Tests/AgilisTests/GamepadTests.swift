@@ -3,7 +3,7 @@ import Testing
 
 /// A mock input backend with gamepad support for testing.
 /// Extends the pattern from InputTests.swift's MockNativeInput.
-final class MockGamepadBackend: @unchecked Sendable, NativeInput {
+final class MockGamepadBackend: @unchecked Sendable, InputBackend {
     // Keyboard / mouse (minimal, for mixed action tests)
     var keysDown: Set<Key> = []
     var mouseButtonsDown: Set<MouseButton> = []
@@ -94,7 +94,8 @@ struct GamepadConnectionTests {
     @Test("No gamepads connected by default")
     func noGamepads() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         #expect(!input.isGamepadConnected(0))
         #expect(!input.isGamepadConnected(1))
@@ -105,7 +106,8 @@ struct GamepadConnectionTests {
     @Test("Gamepad connected detection")
     func gamepadConnected() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0, 2]
 
@@ -118,7 +120,8 @@ struct GamepadConnectionTests {
     @Test("Out of range gamepad index returns false")
     func outOfRange() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         #expect(!input.isGamepadConnected(-1))
         #expect(!input.isGamepadConnected(4))
@@ -128,7 +131,8 @@ struct GamepadConnectionTests {
     @Test("Gamepad name when connected")
     func gamepadName() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadNames[0] = "Xbox Wireless Controller"
@@ -140,7 +144,8 @@ struct GamepadConnectionTests {
     @Test("Gamepad name out of range returns nil")
     func gamepadNameOutOfRange() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         #expect(input.gamepadName(-1) == nil)
         #expect(input.gamepadName(5) == nil)
@@ -155,7 +160,8 @@ struct GamepadButtonStateTests {
     @Test("Button down")
     func buttonDown() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadButtons[0] = [.faceDown, .dpadUp]
@@ -169,18 +175,21 @@ struct GamepadButtonStateTests {
     @Test("Button pressed (transition)")
     func buttonPressed() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
 
         // Frame 1: no buttons
         input.update()
         #expect(!input.isGamepadButtonPressed(0, .faceDown))
+        input.consumeTransitions()
 
         // Frame 2: press A
         backend.gamepadButtons[0] = [.faceDown]
         input.update()
         #expect(input.isGamepadButtonPressed(0, .faceDown))
+        input.consumeTransitions()
 
         // Frame 3: still held — not "just pressed"
         input.update()
@@ -191,19 +200,22 @@ struct GamepadButtonStateTests {
     @Test("Button released (transition)")
     func buttonReleased() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
 
         // Frame 1: press
         backend.gamepadButtons[0] = [.start]
         input.update()
+        input.consumeTransitions()
 
         // Frame 2: release
         backend.gamepadButtons[0] = []
         input.update()
         #expect(input.isGamepadButtonReleased(0, .start))
         #expect(!input.isGamepadButtonDown(0, .start))
+        input.consumeTransitions()
 
         // Frame 3: no longer "just released"
         input.update()
@@ -213,7 +225,8 @@ struct GamepadButtonStateTests {
     @Test("Multiple buttons simultaneously")
     func multipleButtons() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadButtons[0] = [.faceDown, .faceRight, .leftBumper]
@@ -228,7 +241,8 @@ struct GamepadButtonStateTests {
     @Test("Multiple gamepads have independent state")
     func multipleGamepads() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0, 1]
         backend.gamepadButtons[0] = [.faceDown]
@@ -244,7 +258,8 @@ struct GamepadButtonStateTests {
     @Test("Disconnected gamepad returns no button state")
     func disconnectedGamepad() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         // Gamepad not in gamepadsAvailable, but has button data
         backend.gamepadButtons[0] = [.faceDown]
@@ -256,7 +271,8 @@ struct GamepadButtonStateTests {
     @Test("Button queries for out of range gamepad return false")
     func buttonOutOfRange() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         input.update()
         #expect(!input.isGamepadButtonDown(-1, .faceDown))
@@ -274,7 +290,8 @@ struct GamepadAxisTests {
     @Test("Axis reading with dead zone applied")
     func axisWithDeadZone() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [
@@ -291,7 +308,8 @@ struct GamepadAxisTests {
     @Test("Axis at exact dead zone boundary is zero")
     func axisAtDeadZone() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [.leftX: 0.1] // Exactly at dead zone
@@ -304,7 +322,8 @@ struct GamepadAxisTests {
     @Test("Custom dead zone")
     func customDeadZone() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [.leftX: 0.15]
@@ -320,7 +339,8 @@ struct GamepadAxisTests {
     @Test("Zero dead zone passes all values")
     func zeroDeadZone() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         input.gamepadDeadZone = 0
         backend.gamepadsAvailable = [0]
@@ -332,7 +352,8 @@ struct GamepadAxisTests {
     @Test("Negative axis values respect dead zone")
     func negativeAxisDeadZone() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [
@@ -347,7 +368,8 @@ struct GamepadAxisTests {
     @Test("Axis for disconnected gamepad returns 0")
     func axisDisconnected() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadAxes[0] = [.leftX: 0.9]
         // Gamepad not available
@@ -357,7 +379,8 @@ struct GamepadAxisTests {
     @Test("Axis for out of range gamepad returns 0")
     func axisOutOfRange() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         #expect(input.gamepadAxis(-1, .leftX) == 0)
         #expect(input.gamepadAxis(4, .leftY) == 0)
@@ -372,7 +395,8 @@ struct GamepadStickTests {
     @Test("Left stick returns Vector2")
     func leftStick() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [.leftX: 0.7, .leftY: -0.3]
@@ -385,7 +409,8 @@ struct GamepadStickTests {
     @Test("Right stick returns Vector2")
     func rightStick() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [.rightX: -0.5, .rightY: 1.0]
@@ -398,7 +423,8 @@ struct GamepadStickTests {
     @Test("Stick applies dead zone per-axis")
     func stickDeadZone() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [.leftX: 0.05, .leftY: 0.5]
@@ -411,7 +437,8 @@ struct GamepadStickTests {
     @Test("Stick for disconnected gamepad returns zero")
     func stickDisconnected() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         let stick = input.gamepadStick(0, .left)
         #expect(stick == .zero)
@@ -426,18 +453,21 @@ struct GamepadActionMappingTests {
     @Test("Action with gamepad button binding")
     func gamepadAction() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("jump", gamepadButtons: [.faceDown])
 
         backend.gamepadsAvailable = [0]
 
         input.update()
         #expect(!input.isActionActive("jump"))
+        input.consumeTransitions()
 
         backend.gamepadButtons[0] = [.faceDown]
         input.update()
         #expect(input.isActionActive("jump"))
         #expect(input.isActionJustActivated("jump"))
+        input.consumeTransitions()
 
         input.update()
         #expect(input.isActionActive("jump"))
@@ -447,7 +477,8 @@ struct GamepadActionMappingTests {
     @Test("Action deactivated via gamepad")
     func gamepadActionDeactivated() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("jump", gamepadButtons: [.faceDown])
 
         backend.gamepadsAvailable = [0]
@@ -455,12 +486,14 @@ struct GamepadActionMappingTests {
         // Press
         backend.gamepadButtons[0] = [.faceDown]
         input.update()
+        input.consumeTransitions()
 
         // Release
         backend.gamepadButtons[0] = []
         input.update()
         #expect(input.isActionJustDeactivated("jump"))
         #expect(!input.isActionActive("jump"))
+        input.consumeTransitions()
 
         // Next frame
         input.update()
@@ -470,7 +503,8 @@ struct GamepadActionMappingTests {
     @Test("Mixed action: key + mouse + gamepad")
     func mixedAction() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("fire", keys: [.space], mouseButtons: [.left], gamepadButtons: [.rightTrigger])
 
         backend.gamepadsAvailable = [0]
@@ -499,7 +533,8 @@ struct GamepadActionMappingTests {
     @Test("Action uses gamepad 0 for queries")
     func actionUsesGamepadZero() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("jump", gamepadButtons: [.faceDown])
 
         backend.gamepadsAvailable = [0, 1]
@@ -520,7 +555,8 @@ struct GamepadActionMappingTests {
     @Test("registerAction with no gamepad buttons (backward compat)")
     func noGamepadButtons() {
         let backend = MockGamepadBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         input.registerAction("jump", keys: [.space])
 
         backend.keysDown = [.space]
@@ -536,7 +572,7 @@ struct NativeInputDefaultTests {
 
     /// A minimal backend that only implements the original methods (no gamepad overrides).
     /// Tests that the default implementations return "no gamepad" state.
-    final class MinimalBackend: @unchecked Sendable, NativeInput {
+    final class MinimalBackend: @unchecked Sendable, InputBackend {
         func isKeyDown(_ key: Key) -> Bool { false }
         func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
         func mousePosition() -> Vector2 { .zero }
@@ -574,7 +610,8 @@ struct NativeInputDefaultTests {
     @Test("InputManager with minimal backend has no gamepad input")
     func minimalBackendInputManager() {
         let backend = MinimalBackend()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         input.update()
         #expect(!input.isGamepadConnected(0))

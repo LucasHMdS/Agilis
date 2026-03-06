@@ -18,7 +18,7 @@
 public final class AudioManager: @unchecked Sendable {
 
     /// The underlying audio backend.
-    public let backend: AudioEngine
+    public let backend: any AudioBackend
 
     // MARK: - Group Volumes
 
@@ -86,7 +86,7 @@ public final class AudioManager: @unchecked Sendable {
     // MARK: - Init
 
     /// Create an audio manager wrapping the given backend.
-    public init(backend: AudioEngine) {
+    public init(backend: any AudioBackend) {
         self.backend = backend
     }
 

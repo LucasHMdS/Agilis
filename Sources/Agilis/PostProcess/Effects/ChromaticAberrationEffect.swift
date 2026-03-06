@@ -20,14 +20,14 @@ public final class ChromaticAberrationEffect: PostProcessEffect, @unchecked Send
         self.amount = amount
     }
 
-    public func initialize(renderer: Renderer) {
+    public func initialize(renderer: any RenderBackend) {
         shader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.chromaticAberrationFragment
         )
     }
 
-    public func shutdown(renderer: Renderer) {
+    public func shutdown(renderer: any RenderBackend) {
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
@@ -35,7 +35,7 @@ public final class ChromaticAberrationEffect: PostProcessEffect, @unchecked Send
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: Renderer,
+        renderer: any RenderBackend,
         deltaTime: Float
     ) {
         guard shader != .invalid else { return }

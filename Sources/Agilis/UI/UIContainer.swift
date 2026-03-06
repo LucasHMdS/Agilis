@@ -37,14 +37,14 @@ public class UIContainer: UINode, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
         for child in children where child.isVisible {
             child.render(renderer: renderer, theme: theme)
         }
     }
 
-    public override func renderOverlay(renderer: Renderer, theme: UITheme, screenSize: Size) {
+    public override func renderOverlay(renderer: any RenderBackend, theme: UITheme, screenSize: Size) {
         guard isVisible else { return }
         for child in children where child.isVisible {
             child.renderOverlay(renderer: renderer, theme: theme, screenSize: screenSize)

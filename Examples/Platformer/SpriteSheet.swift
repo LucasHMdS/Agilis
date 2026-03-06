@@ -26,7 +26,7 @@ enum MarioSprites {
     static let sheetWidth = 256
     static let sheetHeight = 256
 
-    static func buildAtlas(renderer: Renderer) -> Atlas {
+    static func buildAtlas(renderer: any RenderBackend) -> Atlas {
         var pixels = [UInt8](repeating: 0, count: sheetWidth * sheetHeight * 4)
         var rects: [String: Rect] = [:]
 

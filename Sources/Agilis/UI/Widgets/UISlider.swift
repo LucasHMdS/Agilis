@@ -63,7 +63,7 @@ public class UISlider: UINode, @unchecked Sendable {
         onChange?(value)
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
         // Draw label
         let labelY = frame.y

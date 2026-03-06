@@ -20,7 +20,7 @@ public struct UIDebugRendererOptions: Sendable {
     }
 }
 
-extension Renderer {
+extension RenderBackend {
 
     /// Draw debug overlays for a UI context.
     ///

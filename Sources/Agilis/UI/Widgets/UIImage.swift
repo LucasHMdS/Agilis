@@ -24,7 +24,7 @@ public class UIImage: UINode, @unchecked Sendable {
         return Size(width: min(available.width, 64), height: min(available.height, 64))
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         let texSize = renderer.textureSize(texture)

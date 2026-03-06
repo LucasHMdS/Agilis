@@ -4,7 +4,7 @@ import Testing
 // MARK: - Mock Render Backend
 
 /// A minimal render backend for testing UI layout and text measurement.
-final class MockRenderer: @unchecked Sendable, Renderer {
+final class MockRenderer: @unchecked Sendable, RenderBackend {
     var _screenSize = Size(width: 800, height: 600)
     var drawCalls: [String] = []
     var fonts: [UInt32: Bool] = [:]
@@ -59,7 +59,7 @@ final class MockRenderer: @unchecked Sendable, Renderer {
 }
 
 /// A minimal audio backend for creating test Applications.
-final class MockAudioEngine: @unchecked Sendable, AudioEngine {
+final class MockAudioEngine: @unchecked Sendable, AudioBackend {
     func initialize() throws {}
     func shutdown() {}
     func loadSound(from path: String) -> SoundHandle { .invalid }
@@ -281,6 +281,7 @@ struct UIButtonTests {
         ui.update(app: app, deltaTime: 1.0 / 60.0)
         #expect(button.state == .pressed)
         #expect(!clicked)
+        app.input.consumeTransitions()
 
         // Mouse release over button
         inputBackend.mouseButtonsDown = []

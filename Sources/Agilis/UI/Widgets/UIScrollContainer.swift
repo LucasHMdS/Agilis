@@ -57,7 +57,7 @@ public class UIScrollContainer: UIContainer, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw background

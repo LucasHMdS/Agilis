@@ -45,7 +45,8 @@ struct UIInputConfigTests {
 
     @Test func isConfirmPressedKeyboard() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         let config = UIInputConfig.default
 
         // No keys pressed
@@ -60,7 +61,8 @@ struct UIInputConfigTests {
 
     @Test func isCancelPressedKeyboard() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         let config = UIInputConfig.default
 
         backend.keysDown = [.escape]
@@ -70,7 +72,8 @@ struct UIInputConfigTests {
 
     @Test func isUpDownPressed() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         let config = UIInputConfig.default
 
         backend.keysDown = [.up]
@@ -87,7 +90,8 @@ struct UIInputConfigTests {
 
     @Test func isNextFocusPressedWithShift() {
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
         let config = UIInputConfig.default
 
         // Tab without shift = next focus
@@ -108,7 +112,8 @@ struct UIInputConfigTests {
     @Test func disabledKeyboard() {
         let config = UIInputConfig(keyboard: nil, gamepad: nil)
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         backend.keysDown = [.enter]
         input.update()
@@ -121,7 +126,8 @@ struct UIInputConfigTests {
         let config = UIInputConfig(keyboard: kb)
 
         let backend = MockNativeInput()
-        let input = InputManager(backend: backend)
+        let input = InputManager()
+        input.bind(backend)
 
         // Enter should NOT confirm with custom binding
         backend.keysDown = [.enter]
@@ -864,6 +870,7 @@ struct UIDemoDropdownReproduction {
 
         app.input.update()
         ui.update(app: app, deltaTime: 1.0 / 60.0)
+        app.input.consumeTransitions()
 
         // Open via mouse click on the button
         let f = dropdown.frame
@@ -872,11 +879,13 @@ struct UIDemoDropdownReproduction {
         app.input.update()
         ui.update(app: app, deltaTime: 1.0 / 60.0)
         #expect(dropdown.isOpen == true)
+        app.input.consumeTransitions()
 
         // Release mouse, then click 3rd option in next frame
         inputBackend.mouseButtonsDown = []
         app.input.update()
         ui.update(app: app, deltaTime: 1.0 / 60.0)
+        app.input.consumeTransitions()
 
         let rh = dropdown.fontSize + dropdown.verticalPadding * 2
         let optY = f.y + f.height + rh * 2.5
@@ -1120,6 +1129,7 @@ struct UIDemoDropdownReproduction {
         print("STEP 1: Initial layout")
         app.input.update()
         ui.update(app: app, deltaTime: 1.0 / 60.0)
+        app.input.consumeTransitions()
         print("STEP 1 done. Dropdown frame: \(dropdown.frame)")
 
         // Step 2: Move mouse over dropdown button and click to open
@@ -1134,12 +1144,14 @@ struct UIDemoDropdownReproduction {
         ui.update(app: app, deltaTime: 1.0 / 60.0)
         print("  isOpen: \(dropdown.isOpen)")
         #expect(dropdown.isOpen == true)
+        app.input.consumeTransitions()
 
         // Step 3: Release mouse
         print("STEP 3: Release mouse")
         inputBackend.mouseButtonsDown = []
         app.input.update()
         ui.update(app: app, deltaTime: 1.0 / 60.0)
+        app.input.consumeTransitions()
         print("  isOpen after release: \(dropdown.isOpen)")
 
         // Step 4: Click on the 3rd option ("Hard", index 2)
@@ -1155,14 +1167,6 @@ struct UIDemoDropdownReproduction {
         ui.update(app: app, deltaTime: 1.0 / 60.0)
         print("  Update tick 1 done. isOpen=\(dropdown.isOpen) selectedIndex=\(dropdown.selectedIndex)")
 
-        print("  Update tick 2...")
-        ui.update(app: app, deltaTime: 1.0 / 60.0)
-        print("  Update tick 2 done. isOpen=\(dropdown.isOpen) selectedIndex=\(dropdown.selectedIndex)")
-
-        print("  Update tick 3...")
-        ui.update(app: app, deltaTime: 1.0 / 60.0)
-        print("  Update tick 3 done.")
-
         // Should have selected "Hard" (index 2)
         #expect(dropdown.selectedIndex == 2)
         #expect(dropdown.isOpen == false)
@@ -1173,6 +1177,7 @@ struct UIDemoDropdownReproduction {
         inputBackend.mouseButtonsDown = []
         app.input.update()
         ui.update(app: app, deltaTime: 1.0 / 60.0)
+        app.input.consumeTransitions()
         print("STEP 5 done")
 
         // Step 6: Render
@@ -1222,6 +1227,7 @@ struct UIDemoDropdownReproduction {
         // Initial layout
         app.input.update()
         ui.update(app: app, deltaTime: 1.0 / 60.0)
+        app.input.consumeTransitions()
 
         // Select each option in sequence
         for targetIndex in [0, 2, 3, 1] {
@@ -1231,11 +1237,13 @@ struct UIDemoDropdownReproduction {
             inputBackend.mouseButtonsDown = [.left]
             app.input.update()
             ui.update(app: app, deltaTime: 1.0 / 60.0)
+            app.input.consumeTransitions()
 
             // Release
             inputBackend.mouseButtonsDown = []
             app.input.update()
             ui.update(app: app, deltaTime: 1.0 / 60.0)
+            app.input.consumeTransitions()
 
             // Click on option
             let rh = dropdown.fontSize + dropdown.verticalPadding * 2
@@ -1244,14 +1252,15 @@ struct UIDemoDropdownReproduction {
             inputBackend.mouseButtonsDown = [.left]
             app.input.update()
             ui.update(app: app, deltaTime: 1.0 / 60.0)
-            ui.update(app: app, deltaTime: 1.0 / 60.0)
 
             #expect(dropdown.selectedIndex == targetIndex)
+            app.input.consumeTransitions()
 
             // Release
             inputBackend.mouseButtonsDown = []
             app.input.update()
             ui.update(app: app, deltaTime: 1.0 / 60.0)
+            app.input.consumeTransitions()
 
             // Render
             ui.render(renderer: renderer)

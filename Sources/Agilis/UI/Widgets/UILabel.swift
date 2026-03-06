@@ -24,7 +24,7 @@ public class UILabel: UINode, @unchecked Sendable {
         return Size(width: textSize.width, height: textSize.height)
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
         let textColor = color ?? theme.textColor
         let textWidth = cachedTextSize?.width ?? 0

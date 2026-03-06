@@ -22,19 +22,19 @@ public final class PixelateEffect: PostProcessEffect, @unchecked Sendable {
         self.pixelSize = pixelSize
     }
 
-    public func initialize(renderer: Renderer) {
+    public func initialize(renderer: any RenderBackend) {
         shader = renderer.loadShader(
             vertexSource: nil,
             fragmentSource: PostProcessShaders.pixelateFragment
         )
     }
 
-    public func shutdown(renderer: Renderer) {
+    public func shutdown(renderer: any RenderBackend) {
         if shader != .invalid { renderer.destroyShader(shader) }
         shader = .invalid
     }
 
-    public func resize(width: Int, height: Int, renderer: Renderer) {
+    public func resize(width: Int, height: Int, renderer: any RenderBackend) {
         currentWidth = width
         currentHeight = height
     }
@@ -42,7 +42,7 @@ public final class PixelateEffect: PostProcessEffect, @unchecked Sendable {
     public func apply(
         input: RenderTargetHandle,
         output: RenderTargetHandle,
-        renderer: Renderer,
+        renderer: any RenderBackend,
         deltaTime: Float
     ) {
         guard shader != .invalid else { return }

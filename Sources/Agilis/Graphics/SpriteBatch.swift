@@ -65,7 +65,7 @@ public final class SpriteBatch: @unchecked Sendable {
     }
 
     /// Draw all queued sprites to the renderer and clear the batch.
-    public func flush(to renderer: Renderer) {
+    public func flush(to renderer: any RenderBackend) {
         lastSpriteCount = entries.count
 
         guard !entries.isEmpty else {

@@ -7,7 +7,7 @@ public enum UILayoutEngine {
     public static func performLayout(
         on container: UIContainer,
         in bounds: Rect,
-        renderer: Renderer,
+        renderer: any RenderBackend,
         font: FontHandle
     ) {
         container.frame = bounds
@@ -45,7 +45,7 @@ public enum UILayoutEngine {
 
     private static func measureText(
         in node: UINode,
-        renderer: Renderer,
+        renderer: any RenderBackend,
         font: FontHandle
     ) {
         if let label = node as? UILabel {

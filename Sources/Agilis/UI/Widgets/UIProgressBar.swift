@@ -18,7 +18,7 @@ public class UIProgressBar: UINode, @unchecked Sendable {
         Size(width: min(available.width, 200), height: barHeight)
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Track

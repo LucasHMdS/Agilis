@@ -38,7 +38,7 @@ public struct MaterialContext: Sendable {
     }
 }
 
-extension Renderer {
+extension RenderBackend {
     /// Apply a material with auto-injected standard uniforms.
     ///
     /// Standard uniforms (`_time`, `_resolution`, `_deltaTime`) are set

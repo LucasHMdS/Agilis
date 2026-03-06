@@ -8,7 +8,7 @@ import Glibc
 import CRT
 #endif
 
-extension Renderer {
+extension RenderBackend {
 
     /// Draw debug overlays for the 2D lighting system.
     ///

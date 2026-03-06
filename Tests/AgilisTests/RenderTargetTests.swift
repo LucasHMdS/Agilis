@@ -4,7 +4,7 @@ import Testing
 // MARK: - Mock Render Target Backend
 
 /// A mock renderer that implements render target methods with in-memory tracking.
-final class MockRTRenderer: @unchecked Sendable, Renderer {
+final class MockRTRenderer: @unchecked Sendable, RenderBackend {
     private var nextId: UInt32 = 1
     private var targets: [UInt32: (width: Int, height: Int)] = [:]
     private var targetTextureIds: [UInt32: UInt32] = [:]

@@ -102,7 +102,7 @@ public class UITextInput: UINode, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Background

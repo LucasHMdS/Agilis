@@ -3,7 +3,7 @@ import Testing
 
 // MARK: - Spy Renderer for Overlay
 
-private final class OverlaySpyRenderer: @unchecked Sendable, Renderer {
+private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
     var rectCalls: [(rect: Rect, color: Color)] = []
     var textCalls: [(text: String, position: Vector2, color: Color)] = []
     var lineCalls: [(from: Vector2, to: Vector2)] = []
@@ -45,7 +45,7 @@ private final class OverlaySpyRenderer: @unchecked Sendable, Renderer {
 
 // MARK: - Mock Application
 
-private final class MockAudioEngineO: @unchecked Sendable, AudioEngine {
+private final class MockAudioEngineO: @unchecked Sendable, AudioBackend {
     func initialize() throws {}
     func shutdown() {}
     func loadSound(from path: String) -> SoundHandle { .invalid }
@@ -62,7 +62,7 @@ private final class MockAudioEngineO: @unchecked Sendable, AudioEngine {
     func setMasterVolume(_ volume: Float) {}
 }
 
-private final class MockNativeInputO: @unchecked Sendable, NativeInput {
+private final class MockNativeInputO: @unchecked Sendable, InputBackend {
     func isKeyDown(_ key: Key) -> Bool { false }
     func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
     func mousePosition() -> Vector2 { .zero }

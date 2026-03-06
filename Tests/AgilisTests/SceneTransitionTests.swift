@@ -24,7 +24,7 @@ private final class RecordingScene: Scene {
 }
 
 /// A minimal render backend that tracks drawRect calls for overlay verification.
-private final class OverlaySpyRenderer: @unchecked Sendable, Renderer {
+private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
     var _screenSize = Size(width: 800, height: 600)
     var drawnRects: [(rect: Rect, color: Color)] = []
 
@@ -56,7 +56,7 @@ private final class OverlaySpyRenderer: @unchecked Sendable, Renderer {
 }
 
 /// A stub audio backend (all no-ops).
-private final class StubAudioEngine: @unchecked Sendable, AudioEngine {
+private final class StubAudioEngine: @unchecked Sendable, AudioBackend {
     func initialize() throws {}
     func shutdown() {}
     func loadSound(from path: String) -> SoundHandle { .invalid }
@@ -74,7 +74,7 @@ private final class StubAudioEngine: @unchecked Sendable, AudioEngine {
 }
 
 /// A stub input backend (all no-ops).
-private final class StubNativeInput: @unchecked Sendable, NativeInput {
+private final class StubNativeInput: @unchecked Sendable, InputBackend {
     func isKeyDown(_ key: Key) -> Bool { false }
     func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
     func mousePosition() -> Vector2 { .zero }

@@ -123,7 +123,7 @@ public class UIListView: UINode, @unchecked Sendable {
 
     // MARK: - Render
 
-    public override func render(renderer: Renderer, theme: UITheme) {
+    public override func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Background
