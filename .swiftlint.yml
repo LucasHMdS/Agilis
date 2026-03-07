@@ -1,0 +1,107 @@
+# SwiftLint configuration for Agilis
+
+# Only lint the Swift source code
+included:
+  - Sources/Agilis
+  - Sources/AgilisFormats
+  - Tests
+  - Examples
+
+excluded:
+  - .build
+  - Sources/PlatformC
+  - Sources/AngleC
+  - Sources/MiniaudioC
+  - Sources/StbC
+
+# Rules
+disabled_rules:
+  - file_length
+  - function_body_length
+  - large_tuple
+  - type_body_length
+
+opt_in_rules:
+  - anonymous_argument_in_multiline_closure
+  - array_init
+  - async_without_await
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - comma_inheritance
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - contains_over_range_nil_comparison
+  - direct_return
+  - discouraged_optional_boolean
+  - discouraged_optional_collection
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - fallthrough
+  - fatal_error_message
+  - file_name_no_space
+  - final_test_case
+  - first_where
+  - flatmap_over_map_reduce
+  - force_unwrapping
+  - identical_operands
+  - implicit_return
+  - implicitly_unwrapped_optional
+  - joined_default_parameter
+  - last_where
+  - literal_expression_end_indentation
+  - modifier_order
+  - multiline_arguments
+  - multiline_function_chains
+  - number_separator
+  - prefer_self_type_over_type_of_self
+  - reduce_into
+  - redundant_nil_coalescing
+  - redundant_self
+  - redundant_type_annotation
+  - required_deinit
+  - return_value_from_void_function
+  - sorted_first_last
+  - sorted_imports
+  - toggle_bool
+  - unavailable_function
+  - unneeded_escaping
+  - unneeded_parentheses_in_closure_argument
+  - unneeded_throws_rethrows
+  - unowned_variable_capture
+  - untyped_error_in_catch
+  - unused_parameter
+  - vertical_whitespace_between_cases
+  - weak_delegate
+
+# Rule configuration
+line_length:
+  warning: 150
+  error: 200
+
+function_parameter_count:
+  warning: 8
+  error: 12
+
+identifier_name:
+  min_length:
+    warning: 1
+  max_length:
+    warning: 60
+    error: 80
+  allowed_symbols: ["_"]
+  excluded:
+    - id
+    - ok
+    - or
+    - no
+    - up
+    - to
+    - by
+    - ip
+
+cyclomatic_complexity:
+  warning: 20
+  error: 40

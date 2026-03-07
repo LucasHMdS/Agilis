@@ -1,0 +1,2 @@
+# Force LF line endings for Swift files (required by SwiftLint on Windows)
+*.swift text eol=lf
