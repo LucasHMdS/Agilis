@@ -1,5 +1,5 @@
-import Foundation
 import Agilis
+import Foundation
 
 /// Root structure of an LDtk project file.
 public struct LDtkProject: Codable, Sendable {
@@ -46,6 +46,7 @@ public struct LDtkLevel: Codable, Sendable {
     public let pxHei: Int
     public let worldX: Int
     public let worldY: Int
+    // swiftlint:disable:next discouraged_optional_collection
     public let layerInstances: [LDtkLayerInstance]?
 }
 

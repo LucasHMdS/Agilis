@@ -1,12 +1,9 @@
-import Testing
-import Foundation
 @testable import Agilis
-import Agilis
-
-// MARK: - Test Helpers
-
-/// Thread-safe call tracker for @Sendable closure testing (same pattern as TweenTests).
+import Foundation
+import Testing
 private final class CallTracker: @unchecked Sendable {
+    deinit {}
+
     var called = false
     var callCount = 0
     func call() { called = true; callCount += 1 }
@@ -14,6 +11,8 @@ private final class CallTracker: @unchecked Sendable {
 
 /// Thread-safe value tracker for @Sendable closure testing.
 private final class ValueTracker<T>: @unchecked Sendable {
+    deinit {}
+
     var value: T
     init(_ initial: T) { self.value = initial }
 }
@@ -25,9 +24,13 @@ private func makeClip(
     mode: PlaybackMode = .forward
 ) -> AnimationClip {
     AnimationClip.fromSpriteSheet(
-        name: name, startX: 0, y: 0,
-        frameWidth: 32, frameHeight: 32,
-        count: frameCount, frameDuration: frameDuration,
+        name: name,
+        startX: 0,
+        y: 0,
+        frameWidth: 32,
+        frameHeight: 32,
+        count: frameCount,
+        frameDuration: frameDuration,
         mode: mode
     )
 }
@@ -180,7 +183,7 @@ struct ComponentConfigTests {
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addAnyStateTransition(to: "death", conditions: [.boolEquals("isDead", true)])
         #expect(sm.anyStateTransitions.count == 1)
-        #expect(sm.anyStateTransitions[0].from == "")
+        #expect(sm.anyStateTransitions[0].from.isEmpty)
         #expect(sm.anyStateTransitions[0].to == "death")
     }
 
@@ -227,7 +230,7 @@ struct ComponentConfigTests {
 struct InitializationTests {
 
     @Test("Auto-initialization sets default state clip")
-    func autoInit() {
+    func autoInit() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -241,12 +244,12 @@ struct InitializationTests {
 
         tick(world)
 
-        let animator = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animator.clip.name == "idle")
     }
 
     @Test("Initialization clears needsInitialization flag")
-    func clearsFlag() {
+    func clearsFlag() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -254,12 +257,12 @@ struct InitializationTests {
 
         tick(world)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.needsInitialization == false)
     }
 
     @Test("Missing default state gracefully handled")
-    func missingDefaultState() {
+    func missingDefaultState() throws {
         let (world, _, _) = makeWorld()
         let sm = AnimationStateMachine(defaultState: "nonexistent")
         // No states added — should not crash
@@ -271,12 +274,12 @@ struct InitializationTests {
 
         tick(world)
         // Should not crash; animator keeps its current clip
-        let animator = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animator.clip.name == "fallback")
     }
 
     @Test("Speed override applied on initialization")
-    func speedOverride() {
+    func speedOverride() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "fast")
         sm.addState("fast", clip: makeClip("fast"), speed: 2.0)
@@ -284,7 +287,7 @@ struct InitializationTests {
 
         tick(world)
 
-        let animator = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animator.speed == 2.0)
     }
 }
@@ -295,7 +298,7 @@ struct InitializationTests {
 struct BasicTransitionTests {
 
     @Test("Single transition fires when condition met")
-    func singleTransition() {
+    func singleTransition() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -311,14 +314,14 @@ struct BasicTransitionTests {
         }
         tick(world)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "walk")
-        let animator = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animator.clip.name == "walk")
     }
 
     @Test("Bidirectional transitions")
-    func bidirectional() {
+    func bidirectional() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -334,18 +337,20 @@ struct BasicTransitionTests {
             sm.setBool("isMoving", true)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "walk")
+        let walkSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(walkSm.currentStateName == "walk")
 
         // Go back to idle
         world.updateComponent(AnimationStateMachine.self, on: entity) { sm in
             sm.setBool("isMoving", false)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "idle")
+        let idleSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(idleSm.currentStateName == "idle")
     }
 
     @Test("No matching transition stays in current state")
-    func noMatch() {
+    func noMatch() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -356,20 +361,23 @@ struct BasicTransitionTests {
         tick(world)  // init
         tick(world)  // no condition met
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "idle")
     }
 
     @Test("Exit time gate prevents early transition")
-    func exitTimeGate() {
+    func exitTimeGate() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "attack")
         // 4 frames * 0.1s = 0.4s total
         sm.addState("attack", clip: makeClip("attack", frameCount: 4, frameDuration: 0.1))
         sm.addState("idle", clip: makeClip("idle"))
-        sm.addTransition(from: "attack", to: "idle",
-                         conditions: [.boolEquals("done", true)],
-                         exitTime: 0.9)
+        sm.addTransition(
+            from: "attack",
+            to: "idle",
+            conditions: [.boolEquals("done", true)],
+            exitTime: 0.9
+        )
         sm.setBool("done", true)
 
         let entity = makeEntity(world, sm: sm)
@@ -377,19 +385,20 @@ struct BasicTransitionTests {
 
         // Progress is 0 — exit time not reached
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "attack")
+        let attackSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(attackSm.currentStateName == "attack")
 
         // Advance animation to near end (progress ~ 1.0)
         // 4 frames, 0.1s each. At 60fps, each tick is ~0.0167s
         // Need about 24 ticks to get through 0.4s
         tick(world, times: 25)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "idle")
     }
 
     @Test("Empty conditions means immediate transition")
-    func emptyConditions() {
+    func emptyConditions() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "a")
         sm.addState("a", clip: makeClip("a"))
@@ -399,12 +408,12 @@ struct BasicTransitionTests {
         let entity = makeEntity(world, sm: sm)
         tick(world)  // init + immediate transition
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "b")
     }
 
     @Test("First matching transition wins")
-    func firstMatchWins() {
+    func firstMatchWins() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -418,11 +427,12 @@ struct BasicTransitionTests {
         let entity = makeEntity(world, sm: sm)
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "walk")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "walk")
     }
 
     @Test("Previous state name tracked")
-    func previousStateTracked() {
+    func previousStateTracked() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -433,7 +443,7 @@ struct BasicTransitionTests {
         let entity = makeEntity(world, sm: sm)
         tick(world)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.previousStateName == "idle")
         #expect(updatedSm.currentStateName == "walk")
     }
@@ -445,7 +455,7 @@ struct BasicTransitionTests {
 struct AnyStateTransitionTests {
 
     @Test("Any-state transition fires from any current state")
-    func fromAnyState() {
+    func fromAnyState() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -462,18 +472,20 @@ struct AnyStateTransitionTests {
             sm.setBool("isMoving", true)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "walk")
+        let walkSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(walkSm.currentStateName == "walk")
 
         // Die from walk state
         world.updateComponent(AnimationStateMachine.self, on: entity) { sm in
             sm.setBool("isDead", true)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "death")
+        let deathSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(deathSm.currentStateName == "death")
     }
 
     @Test("Any-state has priority over per-state transitions")
-    func anyStatePriority() {
+    func anyStatePriority() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -487,11 +499,12 @@ struct AnyStateTransitionTests {
         let entity = makeEntity(world, sm: sm)
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "death")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "death")
     }
 
     @Test("Any-state skips self-transition")
-    func anyStateSkipsSelf() {
+    func anyStateSkipsSelf() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -503,13 +516,13 @@ struct AnyStateTransitionTests {
         tick(world)  // init
         tick(world)  // should NOT self-transition
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "idle")
         #expect(updatedSm.previousStateName == nil)  // no transition occurred
     }
 
     @Test("Multiple any-state transitions, first wins")
-    func multipleAnyStateFirstWins() {
+    func multipleAnyStateFirstWins() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -522,11 +535,12 @@ struct AnyStateTransitionTests {
         let entity = makeEntity(world, sm: sm)
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "hurt")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "hurt")
     }
 
     @Test("Any-state transition from non-idle state")
-    func anyStateFromNonIdle() {
+    func anyStateFromNonIdle() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "walk")
         sm.addState("walk", clip: makeClip("walk"))
@@ -541,7 +555,8 @@ struct AnyStateTransitionTests {
         }
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "death")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "death")
     }
 }
 
@@ -551,7 +566,7 @@ struct AnyStateTransitionTests {
 struct ParameterTransitionTests {
 
     @Test("Bool parameter drives transition")
-    func boolDriven() {
+    func boolDriven() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -566,11 +581,12 @@ struct ParameterTransitionTests {
         }
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "walk")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "walk")
     }
 
     @Test("Float greater drives transition")
-    func floatGreater() {
+    func floatGreater() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -585,18 +601,20 @@ struct ParameterTransitionTests {
             sm.setFloat("speed", 3.0)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "idle")
+        let idleSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(idleSm.currentStateName == "idle")
 
         // Speed 6.0 — fires
         world.updateComponent(AnimationStateMachine.self, on: entity) { sm in
             sm.setFloat("speed", 6.0)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "run")
+        let runSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(runSm.currentStateName == "run")
     }
 
     @Test("Float less drives transition")
-    func floatLess() {
+    func floatLess() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "run")
         sm.addState("run", clip: makeClip("run"))
@@ -612,11 +630,12 @@ struct ParameterTransitionTests {
         }
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "idle")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "idle")
     }
 
     @Test("Int parameter drives transition")
-    func intDriven() {
+    func intDriven() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "neutral")
         sm.addState("neutral", clip: makeClip("neutral"))
@@ -631,11 +650,12 @@ struct ParameterTransitionTests {
         }
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "happy")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "happy")
     }
 
     @Test("Trigger consumed after transition")
-    func triggerConsumed() {
+    func triggerConsumed() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -652,13 +672,13 @@ struct ParameterTransitionTests {
         }
         tick(world)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "attack")
         #expect(updatedSm.isTriggerSet("attack") == false)  // consumed
     }
 
     @Test("Multiple conditions AND logic")
-    func multipleConditionsAND() {
+    func multipleConditionsAND() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -677,18 +697,20 @@ struct ParameterTransitionTests {
             sm.setFloat("speed", 3.0)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "idle")
+        let idleSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(idleSm.currentStateName == "idle")
 
         // Both conditions met
         world.updateComponent(AnimationStateMachine.self, on: entity) { sm in
             sm.setFloat("speed", 6.0)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "sprint")
+        let sprintSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(sprintSm.currentStateName == "sprint")
     }
 
     @Test("OR logic via multiple transitions")
-    func orLogicMultipleTransitions() {
+    func orLogicMultipleTransitions() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -705,11 +727,12 @@ struct ParameterTransitionTests {
             sm.setBool("alarmOn", true)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "alert")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "alert")
     }
 
     @Test("Trigger not consumed when other condition fails")
-    func triggerPreservedOnFailure() {
+    func triggerPreservedOnFailure() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -729,7 +752,7 @@ struct ParameterTransitionTests {
         tick(world)
 
         // Trigger should be preserved (other condition failed)
-        let smAfter = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let smAfter = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(smAfter.currentStateName == "idle")
         #expect(smAfter.isTriggerSet("activate") == true)  // NOT consumed
 
@@ -738,7 +761,8 @@ struct ParameterTransitionTests {
             sm.setBool("ready", true)
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "special")
+        let specialSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(specialSm.currentStateName == "special")
     }
 }
 
@@ -748,7 +772,7 @@ struct ParameterTransitionTests {
 struct AnimationEventTransitionTests {
 
     @Test("Animation finished triggers transition")
-    func animationFinished() {
+    func animationFinished() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "attack")
         // oneShot clip: 4 frames * 0.1s = 0.4s
@@ -762,12 +786,12 @@ struct AnimationEventTransitionTests {
         // Advance past the full animation (0.4s at 60fps = 24 ticks)
         tick(world, times: 30)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "idle")
     }
 
     @Test("Animation looped triggers transition")
-    func animationLooped() {
+    func animationLooped() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "patrol")
         // Forward clip: 4 frames * 0.1s = 0.4s per loop
@@ -789,12 +813,12 @@ struct AnimationEventTransitionTests {
         // Advance past one full loop (0.4s)
         tick(world, times: 30)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "idle")
     }
 
     @Test("After time triggers transition")
-    func afterTime() {
+    func afterTime() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -806,15 +830,17 @@ struct AnimationEventTransitionTests {
 
         // Not enough time
         tick(world, times: 10)  // ~0.167s
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "idle")
+        let idleSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(idleSm.currentStateName == "idle")
 
         // Enough time (total ~0.5s at 60fps = 30 ticks)
         tick(world, times: 25)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "bored")
+        let boredSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(boredSm.currentStateName == "bored")
     }
 
     @Test("Combined animation event and parameter")
-    func combinedEventAndParam() {
+    func combinedEventAndParam() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "attack")
         sm.addState("attack", clip: makeClip("attack", frameCount: 4, frameDuration: 0.1, mode: .oneShot))
@@ -834,11 +860,12 @@ struct AnimationEventTransitionTests {
         // Play through attack animation
         tick(world, times: 30)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "walk")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "walk")
     }
 
     @Test("After time resets on state change")
-    func afterTimeResetsOnStateChange() {
+    func afterTimeResetsOnStateChange() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "a")
         sm.addState("a", clip: makeClip("a"))
@@ -858,14 +885,17 @@ struct AnimationEventTransitionTests {
             sm.setTrigger("go")
         }
         tick(world)
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "b")
+        let bSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(bSm.currentStateName == "b")
 
         // timeInState should be reset — need 0.3s more
         tick(world, times: 10)  // ~0.167s — not enough
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "b")
+        let stillBSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(stillBSm.currentStateName == "b")
 
         tick(world, times: 15)  // total ~0.42s — enough
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "c")
+        let cSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(cSm.currentStateName == "c")
     }
 }
 
@@ -875,7 +905,7 @@ struct AnimationEventTransitionTests {
 struct SelfTransitionTests {
 
     @Test("Per-state self-transition restarts clip")
-    func selfTransitionRestartsClip() {
+    func selfTransitionRestartsClip() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "attack")
         sm.addState("attack", clip: makeClip("attack", frameCount: 4, frameDuration: 0.1, mode: .oneShot))
@@ -886,7 +916,7 @@ struct SelfTransitionTests {
 
         // Advance a few frames
         tick(world, times: 10)
-        let animBefore = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animBefore = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animBefore.currentFrameIndex > 0)
 
         // Trigger self-transition
@@ -896,13 +926,13 @@ struct SelfTransitionTests {
         tick(world)
 
         // Animation should restart (forceSetClip resets to frame 0)
-        let animAfter = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animAfter = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animAfter.currentFrameIndex == 0)
         #expect(animAfter.isPlaying == true)
     }
 
     @Test("Trigger-driven self-transition fires once")
-    func triggerSelfTransitionOnce() {
+    func triggerSelfTransitionOnce() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -917,12 +947,12 @@ struct SelfTransitionTests {
         tick(world)  // trigger consumed
 
         // Trigger consumed — should not self-transition again
-        let smAfter = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let smAfter = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(smAfter.isTriggerSet("reset") == false)
     }
 
     @Test("Self-transition updates previousStateName")
-    func selfTransitionPreviousState() {
+    func selfTransitionPreviousState() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "attack")
         sm.addState("attack", clip: makeClip("attack"))
@@ -936,7 +966,7 @@ struct SelfTransitionTests {
         }
         tick(world)
 
-        let smAfter = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let smAfter = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(smAfter.currentStateName == "attack")
         #expect(smAfter.previousStateName == "attack")
     }
@@ -961,7 +991,7 @@ struct EventsAndCallbacksTests {
             tracker.value = "\(event.from)->\(event.to)"
         }
 
-        let _ = makeEntity(world, sm: sm)
+        _ = makeEntity(world, sm: sm)
         tick(world)
 
         #expect(tracker.value == "idle->walk")
@@ -981,7 +1011,7 @@ struct EventsAndCallbacksTests {
             tracker.call()
         }
 
-        let _ = makeEntity(world, sm: sm)
+        _ = makeEntity(world, sm: sm)
         tick(world)
 
         #expect(tracker.called)
@@ -1003,7 +1033,7 @@ struct EventsAndCallbacksTests {
             toTracker.value = to
         }
 
-        let _ = makeEntity(world, sm: sm)
+        _ = makeEntity(world, sm: sm)
         tick(world)
 
         #expect(fromTracker.value == "a")
@@ -1022,7 +1052,7 @@ struct EventsAndCallbacksTests {
             tracker.call()
         }
 
-        let _ = makeEntity(world, sm: sm)
+        _ = makeEntity(world, sm: sm)
         tick(world, times: 5)
 
         #expect(tracker.called == false)
@@ -1129,7 +1159,7 @@ struct SerializationTests {
 struct AnimStateMachineEdgeCaseTests {
 
     @Test("No states defined — no crash")
-    func noStates() {
+    func noStates() throws {
         let (world, _, _) = makeWorld()
         let sm = AnimationStateMachine(defaultState: "none")
 
@@ -1140,12 +1170,12 @@ struct AnimStateMachineEdgeCaseTests {
 
         tick(world, times: 5)
         // Should not crash
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "none")
     }
 
     @Test("No transitions defined — stays in state")
-    func noTransitions() {
+    func noTransitions() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -1153,11 +1183,12 @@ struct AnimStateMachineEdgeCaseTests {
         let entity = makeEntity(world, sm: sm)
         tick(world, times: 10)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entity)!.currentStateName == "idle")
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        #expect(updatedSm.currentStateName == "idle")
     }
 
     @Test("Multiple entities with independent state machines")
-    func multipleEntities() {
+    func multipleEntities() throws {
         let (world, _, _) = makeWorld()
 
         // Entity A: idle -> walk
@@ -1182,8 +1213,10 @@ struct AnimStateMachineEdgeCaseTests {
         }
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entityA)!.currentStateName == "walk")
-        #expect(world.getComponent(AnimationStateMachine.self, from: entityB)!.currentStateName == "stand")
+        let smAResult = try #require(world.getComponent(AnimationStateMachine.self, from: entityA))
+        #expect(smAResult.currentStateName == "walk")
+        let smBResult = try #require(world.getComponent(AnimationStateMachine.self, from: entityB))
+        #expect(smBResult.currentStateName == "stand")
 
         // Now trigger B
         world.updateComponent(AnimationStateMachine.self, on: entityB) { sm in
@@ -1191,12 +1224,14 @@ struct AnimStateMachineEdgeCaseTests {
         }
         tick(world)
 
-        #expect(world.getComponent(AnimationStateMachine.self, from: entityA)!.currentStateName == "walk")
-        #expect(world.getComponent(AnimationStateMachine.self, from: entityB)!.currentStateName == "sit")
+        let smAFinal = try #require(world.getComponent(AnimationStateMachine.self, from: entityA))
+        #expect(smAFinal.currentStateName == "walk")
+        let smBFinal = try #require(world.getComponent(AnimationStateMachine.self, from: entityB))
+        #expect(smBFinal.currentStateName == "sit")
     }
 
     @Test("Transition to nonexistent state — no crash")
-    func transitionToNonexistentState() {
+    func transitionToNonexistentState() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -1208,15 +1243,15 @@ struct AnimStateMachineEdgeCaseTests {
         tick(world)
 
         // Transition is blocked because destination state doesn't exist
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
         #expect(updatedSm.currentStateName == "idle")
         // Animator keeps its current clip since transition was rejected
-        let animator = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animator.clip.name == "idle")
     }
 
     @Test("Time in state advances correctly")
-    func timeInStateAdvances() {
+    func timeInStateAdvances() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
@@ -1227,8 +1262,8 @@ struct AnimStateMachineEdgeCaseTests {
         // Tick 10 more times at 1/60
         tick(world, times: 10)
 
-        let updatedSm = world.getComponent(AnimationStateMachine.self, from: entity)!
-        // 11 ticks total * 1/60 ≈ 0.183s
+        let updatedSm = try #require(world.getComponent(AnimationStateMachine.self, from: entity))
+        // 11 ticks total * 1/60 ~ 0.183s
         #expect(updatedSm.timeInState > 0.15)
         #expect(updatedSm.timeInState < 0.25)
     }
@@ -1262,10 +1297,10 @@ struct DiscardableResultTests {
     @Test("addState returns self for discardable result")
     func addStateDiscardable() {
         var sm = AnimationStateMachine(defaultState: "idle")
-        let _ = sm.addState("idle", clip: makeClip("idle"))
-        let _ = sm.addState("walk", clip: makeClip("walk"))
-        let _ = sm.addTransition(from: "idle", to: "walk", conditions: [.boolEquals("go", true)])
-        let _ = sm.addAnyStateTransition(to: "walk", conditions: [.trigger("sprint")])
+        _ = sm.addState("idle", clip: makeClip("idle"))
+        _ = sm.addState("walk", clip: makeClip("walk"))
+        _ = sm.addTransition(from: "idle", to: "walk", conditions: [.boolEquals("go", true)])
+        _ = sm.addAnyStateTransition(to: "walk", conditions: [.trigger("sprint")])
 
         #expect(sm.states.count == 2)
         #expect(sm.transitions.count == 1)
@@ -1279,7 +1314,7 @@ struct DiscardableResultTests {
 struct SpeedOverrideTests {
 
     @Test("Transition applies speed from destination state")
-    func transitionAppliesSpeed() {
+    func transitionAppliesSpeed() throws {
         let (world, _, _) = makeWorld()
         var sm = AnimationStateMachine(defaultState: "walk")
         sm.addState("walk", clip: makeClip("walk"), speed: 1.0)
@@ -1294,7 +1329,7 @@ struct SpeedOverrideTests {
         }
         tick(world)
 
-        let animator = world.getComponent(SpriteAnimator.self, from: entity)!
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: entity))
         #expect(animator.speed == 2.0)
     }
 }

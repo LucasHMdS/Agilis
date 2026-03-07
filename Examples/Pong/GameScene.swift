@@ -11,6 +11,7 @@ import CRT
 // MARK: - Game Scene
 
 final class GameScene: Scene {
+    deinit {}
     private var fpsFont: FontHandle = .invalid
 
     // Entity handles
@@ -21,8 +22,11 @@ final class GameScene: Scene {
     private var bottomWall: Entity = .null
 
     // System references (for cleanup)
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var aiSystem: PongAISystem!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var physicsWorld: PhysicsWorld2D!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var pongPhysics: PongPhysicsSystem!
 
     // Score
@@ -38,6 +42,7 @@ final class GameScene: Scene {
     private var rallyCount = 0
 
     // Audio
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: PongSounds.SoundSet!
 
     // Debug
@@ -129,21 +134,21 @@ final class GameScene: Scene {
         // --- Subscribe to game events (event bus) ---
         world.on(PaddleHitEvent.self) { [weak self] event in
             guard let self else { return }
-            self.rallyCount += 1
+            rallyCount += 1
             // Pitch rises with ball speed for satisfying feedback
             let pitch = clamp(event.ballSpeed / Pong.ballInitialSpeed, min: 0.8, max: 1.5)
-            app.audio.playSound(self.sounds.paddleHit, volume: 0.5, pitch: pitch, looping: false)
+            app.audio.playSound(sounds.paddleHit, volume: 0.5, pitch: pitch, looping: false)
         }
 
         world.on(WallBounceEvent.self) { [weak self] _ in
             guard let self else { return }
-            app.audio.playSound(self.sounds.wallBounce, volume: 0.3, pitch: 1.0, looping: false)
+            app.audio.playSound(sounds.wallBounce, volume: 0.3, pitch: 1.0, looping: false)
         }
 
-        world.on(GoalScoredEvent.self) { [weak self] event in
+        world.on(GoalScoredEvent.self) { [weak self] _ in
             guard let self else { return }
-            self.rallyCount = 0
-            app.audio.playSound(self.sounds.goalScored, volume: 0.5, pitch: 1.0, looping: false)
+            rallyCount = 0
+            app.audio.playSound(sounds.goalScored, volume: 0.5, pitch: 1.0, looping: false)
         }
     }
 

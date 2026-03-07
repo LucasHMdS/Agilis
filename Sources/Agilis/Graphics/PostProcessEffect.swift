@@ -98,6 +98,6 @@ public protocol PostProcessEffect: AnyObject, Sendable {
 // MARK: - Default Implementations
 
 extension PostProcessEffect {
-    public func shutdown(renderer: any RenderBackend) {}
-    public func resize(width: Int, height: Int, renderer: any RenderBackend) {}
+    public func shutdown(renderer _: any RenderBackend) {}
+    public func resize(width _: Int, height _: Int, renderer _: any RenderBackend) {}
 }

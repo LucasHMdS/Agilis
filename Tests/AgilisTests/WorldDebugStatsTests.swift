@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Test Components
 
@@ -16,20 +16,24 @@ private struct VelocityD: Component {
 // MARK: - Test System
 
 private final class DebugCountingSystem: System, @unchecked Sendable {
+    deinit {}
+
     var updateCallCount = 0
 
-    func update(context: SystemContext) {
+    func update(context _: SystemContext) {
         updateCallCount += 1
     }
 }
 
 private final class SlowSystem: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 100 }
 
-    func update(context: SystemContext) {
+    func update(context _: SystemContext) {
         // Simulate some work
         var sum: Float = 0
-        for i in 0..<1000 {
+        for i in 0..<1_000 {
             sum += Float(i) * 0.001
         }
         _ = sum

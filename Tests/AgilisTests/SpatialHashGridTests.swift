@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Spatial Hash Grid Tests")
 struct SpatialHashGridTests {

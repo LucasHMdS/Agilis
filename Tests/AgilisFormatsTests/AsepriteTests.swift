@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import AgilisFormats
+import Foundation
+import Testing
 
 @Suite("Aseprite Parser Tests")
 struct AsepriteTests {
@@ -138,6 +138,7 @@ struct AsepriteTests {
         #expect(data.meta.version == "1.3")
         #expect(data.meta.scale == "1")
 
+        // swiftlint:disable:next force_unwrapping
         let tags = data.meta.frameTags!
         #expect(tags.count == 2)
         #expect(tags[0].name == "idle")

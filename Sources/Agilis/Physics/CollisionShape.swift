@@ -1,5 +1,3 @@
-
-
 /// A convex polygon defined by vertices in local (body-relative) space.
 /// Vertices must be in counter-clockwise winding order and form a convex shape.
 public struct ConvexPolygon: Sendable, Equatable, Codable {

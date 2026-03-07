@@ -1,7 +1,10 @@
 import Agilis
 
 final class MenuScene: Scene {
+    deinit {}
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var tweens: TweenSystem!
     private var titleEntity: Entity = .null
     private var font: FontHandle = .invalid
@@ -94,7 +97,7 @@ final class MenuScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
 
         // Draw title text at tweened position

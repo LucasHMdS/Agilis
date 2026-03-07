@@ -1,7 +1,7 @@
-
-
 /// A horizontal slider for adjusting a float value within a range.
 public class UISlider: UINode, @unchecked Sendable {
+    deinit {}
+
     public var label: String
     public var value: Float
     public var range: ClosedRange<Float>
@@ -32,12 +32,12 @@ public class UISlider: UINode, @unchecked Sendable {
         self.isFocusable = true
     }
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_ available: Size) -> Size {
         let labelHeight = cachedLabelSize?.height ?? (fontSize + 4)
         return Size(width: min(available.width, 250), height: labelHeight + 20)
     }
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime _: Double) {
         guard isVisible, let app = context.app else { return }
         let input = app.input
         let mousePos = input.mousePosition
@@ -63,7 +63,7 @@ public class UISlider: UINode, @unchecked Sendable {
         onChange?(value)
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
         // Draw label
         let labelY = frame.y
@@ -87,15 +87,22 @@ public class UISlider: UINode, @unchecked Sendable {
 
         // Draw fill
         let normalized = (value - range.lowerBound) / (range.upperBound - range.lowerBound)
-        let fillRect = Rect(x: track.x, y: track.y,
-                            width: track.width * normalized, height: track.height)
+        let fillRect = Rect(
+            x: track.x,
+            y: track.y,
+            width: track.width * normalized,
+            height: track.height
+        )
         renderer.drawRect(fillRect, color: theme.sliderFillColor)
 
         // Draw knob
         let knobX = track.x + track.width * normalized
         let knobY = track.y + track.height / 2
-        renderer.drawCircle(center: Vector2(x: knobX, y: knobY),
-                            radius: knobRadius, color: theme.sliderKnobColor)
+        renderer.drawCircle(
+            center: Vector2(x: knobX, y: knobY),
+            radius: knobRadius,
+            color: theme.sliderKnobColor
+        )
 
         // Focus indicator
         if isFocused {
@@ -106,7 +113,11 @@ public class UISlider: UINode, @unchecked Sendable {
     private func trackRect() -> Rect {
         let labelHeight = cachedLabelSize?.height ?? (fontSize + 4)
         let trackY = frame.y + labelHeight + 6
-        return Rect(x: frame.x, y: trackY,
-                    width: frame.width, height: trackHeight)
+        return Rect(
+            x: frame.x,
+            y: trackY,
+            width: frame.width,
+            height: trackHeight
+        )
     }
 }

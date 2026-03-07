@@ -66,6 +66,7 @@ public struct AsepriteMeta: Codable, Sendable {
     public let image: String
     public let size: AsepriteSize
     public let scale: String?
+    // swiftlint:disable:next discouraged_optional_collection
     public let frameTags: [AsepriteFrameTag]?
 }
 

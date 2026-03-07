@@ -1,11 +1,8 @@
+@testable import Agilis
 import Testing
-@testable import Agilis
-@testable import Agilis
-
-// MARK: - Tracking Audio Backend
-
-/// A mock audio backend that records all calls and tracks playing state.
 final class TrackingAudioEngine: @unchecked Sendable, AudioBackend {
+    deinit {}
+
     // Call tracking
     var playSoundCalls: [(handle: SoundHandle, volume: Float, pitch: Float, looping: Bool)] = []
     var playMusicCalls: [(handle: MusicHandle, volume: Float, looping: Bool)] = []
@@ -25,11 +22,11 @@ final class TrackingAudioEngine: @unchecked Sendable, AudioBackend {
     var soundVolumes: [UInt32: Float] = [:]
     var musicVolumes: [UInt32: Float] = [:]
 
-    func initialize() throws {}
+    func initialize() {}
     func shutdown() {}
 
-    func loadSound(from path: String) -> SoundHandle { .invalid }
-    func loadMusic(from path: String) -> MusicHandle { .invalid }
+    func loadSound(from _: String) -> SoundHandle { .invalid }
+    func loadMusic(from _: String) -> MusicHandle { .invalid }
 
     func playSound(_ handle: SoundHandle, volume: Float, pitch: Float, looping: Bool) {
         playSoundCalls.append((handle, volume, pitch, looping))
@@ -42,7 +39,7 @@ final class TrackingAudioEngine: @unchecked Sendable, AudioBackend {
         soundsPlaying.remove(handle.id)
     }
 
-    func unloadSound(_ handle: SoundHandle) {}
+    func unloadSound(_: SoundHandle) {}
 
     func playMusic(_ handle: MusicHandle, volume: Float, looping: Bool) {
         playMusicCalls.append((handle, volume, looping))
@@ -67,9 +64,10 @@ final class TrackingAudioEngine: @unchecked Sendable, AudioBackend {
         updateMusicStreamCalls.append(handle)
     }
 
-    func unloadMusic(_ handle: MusicHandle) {}
+    func unloadMusic(_: MusicHandle) {}
 
-    func setMasterVolume(_ volume: Float) {}
+    // swiftlint:disable:next inclusive_language
+    func setMasterVolume(_: Float) {}
 
     func isSoundPlaying(_ handle: SoundHandle) -> Bool {
         soundsPlaying.contains(handle.id)
@@ -353,6 +351,7 @@ struct AudioManagerFadeTests {
         // After 1 second (50% progress), volume should be ~0.5
         manager.update(deltaTime: 1.0)
 
+        // swiftlint:disable:next force_unwrapping
         let lastVolume = backend.setMusicVolumeCalls.last!.volume
         #expect(lastVolume > 0.4 && lastVolume < 0.6)
     }
@@ -367,6 +366,7 @@ struct AudioManagerFadeTests {
         // After full duration
         manager.update(deltaTime: 1.0)
 
+        // swiftlint:disable:next force_unwrapping
         let lastVolume = backend.setMusicVolumeCalls.last!.volume
         #expect(lastVolume == 0.8)
 
@@ -386,6 +386,7 @@ struct AudioManagerFadeTests {
 
         // At 50%
         manager.update(deltaTime: 1.0)
+        // swiftlint:disable:next force_unwrapping
         let midVolume = backend.setMusicVolumeCalls.last!.volume
         #expect(midVolume > 0.4 && midVolume < 0.6)
 
@@ -404,6 +405,7 @@ struct AudioManagerFadeTests {
 
         // After full fade, effective = 1.0 * 0.5 = 0.5
         manager.update(deltaTime: 1.0)
+        // swiftlint:disable:next force_unwrapping
         let lastVolume = backend.setMusicVolumeCalls.last!.volume
         #expect(lastVolume == 0.5)
     }
@@ -449,6 +451,7 @@ struct AudioManagerCrossfadeTests {
 
         let outgoingVolumes = backend.setMusicVolumeCalls.filter { $0.handle.id == musicHandle1.id }
         #expect(!outgoingVolumes.isEmpty)
+        // swiftlint:disable:next force_unwrapping
         let outgoingVolume = outgoingVolumes.last!.volume
         #expect(outgoingVolume > 0.4 && outgoingVolume < 0.6)
     }
@@ -466,6 +469,7 @@ struct AudioManagerCrossfadeTests {
 
         let incomingVolumes = backend.setMusicVolumeCalls.filter { $0.handle.id == musicHandle2.id }
         #expect(!incomingVolumes.isEmpty)
+        // swiftlint:disable:next force_unwrapping
         let incomingVolume = incomingVolumes.last!.volume
         #expect(incomingVolume > 0.4 && incomingVolume < 0.6)
     }
@@ -487,6 +491,7 @@ struct AudioManagerCrossfadeTests {
 
         // Incoming should be at target volume
         let incomingVolumes = backend.setMusicVolumeCalls.filter { $0.handle.id == musicHandle2.id }
+        // swiftlint:disable:next force_unwrapping
         #expect(incomingVolumes.last!.volume == 0.8)
     }
 

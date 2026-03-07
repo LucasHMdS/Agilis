@@ -1,5 +1,3 @@
-
-
 /// Manages a chain of screen-space post-processing effects.
 ///
 /// The pipeline captures the scene into a render target, processes it
@@ -27,6 +25,8 @@
 /// postProcess.shutdown(renderer: app.renderer)
 /// ```
 public final class PostProcessPipeline: @unchecked Sendable {
+    deinit {}
+
     private var effects: [any PostProcessEffect] = []
     private var sceneRT: RenderTargetHandle = .invalid
     private var pingRT: RenderTargetHandle = .invalid
@@ -76,7 +76,7 @@ public final class PostProcessPipeline: @unchecked Sendable {
     ///     vignette.intensity = 0.8
     /// }
     /// ```
-    public func effect<T: PostProcessEffect>(ofType type: T.Type) -> T? {
+    public func effect<T: PostProcessEffect>(ofType _: T.Type) -> T? {
         effects.first(where: { $0 is T }) as? T
     }
 
@@ -190,7 +190,7 @@ public final class PostProcessPipeline: @unchecked Sendable {
                 deltaTime: deltaTime
             )
             currentInput = currentOutput
-            usesPing = !usesPing
+            usesPing.toggle()
         }
 
         // Blit final result to screen

@@ -1,32 +1,34 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Mock Render Backend
 
 /// A minimal render backend for testing UI layout and text measurement.
 final class MockRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var _screenSize = Size(width: 800, height: 600)
     var drawCalls: [String] = []
     var fonts: [UInt32: Bool] = [:]
     private var nextFontId: UInt32 = 1
 
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
+    func setBackgroundColor(_: Color) {}
 
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
 
-    func drawSprite(_ sprite: Sprite) { drawCalls.append("sprite") }
-    func drawRect(_ rect: Rect, color: Color) { drawCalls.append("rect") }
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) { drawCalls.append("rectOutline") }
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) { drawCalls.append("line") }
-    func drawCircle(center: Vector2, radius: Float, color: Color) { drawCalls.append("circle") }
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) { drawCalls.append("circleOutline") }
+    func drawSprite(_: Sprite) { drawCalls.append("sprite") }
+    func drawRect(_: Rect, color _: Color) { drawCalls.append("rect") }
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) { drawCalls.append("rectOutline") }
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) { drawCalls.append("line") }
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) { drawCalls.append("circle") }
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) { drawCalls.append("circleOutline") }
 
     func loadDefaultFont() -> FontHandle {
         let handle = FontHandle(id: nextFontId)
@@ -34,25 +36,25 @@ final class MockRenderer: @unchecked Sendable, RenderBackend {
         nextFontId += 1
         return handle
     }
-    func loadFont(from path: String, size: Int) -> FontHandle {
+    func loadFont(from _: String, size _: Int) -> FontHandle {
         let handle = FontHandle(id: nextFontId)
         fonts[nextFontId] = true
         nextFontId += 1
         return handle
     }
     func destroyFont(_ handle: FontHandle) { fonts.removeValue(forKey: handle.id) }
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {
+    func drawText(_ text: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {
         drawCalls.append("text:\(text)")
     }
     /// Returns a predictable size: 10px per character width, fontSize height.
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size {
+    func measureText(_ text: String, font _: FontHandle, size: Float) -> Size {
         Size(width: Float(text.count) * size * 0.5, height: size)
     }
 
-    func beginClip(_ rect: Rect) { drawCalls.append("beginClip") }
+    func beginClip(_: Rect) { drawCalls.append("beginClip") }
     func endClip() { drawCalls.append("endClip") }
 
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
 
     var screenSize: Size { _screenSize }
@@ -60,20 +62,23 @@ final class MockRenderer: @unchecked Sendable, RenderBackend {
 
 /// A minimal audio backend for creating test Applications.
 final class MockAudioEngine: @unchecked Sendable, AudioBackend {
-    func initialize() throws {}
+    deinit {}
+
+    func initialize() {}
     func shutdown() {}
-    func loadSound(from path: String) -> SoundHandle { .invalid }
-    func playSound(_ handle: SoundHandle, volume: Float, pitch: Float, looping: Bool) {}
-    func stopSound(_ handle: SoundHandle) {}
-    func unloadSound(_ handle: SoundHandle) {}
-    func loadMusic(from path: String) -> MusicHandle { .invalid }
-    func playMusic(_ handle: MusicHandle, volume: Float, looping: Bool) {}
-    func pauseMusic(_ handle: MusicHandle) {}
-    func resumeMusic(_ handle: MusicHandle) {}
-    func stopMusic(_ handle: MusicHandle) {}
-    func updateMusicStream(_ handle: MusicHandle) {}
-    func unloadMusic(_ handle: MusicHandle) {}
-    func setMasterVolume(_ volume: Float) {}
+    func loadSound(from _: String) -> SoundHandle { .invalid }
+    func playSound(_: SoundHandle, volume _: Float, pitch _: Float, looping _: Bool) {}
+    func stopSound(_: SoundHandle) {}
+    func unloadSound(_: SoundHandle) {}
+    func loadMusic(from _: String) -> MusicHandle { .invalid }
+    func playMusic(_: MusicHandle, volume _: Float, looping _: Bool) {}
+    func pauseMusic(_: MusicHandle) {}
+    func resumeMusic(_: MusicHandle) {}
+    func stopMusic(_: MusicHandle) {}
+    func updateMusicStream(_: MusicHandle) {}
+    func unloadMusic(_: MusicHandle) {}
+    // swiftlint:disable:next inclusive_language
+    func setMasterVolume(_: Float) {}
 }
 
 // MARK: - Helpers
@@ -141,7 +146,7 @@ struct UIContainerTests {
         #expect(child1.parent == nil)
 
         container.removeAll()
-        #expect(container.children.count == 0)
+        #expect(container.children.isEmpty)
     }
 
     @Test func addReturnsSelf() {
@@ -471,6 +476,7 @@ struct UIToggleTests {
     }
 
     @Test func onChangeCallback() {
+        // swiftlint:disable:next discouraged_optional_boolean
         var received: Bool?
         let toggle = UIToggle("Music", onChange: { received = $0 })
         toggle.toggle()
@@ -506,7 +512,7 @@ struct UITextInputTests {
     @Test func defaultProperties() {
         let input = UITextInput("Name")
         #expect(input.placeholder == "Name")
-        #expect(input.text == "")
+        #expect(input.text.isEmpty)
         #expect(input.cursorIndex == 0)
         #expect(input.isFocusable == true)
     }

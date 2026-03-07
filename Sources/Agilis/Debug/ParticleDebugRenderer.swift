@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -57,12 +55,18 @@ extension RenderBackend {
                 case .point:
                     // Crosshair
                     let size: Float = 6
-                    drawLine(from: Vector2(x: pos.x - size, y: pos.y),
-                             to: Vector2(x: pos.x + size, y: pos.y),
-                             color: color, thickness: 1)
-                    drawLine(from: Vector2(x: pos.x, y: pos.y - size),
-                             to: Vector2(x: pos.x, y: pos.y + size),
-                             color: color, thickness: 1)
+                    drawLine(
+                        from: Vector2(x: pos.x - size, y: pos.y),
+                        to: Vector2(x: pos.x + size, y: pos.y),
+                        color: color,
+                        thickness: 1
+                    )
+                    drawLine(
+                        from: Vector2(x: pos.x, y: pos.y - size),
+                        to: Vector2(x: pos.x, y: pos.y + size),
+                        color: color,
+                        thickness: 1
+                    )
 
                 case .circle(let radius):
                     drawCircleOutline(center: pos, radius: radius, color: color, thickness: 1)
@@ -88,9 +92,13 @@ extension RenderBackend {
                 let max = emitter.maxParticles
                 let status = emitter.isEmitting ? "ON" : "OFF"
                 let text = "\(active)/\(max) [\(status)]"
-                drawText(text,
-                         position: Vector2(x: pos.x + 8, y: pos.y - 8),
-                         font: font, size: options.fontSize, color: color)
+                drawText(
+                    text,
+                    position: Vector2(x: pos.x + 8, y: pos.y - 8),
+                    font: font,
+                    size: options.fontSize,
+                    color: color
+                )
             }
         }
     }

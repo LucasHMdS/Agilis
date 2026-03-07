@@ -1,5 +1,3 @@
-
-
 /// A dropdown/select widget that shows a list of options when activated.
 ///
 /// The dropdown button shows the currently selected option. When opened, a popup
@@ -12,6 +10,8 @@
 /// dropdown.onChange = { index in print("Selected: \(dropdown.options[index])") }
 /// ```
 public class UIDropdown: UINode, @unchecked Sendable {
+    deinit {}
+
     /// The available options to choose from.
     public var options: [String] {
         didSet { cachedTextSize = nil; clampSelection() }
@@ -29,10 +29,10 @@ public class UIDropdown: UINode, @unchecked Sendable {
     public var fontSize: Float { didSet { if fontSize != oldValue { cachedTextSize = nil } } }
 
     /// Whether the popup list is currently visible.
-    public private(set) var isOpen: Bool = false
+    public private(set) var isOpen = false
 
     /// Maximum number of visible options before scrolling is enabled.
-    public var maxVisibleOptions: Int = 6
+    public var maxVisibleOptions = 6
 
     /// Horizontal padding inside the button and each option row.
     public var horizontalPadding: Float = 12
@@ -44,16 +44,16 @@ public class UIDropdown: UINode, @unchecked Sendable {
     internal var cachedTextSize: Size?
 
     /// Currently highlighted option index in the popup (mouse hover or keyboard).
-    private var highlightedIndex: Int = -1
+    private var highlightedIndex = -1
 
     /// Scroll offset for the popup list when options exceed maxVisibleOptions.
-    private var scrollOffset: Int = 0
+    private var scrollOffset = 0
 
     /// Whether the popup opens upward (computed when opened).
-    private var opensUpward: Bool = false
+    private var opensUpward = false
 
     /// Guards against multi-tick processing of the same press event.
-    private var inputGuard: Bool = false
+    private var inputGuard = false
 
     /// The computed popup rect (set when opened, used for rendering).
     private var popupRect: Rect = .init(x: 0, y: 0, width: 0, height: 0)
@@ -108,7 +108,7 @@ public class UIDropdown: UINode, @unchecked Sendable {
 
     // MARK: - Layout
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_: Size) -> Size {
         let textSize = cachedTextSize ?? Size(width: 100, height: fontSize + 4)
         let arrowWidth: Float = 20
         return Size(width: textSize.width + horizontalPadding * 2 + arrowWidth,
@@ -117,7 +117,7 @@ public class UIDropdown: UINode, @unchecked Sendable {
 
     // MARK: - Update
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime _: Double) {
         guard isVisible, let app = context.app else { return }
         let input = app.input
         let mousePos = input.mousePosition
@@ -215,7 +215,7 @@ public class UIDropdown: UINode, @unchecked Sendable {
 
     // MARK: - Render
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw button background
@@ -227,14 +227,20 @@ public class UIDropdown: UINode, @unchecked Sendable {
         let textY = frame.y + (frame.height - fontSize) / 2
         renderer.drawText(selectedText,
                           position: Vector2(x: frame.x + horizontalPadding, y: textY),
-                          font: theme.font, size: fontSize, color: theme.textColor)
+                          font: theme.font,
+                          size: fontSize,
+                          color: theme.textColor)
 
         // Draw dropdown arrow
         let arrowSize: Float = 8
         let arrowX = frame.x + frame.width - horizontalPadding - arrowSize
         let arrowY = frame.y + frame.height / 2
-        drawArrow(renderer: renderer, x: arrowX, y: arrowY, size: arrowSize,
-                  pointsDown: !isOpen, color: theme.textColor)
+        drawArrow(renderer: renderer,
+                  x: arrowX,
+                  y: arrowY,
+                  size: arrowSize,
+                  pointsDown: !isOpen,
+                  color: theme.textColor)
 
         // Focus outline
         if isFocused {
@@ -243,7 +249,7 @@ public class UIDropdown: UINode, @unchecked Sendable {
     }
 
     /// Draw the dropdown popup on top of everything else.
-    public override func renderOverlay(renderer: any RenderBackend, theme: UITheme, screenSize: Size) {
+    override public func renderOverlay(renderer: any RenderBackend, theme: UITheme, screenSize _: Size) {
         guard isVisible, isOpen, !options.isEmpty else { return }
 
         let rowHeight = self.rowHeight
@@ -273,7 +279,9 @@ public class UIDropdown: UINode, @unchecked Sendable {
             let textY = rowY + (rowHeight - fontSize) / 2
             renderer.drawText(options[optionIndex],
                               position: Vector2(x: popupRect.x + horizontalPadding, y: textY),
-                              font: theme.font, size: fontSize, color: textColor)
+                              font: theme.font,
+                              size: fontSize,
+                              color: textColor)
         }
 
         renderer.endClip()
@@ -288,16 +296,24 @@ public class UIDropdown: UINode, @unchecked Sendable {
                 // Up arrow indicator at top
                 let cx = popupRect.x + popupRect.width - 10
                 let cy = popupRect.y + 6
-                drawArrow(renderer: renderer, x: cx - 4, y: cy, size: 4,
-                          pointsDown: false, color: indicatorColor)
+                drawArrow(renderer: renderer,
+                          x: cx - 4,
+                          y: cy,
+                          size: 4,
+                          pointsDown: false,
+                          color: indicatorColor)
             }
             let visibleCount = min(options.count, maxVisibleOptions)
             if scrollOffset + visibleCount < options.count {
                 // Down arrow indicator at bottom
                 let cx = popupRect.x + popupRect.width - 10
                 let cy = popupRect.y + popupRect.height - 6
-                drawArrow(renderer: renderer, x: cx - 4, y: cy, size: 4,
-                          pointsDown: true, color: indicatorColor)
+                drawArrow(renderer: renderer,
+                          x: cx - 4,
+                          y: cy,
+                          size: 4,
+                          pointsDown: true,
+                          color: indicatorColor)
             }
         }
     }
@@ -341,62 +357,82 @@ public class UIDropdown: UINode, @unchecked Sendable {
         if popupHeight <= spaceBelow {
             // Opens downward (default)
             opensUpward = false
-            popupRect = Rect(x: frame.x, y: frame.y + frame.height,
-                             width: popupWidth, height: popupHeight)
+            popupRect = Rect(x: frame.x,
+                             y: frame.y + frame.height,
+                             width: popupWidth,
+                             height: popupHeight)
         } else if popupHeight <= spaceAbove {
             // Opens upward
             opensUpward = true
-            popupRect = Rect(x: frame.x, y: frame.y - popupHeight,
-                             width: popupWidth, height: popupHeight)
+            popupRect = Rect(x: frame.x,
+                             y: frame.y - popupHeight,
+                             width: popupWidth,
+                             height: popupHeight)
         } else {
             // Open in direction with more space, clamp height
             if spaceBelow >= spaceAbove {
                 opensUpward = false
                 let clampedHeight = min(popupHeight, spaceBelow)
-                popupRect = Rect(x: frame.x, y: frame.y + frame.height,
-                                 width: popupWidth, height: clampedHeight)
+                popupRect = Rect(x: frame.x,
+                                 y: frame.y + frame.height,
+                                 width: popupWidth,
+                                 height: clampedHeight)
             } else {
                 opensUpward = true
                 let clampedHeight = min(popupHeight, spaceAbove)
-                popupRect = Rect(x: frame.x, y: frame.y - clampedHeight,
-                                 width: popupWidth, height: clampedHeight)
+                popupRect = Rect(x: frame.x,
+                                 y: frame.y - clampedHeight,
+                                 width: popupWidth,
+                                 height: clampedHeight)
             }
         }
 
         // Clamp horizontal to screen bounds
         if popupRect.x + popupRect.width > screenSize.width {
-            popupRect = Rect(x: screenSize.width - popupRect.width, y: popupRect.y,
-                             width: popupRect.width, height: popupRect.height)
+            popupRect = Rect(x: screenSize.width - popupRect.width,
+                             y: popupRect.y,
+                             width: popupRect.width,
+                             height: popupRect.height)
         }
         if popupRect.x < 0 {
-            popupRect = Rect(x: 0, y: popupRect.y,
-                             width: popupRect.width, height: popupRect.height)
+            popupRect = Rect(x: 0,
+                             y: popupRect.y,
+                             width: popupRect.width,
+                             height: popupRect.height)
         }
     }
 
-    private func drawArrow(renderer: any RenderBackend, x: Float, y: Float,
-                           size: Float, pointsDown: Bool, color: Color) {
+    private func drawArrow(renderer: any RenderBackend,
+                           x: Float,
+                           y: Float,
+                           size: Float,
+                           pointsDown: Bool,
+                           color: Color) {
         if pointsDown {
             renderer.drawLine(
                 from: Vector2(x: x, y: y - size / 2),
                 to: Vector2(x: x + size, y: y + size / 2),
-                color: color, thickness: 2
+                color: color,
+                thickness: 2
             )
             renderer.drawLine(
                 from: Vector2(x: x + size, y: y + size / 2),
                 to: Vector2(x: x + size * 2, y: y - size / 2),
-                color: color, thickness: 2
+                color: color,
+                thickness: 2
             )
         } else {
             renderer.drawLine(
                 from: Vector2(x: x, y: y + size / 2),
                 to: Vector2(x: x + size, y: y - size / 2),
-                color: color, thickness: 2
+                color: color,
+                thickness: 2
             )
             renderer.drawLine(
                 from: Vector2(x: x + size, y: y - size / 2),
                 to: Vector2(x: x + size * 2, y: y + size / 2),
-                color: color, thickness: 2
+                color: color,
+                thickness: 2
             )
         }
     }

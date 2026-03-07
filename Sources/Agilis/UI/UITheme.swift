@@ -1,5 +1,3 @@
-
-
 /// Visual theme for all UI elements.
 public struct UITheme: @unchecked Sendable {
     // Font

@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -17,6 +15,8 @@ import CRT
 ///
 /// The grid is rebuilt each physics step (cleared and re-populated).
 public final class SpatialHashGrid: @unchecked Sendable {
+    deinit {}
+
     /// The size of each grid cell in world units.
     public let cellSize: Float
 

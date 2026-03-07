@@ -1,5 +1,3 @@
-
-
 /// A data-driven scrollable list with single-item selection.
 ///
 /// Renders items directly (no child UINodes per row) for efficiency.
@@ -11,6 +9,8 @@
 /// list.onChange = { index in print("Selected: \(list.items[index])") }
 /// ```
 public class UIListView: UINode, @unchecked Sendable {
+    deinit {}
+
     /// The items to display.
     public var items: [String] {
         didSet { clampSelection() }
@@ -79,14 +79,14 @@ public class UIListView: UINode, @unchecked Sendable {
 
     // MARK: - Layout
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_ available: Size) -> Size {
         let contentHeight = Float(items.count) * rowHeight
         return Size(width: available.width, height: min(contentHeight, available.height))
     }
 
     // MARK: - Update
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime _: Double) {
         guard isVisible, let app = context.app else { return }
         let input = app.input
         let mousePos = input.mousePosition
@@ -123,7 +123,7 @@ public class UIListView: UINode, @unchecked Sendable {
 
     // MARK: - Render
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Background
@@ -148,9 +148,13 @@ public class UIListView: UINode, @unchecked Sendable {
 
             // Item text
             let textY = rowY + (rowHeight - fontSize) / 2
-            renderer.drawText(items[i],
-                              position: Vector2(x: frame.x + horizontalPadding, y: textY),
-                              font: theme.font, size: fontSize, color: theme.textColor)
+            renderer.drawText(
+                items[i],
+                position: Vector2(x: frame.x + horizontalPadding, y: textY),
+                font: theme.font,
+                size: fontSize,
+                color: theme.textColor
+            )
         }
 
         renderer.endClip()

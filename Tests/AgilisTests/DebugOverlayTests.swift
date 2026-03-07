@@ -1,9 +1,11 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Spy Renderer for Overlay
 
 private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var rectCalls: [(rect: Rect, color: Color)] = []
     var textCalls: [(text: String, position: Vector2, color: Color)] = []
     var lineCalls: [(from: Vector2, to: Vector2)] = []
@@ -11,34 +13,34 @@ private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
     func drawRect(_ rect: Rect, color: Color) {
         rectCalls.append((rect, color))
     }
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {
+    func drawText(_ text: String, position: Vector2, font _: FontHandle, size _: Float, color: Color) {
         textCalls.append((text, position, color))
     }
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {
+    func drawLine(from start: Vector2, to end: Vector2, color _: Color, thickness _: Float) {
         lineCalls.append((start, end))
     }
 
     // Unused stubs
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawSprite(_ sprite: Sprite) {}
-    func initialize(config: WindowConfig) throws {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawSprite(_: Sprite) {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
     func loadDefaultFont() -> FontHandle { FontHandle(id: 1) }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { Size(width: Float(text.count) * 7, height: size) }
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func measureText(_ text: String, font _: FontHandle, size: Float) -> Size { Size(width: Float(text.count) * 7, height: size) }
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { Size(width: 800, height: 600) }
 }
@@ -46,25 +48,30 @@ private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
 // MARK: - Mock Application
 
 private final class MockAudioEngineO: @unchecked Sendable, AudioBackend {
-    func initialize() throws {}
+    deinit {}
+
+    func initialize() {}
     func shutdown() {}
-    func loadSound(from path: String) -> SoundHandle { .invalid }
-    func playSound(_ handle: SoundHandle, volume: Float, pitch: Float, looping: Bool) {}
-    func stopSound(_ handle: SoundHandle) {}
-    func unloadSound(_ handle: SoundHandle) {}
-    func loadMusic(from path: String) -> MusicHandle { .invalid }
-    func playMusic(_ handle: MusicHandle, volume: Float, looping: Bool) {}
-    func pauseMusic(_ handle: MusicHandle) {}
-    func resumeMusic(_ handle: MusicHandle) {}
-    func stopMusic(_ handle: MusicHandle) {}
-    func updateMusicStream(_ handle: MusicHandle) {}
-    func unloadMusic(_ handle: MusicHandle) {}
-    func setMasterVolume(_ volume: Float) {}
+    func loadSound(from _: String) -> SoundHandle { .invalid }
+    func playSound(_: SoundHandle, volume _: Float, pitch _: Float, looping _: Bool) {}
+    func stopSound(_: SoundHandle) {}
+    func unloadSound(_: SoundHandle) {}
+    func loadMusic(from _: String) -> MusicHandle { .invalid }
+    func playMusic(_: MusicHandle, volume _: Float, looping _: Bool) {}
+    func pauseMusic(_: MusicHandle) {}
+    func resumeMusic(_: MusicHandle) {}
+    func stopMusic(_: MusicHandle) {}
+    func updateMusicStream(_: MusicHandle) {}
+    func unloadMusic(_: MusicHandle) {}
+    // swiftlint:disable:next inclusive_language
+    func setMasterVolume(_: Float) {}
 }
 
 private final class MockNativeInputO: @unchecked Sendable, InputBackend {
-    func isKeyDown(_ key: Key) -> Bool { false }
-    func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
+    deinit {}
+
+    func isKeyDown(_: Key) -> Bool { false }
+    func isMouseButtonDown(_: MouseButton) -> Bool { false }
     func mousePosition() -> Vector2 { .zero }
     func mouseDelta() -> Vector2 { .zero }
     func mouseScrollDelta() -> Float { 0 }
@@ -114,6 +121,7 @@ struct DebugOverlayTests {
     @Test("Renders FPS text when visible")
     func rendersFPS() {
         let app = makeTestAppO()
+        // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
         let overlay = DebugOverlay(font: FontHandle(id: 1))
         overlay.recordFrame(frameTime: 1.0 / 60.0)
@@ -127,6 +135,7 @@ struct DebugOverlayTests {
     @Test("Does not render when invisible")
     func hiddenRendersNothing() {
         let app = makeTestAppO()
+        // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
         let overlay = DebugOverlay(font: FontHandle(id: 1))
         overlay.isVisible = false
@@ -140,6 +149,7 @@ struct DebugOverlayTests {
     @Test("Renders entity stats")
     func rendersEntityStats() {
         let app = makeTestAppO()
+        // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
         let overlay = DebugOverlay(font: FontHandle(id: 1))
 
@@ -155,6 +165,7 @@ struct DebugOverlayTests {
     @Test("Renders log entries from ring buffer")
     func rendersLog() {
         let app = makeTestAppO()
+        // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
         let overlay = DebugOverlay(font: FontHandle(id: 1))
 
@@ -171,6 +182,7 @@ struct DebugOverlayTests {
     @Test("Disabling sections hides them")
     func disabledSections() {
         let app = makeTestAppO()
+        // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
         let options = DebugOverlayOptions(
             showFPS: false,
@@ -190,6 +202,7 @@ struct DebugOverlayTests {
     @Test("Frame graph draws bars after recording frames")
     func frameGraph() {
         let app = makeTestAppO()
+        // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
         let options = DebugOverlayOptions(showFPS: false, showEntityStats: false,
                                           showSystemTimings: false, showLog: false)
@@ -209,6 +222,7 @@ struct DebugOverlayTests {
     @Test("System timings are rendered after world update")
     func systemTimings() {
         let app = makeTestAppO()
+        // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
         let options = DebugOverlayOptions(showFPS: false, showFrameGraph: false,
                                           showEntityStats: false, showLog: false)
@@ -229,5 +243,7 @@ struct DebugOverlayTests {
 // MARK: - Test System for Timing
 
 private final class TestTimingSystem: System, @unchecked Sendable {
-    func update(context: SystemContext) {}
+    deinit {}
+
+    func update(context _: SystemContext) {}
 }

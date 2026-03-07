@@ -1,5 +1,3 @@
-
-
 // MARK: - Spatial Queries
 
 extension PhysicsWorld2D {
@@ -36,7 +34,7 @@ extension PhysicsWorld2D {
         let dir = direction.normalized
         guard dir.lengthSquared > PhysicsConstants.Tolerance.vectorLength else { return nil }
 
-        var closestHit: RaycastHit? = nil
+        var closestHit: RaycastHit?
         var closestDist = maxDistance
 
         world.forEach { (entity: Entity, transform: inout Transform2D, collider: inout Collider2D) in
@@ -45,15 +43,21 @@ extension PhysicsWorld2D {
             let worldPos = transform.position + collider.offset
 
             guard let hit = SpatialQuery.raycast(
-                origin: origin, direction: dir, tMax: closestDist,
-                shape: collider.shape, shapePos: worldPos, shapeRot: transform.rotation
+                origin: origin,
+                direction: dir,
+                tMax: closestDist,
+                shape: collider.shape,
+                shapePos: worldPos,
+                shapeRot: transform.rotation
             ) else { return }
 
             if hit.distance < closestDist {
                 closestDist = hit.distance
                 closestHit = RaycastHit(
-                    entity: entity, point: hit.point,
-                    normal: hit.normal, distance: hit.distance
+                    entity: entity,
+                    point: hit.point,
+                    normal: hit.normal,
+                    distance: hit.distance
                 )
             }
         }
@@ -92,13 +96,19 @@ extension PhysicsWorld2D {
             let worldPos = transform.position + collider.offset
 
             guard let hit = SpatialQuery.raycast(
-                origin: origin, direction: dir, tMax: maxDistance,
-                shape: collider.shape, shapePos: worldPos, shapeRot: transform.rotation
+                origin: origin,
+                direction: dir,
+                tMax: maxDistance,
+                shape: collider.shape,
+                shapePos: worldPos,
+                shapeRot: transform.rotation
             ) else { return }
 
             hits.append(RaycastHit(
-                entity: entity, point: hit.point,
-                normal: hit.normal, distance: hit.distance
+                entity: entity,
+                point: hit.point,
+                normal: hit.normal,
+                distance: hit.distance
             ))
         }
 
@@ -139,7 +149,9 @@ extension PhysicsWorld2D {
 
             if SpatialQuery.pointTest(
                 point: point,
-                shape: collider.shape, shapePos: worldPos, shapeRot: transform.rotation
+                shape: collider.shape,
+                shapePos: worldPos,
+                shapeRot: transform.rotation
             ) {
                 results.append(PointQueryResult(entity: entity))
             }
@@ -182,7 +194,9 @@ extension PhysicsWorld2D {
 
             if SpatialQuery.areaTest(
                 rect: rect,
-                shape: collider.shape, shapePos: worldPos, shapeRot: transform.rotation
+                shape: collider.shape,
+                shapePos: worldPos,
+                shapeRot: transform.rotation
             ) {
                 results.append(AreaQueryResult(entity: entity))
             }

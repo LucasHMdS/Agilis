@@ -1,9 +1,11 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 /// A mock renderer for testing individual effects.
 private final class EffectMockRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var nextRTId: UInt32 = 100
     var nextShaderId: UInt32 = 1
     var loadedShaders: [UInt32] = []
@@ -19,9 +21,9 @@ private final class EffectMockRenderer: @unchecked Sendable, RenderBackend {
     var rtBegins: [UInt32] = []
     var rtEnds: Int = 0
     var spritesDrawn: [Sprite] = []
-    var _screenSize: Size = Size(width: 800, height: 600)
+    var _screenSize = Size(width: 800, height: 600)
 
-    func loadShader(vertexSource: String?, fragmentSource: String) -> ShaderHandle {
+    func loadShader(vertexSource _: String?, fragmentSource _: String) -> ShaderHandle {
         let id = nextShaderId
         nextShaderId += 1
         loadedShaders.append(id)
@@ -32,7 +34,7 @@ private final class EffectMockRenderer: @unchecked Sendable, RenderBackend {
         destroyedShaders.append(handle.id)
     }
 
-    func createRenderTarget(width: Int, height: Int) -> RenderTargetHandle {
+    func createRenderTarget(width _: Int, height _: Int) -> RenderTargetHandle {
         let id = nextRTId
         nextRTId += 1
         createdRTs.append(id)
@@ -50,10 +52,10 @@ private final class EffectMockRenderer: @unchecked Sendable, RenderBackend {
     func endRenderTarget() { rtEnds += 1 }
 
     func renderTargetTexture(_ handle: RenderTargetHandle) -> TextureHandle {
-        TextureHandle(id: handle.id + 1000)
+        TextureHandle(id: handle.id + 1_000)
     }
 
-    func renderTargetSize(_ handle: RenderTargetHandle) -> Size { _screenSize }
+    func renderTargetSize(_: RenderTargetHandle) -> Size { _screenSize }
     func beginShader(_ handle: ShaderHandle) { shaderBegins.append(handle.id) }
     func endShader() { shaderEnds += 1 }
     func drawSprite(_ sprite: Sprite) { spritesDrawn.append(sprite) }
@@ -74,31 +76,31 @@ private final class EffectMockRenderer: @unchecked Sendable, RenderBackend {
         textureUniforms.append((handle.id, name, texture.id))
     }
 
-    func setShaderVec4(_ handle: ShaderHandle, name: String, x: Float, y: Float, z: Float, w: Float) {}
-    func setShaderInt(_ handle: ShaderHandle, name: String, value: Int32) {}
+    func setShaderVec4(_: ShaderHandle, name _: String, x _: Float, y _: Float, z _: Float, w _: Float) {}
+    func setShaderInt(_: ShaderHandle, name _: String, value _: Int32) {}
 
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { _screenSize }
 }
@@ -160,8 +162,11 @@ struct PostProcessEffectTests {
         let radiusU = renderer.floatUniforms.first(where: { $0.name == "radius" })
         let softnessU = renderer.floatUniforms.first(where: { $0.name == "softness" })
         #expect(intensityU != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(intensityU!.value - 0.7) < 0.001)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(radiusU!.value - 0.6) < 0.001)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(softnessU!.value - 0.4) < 0.001)
     }
 
@@ -188,6 +193,7 @@ struct PostProcessEffectTests {
 
         let amountU = renderer.floatUniforms.first(where: { $0.name == "amount" })
         #expect(amountU != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(amountU!.value - 0.005) < 0.0001)
     }
 
@@ -224,10 +230,15 @@ struct PostProcessEffectTests {
         let gammaU = renderer.floatUniforms.first(where: { $0.name == "gamma" })
         let tintU = renderer.vec3Uniforms.first(where: { $0.name == "tint" })
 
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(brightnessU!.value - 0.1) < 0.001)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(contrastU!.value - 1.5) < 0.001)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(saturationU!.value - 0.8) < 0.001)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(gammaU!.value - 1.2) < 0.001)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(tintU!.x - 1.0) < 0.01) // red = 255/255
     }
 
@@ -249,7 +260,7 @@ struct PostProcessEffectTests {
         let renderer = EffectMockRenderer()
         let effect = ScanlinesEffect()
         effect.initialize(renderer: renderer)
-        effect.resize(width: 1920, height: 1080, renderer: renderer)
+        effect.resize(width: 1_920, height: 1_080, renderer: renderer)
 
         let input = RenderTargetHandle(id: 10)
         let output = RenderTargetHandle(id: 20)
@@ -257,8 +268,10 @@ struct PostProcessEffectTests {
 
         let resU = renderer.vec2Uniforms.first(where: { $0.name == "resolution" })
         #expect(resU != nil)
-        #expect(abs(resU!.value.x - 1920) < 0.1)
-        #expect(abs(resU!.value.y - 1080) < 0.1)
+        // swiftlint:disable:next force_unwrapping
+        #expect(abs(resU!.value.x - 1_920) < 0.1)
+        // swiftlint:disable:next force_unwrapping
+        #expect(abs(resU!.value.y - 1_080) < 0.1)
     }
 
     // MARK: - Pixelate
@@ -284,6 +297,7 @@ struct PostProcessEffectTests {
         effect.apply(input: input, output: output, renderer: renderer, deltaTime: 0.016)
 
         let pixelU = renderer.floatUniforms.first(where: { $0.name == "pixelSize" })
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(pixelU!.value - 8.0) < 0.001)
     }
 
@@ -373,7 +387,7 @@ struct PostProcessEffectTests {
             VignetteEffect(),
             ChromaticAberrationEffect(),
             ColorGradingEffect(),
-            PixelateEffect(),
+            PixelateEffect()
         ]
 
         let input = RenderTargetHandle(id: 10)

@@ -1,5 +1,3 @@
-
-
 /// Standard uniforms automatically injected into materials that declare them.
 ///
 /// When a material's shader has a uniform matching one of the standard names,

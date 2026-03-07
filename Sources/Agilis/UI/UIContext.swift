@@ -1,7 +1,7 @@
-
-
 /// Manages the UI tree, focus state, and input dispatch for a scene.
 public final class UIContext: @unchecked Sendable {
+    deinit {}
+
     /// The root container. All UI elements are children of this.
     public let root: UIContainer
 
@@ -62,16 +62,24 @@ public final class UIContext: @unchecked Sendable {
 
         if needsLayout {
             let bounds = Rect(x: 0, y: 0, width: screenSize.width, height: screenSize.height)
-            UILayoutEngine.performLayout(on: root, in: bounds,
-                                         renderer: app.renderer, font: font)
+            UILayoutEngine.performLayout(
+                on: root,
+                in: bounds,
+                renderer: app.renderer,
+                font: font
+            )
             rebuildFocusOrder()
             needsLayout = false
         }
 
         // When a modal is active, only update the modal (blocks normal input)
         if let modal = activeModal {
-            modal.layoutModal(renderer: app.renderer, font: font,
-                              screenSize: screenSize, theme: theme)
+            modal.layoutModal(
+                renderer: app.renderer,
+                font: font,
+                screenSize: screenSize,
+                theme: theme
+            )
             modal.updateModal(context: self, deltaTime: deltaTime)
             return
         }
@@ -82,8 +90,12 @@ public final class UIContext: @unchecked Sendable {
         // If a modal was presented during root.update() (e.g. from a button action),
         // lay it out now so it doesn't render at (0,0) for one frame.
         if let modal = activeModal {
-            modal.layoutModal(renderer: app.renderer, font: font,
-                              screenSize: screenSize, theme: theme)
+            modal.layoutModal(
+                renderer: app.renderer,
+                font: font,
+                screenSize: screenSize,
+                theme: theme
+            )
         }
     }
 

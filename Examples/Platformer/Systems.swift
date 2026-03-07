@@ -11,6 +11,7 @@ import CRT
 // MARK: - Enemy AI System (priority 0)
 
 final class EnemyAISystem: System {
+    deinit {}
     var priority: Int { 0 }
 
     var componentAccess: ComponentAccess {
@@ -20,7 +21,7 @@ final class EnemyAISystem: System {
     func update(context: SystemContext) {
         let world = context.world
 
-        world.forEach { (entity: Entity, vel: inout Velocity2D, enemy: inout Enemy) in
+        world.forEach { (_: Entity, vel: inout Velocity2D, enemy: inout Enemy) in
             if enemy.isDead {
                 vel.linear = .zero
                 return
@@ -33,6 +34,7 @@ final class EnemyAISystem: System {
 // MARK: - Gameplay System (priority 10)
 
 final class GameplaySystem: System {
+    deinit {}
     var priority: Int { 10 }
 
     var componentAccess: ComponentAccess {
@@ -48,7 +50,7 @@ final class GameplaySystem: System {
         let dt = Float(context.deltaTime)
 
         // Question block bounce animation
-        world.forEach { (entity: Entity, pos: inout Transform2D, block: inout QuestionBlock) in
+        world.forEach { (_: Entity, pos: inout Transform2D, block: inout QuestionBlock) in
             if block.state == .bouncing {
                 block.bounceTimer -= dt
                 if block.bounceTimer <= 0 {
@@ -77,7 +79,7 @@ final class GameplaySystem: System {
         }
 
         // Player invincibility countdown
-        world.forEach { (entity: Entity, player: inout Player) in
+        world.forEach { (_: Entity, player: inout Player) in
             if player.isInvincible {
                 player.invincibleTimer -= dt
                 if player.invincibleTimer <= 0 {
@@ -91,6 +93,7 @@ final class GameplaySystem: System {
 // MARK: - Post-Physics System (priority 110)
 
 final class PostPhysicsSystem: System {
+    deinit {}
     var priority: Int { 110 }
 
     var componentAccess: ComponentAccess {
@@ -108,11 +111,12 @@ final class PostPhysicsSystem: System {
         self.physics = physics
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func update(context: SystemContext) {
         let world = context.world
 
         // Reset grounded state before collision checks
-        world.forEach { (entity: Entity, player: inout Player) in
+        world.forEach { (_: Entity, player: inout Player) in
             player.isGrounded = false
         }
 

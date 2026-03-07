@@ -13,6 +13,8 @@
 /// }
 /// ```
 public final class CommandBuffer: @unchecked Sendable {
+    deinit {}
+
     private enum Command {
         case createEntity(Entity)
         case destroyEntity(Entity)
@@ -46,7 +48,7 @@ public final class CommandBuffer: @unchecked Sendable {
     }
 
     /// Queue removing a component type from an entity.
-    public func removeComponent<T: Component>(_ type: T.Type, from entity: Entity) {
+    public func removeComponent<T: Component>(_: T.Type, from entity: Entity) {
         commands.append(.removeComponent(entity: entity, typeId: ObjectIdentifier(T.self)))
     }
 
@@ -58,10 +60,13 @@ public final class CommandBuffer: @unchecked Sendable {
             switch command {
             case .createEntity(let entity):
                 world.confirmEntity(entity)
+
             case .destroyEntity(let entity):
                 world.destroyEntity(entity)
+
             case .addComponent(_, let apply):
                 apply(world)
+
             case .removeComponent(let entity, let typeId):
                 world.removeComponentByTypeId(typeId, from: entity)
             }

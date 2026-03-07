@@ -1,6 +1,5 @@
 import Foundation
 
-
 /// Serializes and deserializes ECS world state to and from JSON.
 ///
 /// Only component types that have been registered via `register(_:)` are included
@@ -29,6 +28,8 @@ import Foundation
 /// - **SpriteAnimator.lastEvent** is transient and not serialized.
 public final class WorldSerializer: @unchecked Sendable {
 
+    deinit {}
+
     // MARK: - Type-Erased Registration
 
     private struct Registration {
@@ -47,7 +48,7 @@ public final class WorldSerializer: @unchecked Sendable {
     ///
     /// Only registered types are included when encoding. Unregistered component
     /// types in JSON are silently skipped when decoding.
-    public func register<T: SerializableComponent>(_ type: T.Type) {
+    public func register<T: SerializableComponent>(_: T.Type) {
         let name = T.componentName
         let encoder = JSONEncoder()
         let decoder = JSONDecoder()

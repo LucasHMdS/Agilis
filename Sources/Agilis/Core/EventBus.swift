@@ -8,13 +8,15 @@
 /// don't fire for the current call.
 internal final class EventBus: @unchecked Sendable {
 
+    deinit {}
+
     /// Type-erased event handler storage. Key = event type, Value = array of optional closures.
     /// Nil entries are slots where handlers were removed via `removeSubscription`.
     private var handlers: [ObjectIdentifier: [((Any) -> Void)?]] = [:]
 
     /// Subscribe to events of a given type. Returns an opaque subscription for removal.
     @discardableResult
-    func on<T: Event>(_ type: T.Type, handler: @escaping (T) -> Void) -> EventSubscription {
+    func on<T: Event>(_: T.Type, handler: @escaping (T) -> Void) -> EventSubscription {
         let key = ObjectIdentifier(T.self)
         let erased: (Any) -> Void = { any in
             guard let typed = any as? T else { return }
@@ -43,7 +45,7 @@ internal final class EventBus: @unchecked Sendable {
     }
 
     /// Remove all handlers for a specific event type.
-    func removeHandlers<T: Event>(for type: T.Type) {
+    func removeHandlers<T: Event>(for _: T.Type) {
         let key = ObjectIdentifier(T.self)
         handlers.removeValue(forKey: key)
     }

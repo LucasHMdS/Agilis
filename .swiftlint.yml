@@ -105,3 +105,4 @@ identifier_name:
 cyclomatic_complexity:
   warning: 20
   error: 40
+

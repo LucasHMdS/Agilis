@@ -1,5 +1,3 @@
-
-
 extension RenderBackend {
 
     /// Draw all active particles from an emitter.

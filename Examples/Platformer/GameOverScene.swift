@@ -1,9 +1,12 @@
 import Agilis
 
 final class GameOverScene: Scene {
+    deinit {}
     let finalScore: Int
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: MarioSounds.SoundSet!
 
     init(score: Int) {
@@ -75,7 +78,7 @@ final class GameOverScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         ui.render(renderer: app.renderer)
 
         let screen = app.renderer.screenSize

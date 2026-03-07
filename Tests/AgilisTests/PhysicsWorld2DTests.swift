@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("PhysicsWorld2D Integration Tests")
 struct PhysicsWorld2DTests {
@@ -38,8 +38,11 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 5)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let pos = world.getComponent(Transform2D.self, from: ball)!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         // After 1 tick, gravity should have been applied
@@ -58,7 +61,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .aabb(halfExtents: Vector2(x: 400, y: 20))), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let floor = world.entity(named: "floor")!
+        // swiftlint:disable:next force_unwrapping
         let pos = world.getComponent(Transform2D.self, from: floor)!
 
         #expect(abs(pos.position.y - 500) < 0.01, "Static body should not move")
@@ -86,7 +91,9 @@ struct PhysicsWorld2DTests {
         }
 
         // The ball should have been stopped or bounced
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let pos = world.getComponent(Transform2D.self, from: ball)!
 
         // Ball should not have fallen far through the floor
@@ -111,7 +118,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .aabb(halfExtents: Vector2(x: 5, y: 50))), to: wall)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         // After bouncing off the wall, x velocity should be negative
@@ -144,7 +153,9 @@ struct PhysicsWorld2DTests {
         })
 
         // Ball should pass through the trigger zone
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         // Velocity should be unchanged (no physics response from trigger)
@@ -180,7 +191,9 @@ struct PhysicsWorld2DTests {
         #expect(physics.events.isEmpty, "Different layers should not produce collision events")
 
         // Ball should pass through
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
         #expect(abs(vel.linear.x - 50) < 5, "Ball should pass through wall on different layer")
     }
@@ -198,7 +211,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 5)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let e = world.entity(named: "entity")!
+        // swiftlint:disable:next force_unwrapping
         let prev = world.getComponent(PreviousTransform2D.self, from: e)!
 
         // PreviousTransform should have been set to the pre-integration position
@@ -212,7 +227,7 @@ struct PhysicsWorld2DTests {
     func collisionEventLifecycle() {
         var tickEvents: [[CollisionEvent]] = []
 
-        let _ = runPhysics(
+        _ = runPhysics(
             gravity: .zero,
             ticks: 3,
             afterTick: { _, physics, _ in
@@ -247,7 +262,7 @@ struct PhysicsWorld2DTests {
     func collisionEndedEvent() {
         var tickEvents: [[CollisionEvent]] = []
 
-        let _ = runPhysics(
+        _ = runPhysics(
             gravity: .zero,
             ticks: 10,
             afterTick: { _, physics, _ in
@@ -290,7 +305,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 10)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let e = world.entity(named: "kinematic")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: e)!
 
         // Kinematic body should not have gravity applied
@@ -310,7 +327,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 5)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         #expect(abs(vel.linear.x) < 0.001)

@@ -9,15 +9,21 @@ import CRT
 #endif
 
 final class GameScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: DungeonSounds.SoundSet!
 
     // Systems
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var physics: PhysicsWorld2D!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var lighting: LightingSystem!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var particleSystem: ParticleSystem!
 
     // Dungeon data
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var dungeonData: DungeonBuilder.DungeonData!
     private var camera = Camera2D()
 
@@ -86,6 +92,7 @@ final class GameScene: Scene {
         camera.offset = Vector2(x: Dungeon.screenWidth / 2, y: Dungeon.screenHeight / 2)
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func update(app: Application, deltaTime: Double) {
         let dt = Float(deltaTime)
 
@@ -235,7 +242,7 @@ final class GameScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
 
         // Begin camera
@@ -395,7 +402,7 @@ final class GameScene: Scene {
             Vector2(x: roomCenter.x - patrolRadius, y: roomCenter.y - patrolRadius),
             Vector2(x: roomCenter.x + patrolRadius, y: roomCenter.y - patrolRadius),
             Vector2(x: roomCenter.x + patrolRadius, y: roomCenter.y + patrolRadius),
-            Vector2(x: roomCenter.x - patrolRadius, y: roomCenter.y + patrolRadius),
+            Vector2(x: roomCenter.x - patrolRadius, y: roomCenter.y + patrolRadius)
         ]
         app.world.addComponent(EnemyComp(patrolPath: path), to: entity)
 

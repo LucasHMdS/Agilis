@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -302,9 +300,9 @@ public enum ShadowGeometry {
     static func aabbVertices(halfExtents: Vector2) -> [Vector2] {
         [
             Vector2(x: -halfExtents.x, y: -halfExtents.y),  // bottom-left
-            Vector2(x:  halfExtents.x, y: -halfExtents.y),  // bottom-right
-            Vector2(x:  halfExtents.x, y:  halfExtents.y),  // top-right
-            Vector2(x: -halfExtents.x, y:  halfExtents.y),  // top-left
+            Vector2(x: halfExtents.x, y: -halfExtents.y),  // bottom-right
+            Vector2(x: halfExtents.x, y: halfExtents.y),  // top-right
+            Vector2(x: -halfExtents.x, y: halfExtents.y)  // top-left
         ]
     }
 

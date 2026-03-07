@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Ray Intersection Tests
 
@@ -18,9 +18,13 @@ struct RayIntersectionTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.distance - 40) < 0.01) // hits at x=40 (50-10)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.point.x - 40) < 0.01)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.point.y - 50) < 0.01)
+        // swiftlint:disable:next force_unwrapping
         #expect(hit!.normal.x < 0) // normal points left (toward ray origin)
     }
 
@@ -48,7 +52,9 @@ struct RayIntersectionTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(hit!.distance == 0)
+        // swiftlint:disable:next force_unwrapping
         #expect(hit!.point == Vector2(x: 50, y: 50))
     }
 
@@ -63,10 +69,14 @@ struct RayIntersectionTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.distance - 40) < 0.01) // hits at x=40 (50-10)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.point.x - 40) < 0.01)
         // Normal should point toward ray origin (left)
+        // swiftlint:disable:next force_unwrapping
         #expect(hit!.normal.x < 0)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.normal.y) < 0.01)
     }
 
@@ -94,6 +104,7 @@ struct RayIntersectionTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(hit!.distance == 0)
     }
 
@@ -114,7 +125,9 @@ struct RayIntersectionTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.point.x - 40) < 0.01) // hits left edge at x=40
+        // swiftlint:disable:next force_unwrapping
         #expect(hit!.distance > 0)
     }
 
@@ -326,7 +339,9 @@ struct PhysicsWorldQueryTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.distance - 45) < 0.01) // 50 - 5 = 45
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.point.x - 45) < 0.01)
     }
 
@@ -363,6 +378,7 @@ struct PhysicsWorldQueryTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.distance - 95) < 0.01) // 100 - 5 = 95
     }
 
@@ -402,6 +418,7 @@ struct PhysicsWorldQueryTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.distance - 55) < 0.01) // 60 - 5 = 55
     }
 
@@ -425,6 +442,7 @@ struct PhysicsWorldQueryTests {
 
         #expect(hit != nil)
         // After 90° rotation, halfExtents (10,1) becomes effectively (1,10)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.point.x - 49) < 0.5)
     }
 
@@ -441,6 +459,7 @@ struct PhysicsWorldQueryTests {
         )
 
         #expect(hit != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(hit!.distance - 40) < 0.01) // 50 - 10 = 40
     }
 

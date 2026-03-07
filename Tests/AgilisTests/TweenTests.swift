@@ -1,11 +1,9 @@
-import Testing
 @testable import Agilis
-import Agilis
+import Testing
 
-// MARK: - Test Helpers
-
-/// Thread-safe tracker for @Sendable closure captures in tests.
 private final class CallTracker: @unchecked Sendable {
+    deinit {}
+
     var wasCalled = false
     var callCount = 0
     func fire() { wasCalled = true; callCount += 1 }
@@ -13,6 +11,8 @@ private final class CallTracker: @unchecked Sendable {
 
 /// Thread-safe value tracker for @Sendable closure captures in tests.
 private final class ValueTracker<T>: @unchecked Sendable {
+    deinit {}
+
     var value: T
     init(_ initial: T) { self.value = initial }
 }
@@ -24,26 +24,43 @@ private func makeTweenWorld() -> (World, TweenSystem) {
     return (world, system)
 }
 
-private func tick(_ world: World, times: Int = 1, dt: Double = 1.0 / 60.0) {
+private func tick(
+    _ world: World,
+    times: Int = 1,
+    dt: Double = 1.0 / 60.0
+) {
     for _ in 0..<times {
         world.update(deltaTime: dt)
     }
 }
 
 /// Create an entity with Transform2D at a given position.
-private func makeEntity(_ world: World, position: Vector2 = .zero,
-                         rotation: Float = 0, scale: Vector2 = .one) -> Entity {
+private func makeEntity(
+    _ world: World,
+    position: Vector2 = .zero,
+    rotation: Float = 0,
+    scale: Vector2 = .one
+) -> Entity {
     let e = world.createEntity()
-    world.addComponent(Transform2D(position: position, rotation: rotation, scale: scale), to: e)
+    world.addComponent(
+        Transform2D(position: position, rotation: rotation, scale: scale),
+        to: e
+    )
     return e
 }
 
 /// Create an entity with Transform2D + Sprite.
-private func makeSpriteEntity(_ world: World, position: Vector2 = .zero,
-                                tint: Color = .white) -> Entity {
+private func makeSpriteEntity(
+    _ world: World,
+    position: Vector2 = .zero,
+    tint: Color = .white
+) -> Entity {
     let e = world.createEntity()
     world.addComponent(Transform2D(position: position), to: e)
-    world.addComponent(Sprite(texture: TextureHandle(id: 1), tint: tint), to: e)
+    world.addComponent(
+        Sprite(texture: TextureHandle(id: 1), tint: tint),
+        to: e
+    )
     return e
 }
 
@@ -138,7 +155,11 @@ struct TweenHandleTests {
 
     @Test("Handle hashability")
     func handleHash() {
-        let set: Set<TweenHandle> = [TweenHandle(id: 1), TweenHandle(id: 2), TweenHandle(id: 1)]
+        let set: Set<TweenHandle> = [
+            TweenHandle(id: 1),
+            TweenHandle(id: 2),
+            TweenHandle(id: 1)
+        ]
         #expect(set.count == 2)
     }
 }
@@ -148,94 +169,134 @@ struct TweenHandleTests {
 @Suite("Position Tweens")
 struct PositionTweenTests {
     @Test("moveTo reads current position as start")
-    func moveToStartsAtCurrent() {
+    func moveToStartsAtCurrent() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 10, y: 20))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 200), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 200),
+            duration: 1.0,
+            in: world
+        )
         // Before any tick, position should be unchanged
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(pos.x == 10 && pos.y == 20)
     }
 
     @Test("moveTo at t=0 keeps start position")
-    func moveToAtStart() {
+    func moveToAtStart() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 10, y: 20))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 200), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 200),
+            duration: 1.0,
+            in: world
+        )
         // After 1 tick at 1/60s, position should barely move from start
         tick(world, times: 1)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
-        // With linear easing, after 1/60s of 1s duration, t ≈ 0.0167
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
+        // With linear easing, after 1/60s of 1s duration, t ~ 0.0167
         #expect(pos.x > 10 && pos.x < 15)
     }
 
     @Test("moveTo reaches target at completion")
-    func moveToReachesTarget() {
+    func moveToReachesTarget() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 200), duration: 0.5, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 200),
+            duration: 0.5,
+            in: world
+        )
         // 30 ticks at 1/60 = 0.5 seconds
         tick(world, times: 30)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(abs(pos.x - 100) < 1 && abs(pos.y - 200) < 1)
     }
 
     @Test("moveTo midpoint with linear easing")
-    func moveToMidpoint() {
+    func moveToMidpoint() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         // 30 ticks at 1/60 = 0.5 seconds = halfway
         tick(world, times: 30)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(abs(pos.x - 50) < 2)
     }
 
     @Test("moveFromTo uses explicit start value")
-    func moveFromToExplicitStart() {
+    func moveFromToExplicitStart() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 999, y: 999))
 
-        tweens.moveFromTo(e, from: Vector2(x: 0, y: 0), to: Vector2(x: 100, y: 0), duration: 1.0)
+        tweens.moveFromTo(
+            e,
+            from: Vector2(x: 0, y: 0),
+            to: Vector2(x: 100, y: 0),
+            duration: 1.0
+        )
         tick(world, times: 1)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         // Should interpolate from (0,0), not from (999,999)
         #expect(pos.x >= 0 && pos.x < 10)
     }
 
     @Test("moveTo with cubicOut easing progresses faster at start")
-    func moveToWithEasing() {
+    func moveToWithEasing() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0,
-                      easing: .cubicOut, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            easing: .cubicOut,
+            in: world
+        )
         // After 0.5s with cubicOut, should be well past 50% (cubicOut is fast start)
         tick(world, times: 30)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
-        #expect(pos.x > 60) // cubicOut at t=0.5 ≈ 0.875
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
+        #expect(pos.x > 60) // cubicOut at t=0.5 ~ 0.875
     }
 
     @Test("moveTo returns invalid for entity without Transform2D")
     func moveToNoTransform() {
         let (world, tweens) = makeTweenWorld()
         let e = world.createEntity()
-        let handle = tweens.moveTo(e, target: .zero, duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: .zero,
+            duration: 1.0,
+            in: world
+        )
         #expect(handle == .invalid)
     }
 
     @Test("Zero duration moveTo snaps instantly")
-    func zeroDurationMoveTo() {
+    func zeroDurationMoveTo() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 200), duration: 0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 200),
+            duration: 0,
+            in: world
+        )
         tick(world, times: 1)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(abs(pos.x - 100) < 0.01 && abs(pos.y - 200) < 0.01)
     }
 }
@@ -245,24 +306,24 @@ struct PositionTweenTests {
 @Suite("Rotation Tweens")
 struct RotationTweenTests {
     @Test("rotateTo reaches target")
-    func rotateToTarget() {
+    func rotateToTarget() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, rotation: 0)
 
         tweens.rotateTo(e, target: .pi, duration: 0.5, in: world)
         tick(world, times: 30)
-        let rot = world.getComponent(Transform2D.self, from: e)!.rotation
+        let rot = try #require(world.getComponent(Transform2D.self, from: e)).rotation
         #expect(abs(rot - .pi) < 0.1)
     }
 
     @Test("rotateTo midpoint linear")
-    func rotateToMidpoint() {
+    func rotateToMidpoint() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, rotation: 0)
 
         tweens.rotateTo(e, target: 2.0, duration: 1.0, in: world)
         tick(world, times: 30)
-        let rot = world.getComponent(Transform2D.self, from: e)!.rotation
+        let rot = try #require(world.getComponent(Transform2D.self, from: e)).rotation
         #expect(abs(rot - 1.0) < 0.1)
     }
 
@@ -270,19 +331,30 @@ struct RotationTweenTests {
     func rotateToNoTransform() {
         let (world, tweens) = makeTweenWorld()
         let e = world.createEntity()
-        let handle = tweens.rotateTo(e, target: 1.0, duration: 1.0, in: world)
+        let handle = tweens.rotateTo(
+            e,
+            target: 1.0,
+            duration: 1.0,
+            in: world
+        )
         #expect(handle == .invalid)
     }
 
     @Test("rotateTo with easing")
-    func rotateToWithEasing() {
+    func rotateToWithEasing() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, rotation: 0)
 
-        tweens.rotateTo(e, target: 2.0, duration: 1.0, easing: .quadIn, in: world)
+        tweens.rotateTo(
+            e,
+            target: 2.0,
+            duration: 1.0,
+            easing: .quadIn,
+            in: world
+        )
         tick(world, times: 30)
-        let rot = world.getComponent(Transform2D.self, from: e)!.rotation
-        // quadIn at t=0.5 = 0.25, so rotation ≈ 0.5
+        let rot = try #require(world.getComponent(Transform2D.self, from: e)).rotation
+        // quadIn at t=0.5 = 0.25, so rotation ~ 0.5
         #expect(rot < 0.75)
     }
 }
@@ -292,35 +364,50 @@ struct RotationTweenTests {
 @Suite("Scale Tweens")
 struct ScaleTweenTests {
     @Test("scaleTo reaches target")
-    func scaleToTarget() {
+    func scaleToTarget() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, scale: .one)
 
-        tweens.scaleTo(e, target: Vector2(x: 2, y: 3), duration: 0.5, in: world)
+        tweens.scaleTo(
+            e,
+            target: Vector2(x: 2, y: 3),
+            duration: 0.5,
+            in: world
+        )
         tick(world, times: 30)
-        let scale = world.getComponent(Transform2D.self, from: e)!.scale
+        let scale = try #require(world.getComponent(Transform2D.self, from: e)).scale
         #expect(abs(scale.x - 2) < 0.1 && abs(scale.y - 3) < 0.1)
     }
 
     @Test("scaleUniformTo scales both axes equally")
-    func scaleUniform() {
+    func scaleUniform() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, scale: .one)
 
-        tweens.scaleUniformTo(e, target: 2.0, duration: 0.5, in: world)
+        tweens.scaleUniformTo(
+            e,
+            target: 2.0,
+            duration: 0.5,
+            in: world
+        )
         tick(world, times: 30)
-        let scale = world.getComponent(Transform2D.self, from: e)!.scale
+        let scale = try #require(world.getComponent(Transform2D.self, from: e)).scale
         #expect(abs(scale.x - 2) < 0.1 && abs(scale.y - 2) < 0.1)
     }
 
     @Test("scaleTo midpoint")
-    func scaleToMidpoint() {
+    func scaleToMidpoint() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, scale: Vector2(x: 1, y: 1))
 
-        tweens.scaleTo(e, target: Vector2(x: 3, y: 3), duration: 1.0, in: world)
+        tweens.scaleTo(
+            e,
+            target: Vector2(x: 3, y: 3),
+            duration: 1.0,
+            in: world
+        )
         tick(world, times: 30)
-        let scale = world.getComponent(Transform2D.self, from: e)!.scale
+        let scale = try #require(world.getComponent(Transform2D.self, from: e)).scale
         #expect(abs(scale.x - 2) < 0.2)
     }
 
@@ -328,7 +415,12 @@ struct ScaleTweenTests {
     func scaleToNoTransform() {
         let (world, tweens) = makeTweenWorld()
         let e = world.createEntity()
-        let handle = tweens.scaleTo(e, target: Vector2(x: 2, y: 2), duration: 1.0, in: world)
+        let handle = tweens.scaleTo(
+            e,
+            target: Vector2(x: 2, y: 2),
+            duration: 1.0,
+            in: world
+        )
         #expect(handle == .invalid)
     }
 }
@@ -338,47 +430,54 @@ struct ScaleTweenTests {
 @Suite("Color and Alpha Tweens")
 struct ColorTweenTests {
     @Test("tintTo reaches target color")
-    func tintToTarget() {
+    func tintToTarget() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeSpriteEntity(world, tint: .white)
 
-        tweens.tintTo(e, target: Color(r: 255, g: 0, b: 0, a: 255),
-                      duration: 0.5, in: world)
+        tweens.tintTo(
+            e,
+            target: Color(r: 255, g: 0, b: 0, a: 255),
+            duration: 0.5,
+            in: world
+        )
         tick(world, times: 30)
-        let tint = world.getComponent(Sprite.self, from: e)!.tint
+        let tint = try #require(world.getComponent(Sprite.self, from: e)).tint
         #expect(tint.r == 255 && tint.g < 10 && tint.b < 10)
     }
 
     @Test("fadeTo reaches target alpha")
-    func fadeToTarget() {
+    func fadeToTarget() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeSpriteEntity(world, tint: .white) // alpha = 255
 
         tweens.fadeTo(e, alpha: 0, duration: 0.5, in: world)
         tick(world, times: 30)
-        let alpha = world.getComponent(Sprite.self, from: e)!.tint.a
+        let alpha = try #require(world.getComponent(Sprite.self, from: e)).tint.a
         #expect(alpha < 5)
     }
 
     @Test("fadeOut fades to zero alpha")
-    func fadeOutToZero() {
+    func fadeOutToZero() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeSpriteEntity(world, tint: .white)
 
         tweens.fadeOut(e, duration: 0.5, in: world)
         tick(world, times: 30)
-        let alpha = world.getComponent(Sprite.self, from: e)!.tint.a
+        let alpha = try #require(world.getComponent(Sprite.self, from: e)).tint.a
         #expect(alpha < 5)
     }
 
     @Test("fadeIn fades to full alpha")
-    func fadeInToFull() {
+    func fadeInToFull() throws {
         let (world, tweens) = makeTweenWorld()
-        let e = makeSpriteEntity(world, tint: Color(r: 255, g: 255, b: 255, a: 0))
+        let e = makeSpriteEntity(
+            world,
+            tint: Color(r: 255, g: 255, b: 255, a: 0)
+        )
 
         tweens.fadeIn(e, duration: 0.5, in: world)
         tick(world, times: 30)
-        let alpha = world.getComponent(Sprite.self, from: e)!.tint.a
+        let alpha = try #require(world.getComponent(Sprite.self, from: e)).tint.a
         #expect(alpha > 250)
     }
 
@@ -386,18 +485,26 @@ struct ColorTweenTests {
     func tintToNoSprite() {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world)
-        let handle = tweens.tintTo(e, target: .red, duration: 1.0, in: world)
+        let handle = tweens.tintTo(
+            e,
+            target: .red,
+            duration: 1.0,
+            in: world
+        )
         #expect(handle == .invalid)
     }
 
     @Test("fadeTo preserves RGB channels")
-    func fadePreservesRGB() {
+    func fadePreservesRGB() throws {
         let (world, tweens) = makeTweenWorld()
-        let e = makeSpriteEntity(world, tint: Color(r: 100, g: 150, b: 200, a: 255))
+        let e = makeSpriteEntity(
+            world,
+            tint: Color(r: 100, g: 150, b: 200, a: 255)
+        )
 
         tweens.fadeTo(e, alpha: 128, duration: 0.5, in: world)
         tick(world, times: 30)
-        let tint = world.getComponent(Sprite.self, from: e)!.tint
+        let tint = try #require(world.getComponent(Sprite.self, from: e)).tint
         // RGB should remain 100, 150, 200 — only alpha changes
         #expect(tint.r == 100 && tint.g == 150 && tint.b == 200)
         #expect(abs(Int(tint.a) - 128) < 5)
@@ -413,7 +520,7 @@ struct CustomTweenTests {
     }
 
     @Test("Custom tween applies user closure")
-    func customTweenApplies() {
+    func customTweenApplies() throws {
         let (world, tweens) = makeTweenWorld()
         let e = world.createEntity()
         world.addComponent(Health(current: 0), to: e)
@@ -425,7 +532,7 @@ struct CustomTweenTests {
         }
 
         tick(world, times: 30)
-        let health = world.getComponent(Health.self, from: e)!
+        let health = try #require(world.getComponent(Health.self, from: e))
         #expect(abs(health.current - 100) < 2)
     }
 
@@ -436,12 +543,16 @@ struct CustomTweenTests {
         world.addComponent(Health(current: 0), to: e)
 
         let tracker = ValueTracker<Float>(-1)
-        tweens.custom(e, duration: 1.0, easing: .cubicOut) { _, _, t in
+        tweens.custom(
+            e,
+            duration: 1.0,
+            easing: .cubicOut
+        ) { _, _, t in
             tracker.value = t
         }
 
         tick(world, times: 30)
-        // cubicOut at t=0.5 ≈ 0.875
+        // cubicOut at t=0.5 ~ 0.875
         #expect(tracker.value > 0.8)
     }
 
@@ -465,54 +576,75 @@ struct CustomTweenTests {
 @Suite("Tween Delay")
 struct DelayTests {
     @Test("Tween waits during delay")
-    func tweenWaitsDuringDelay() {
+    func tweenWaitsDuringDelay() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5,
-                      delay: 0.5, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            delay: 0.5,
+            in: world
+        )
         // After 0.25 seconds (15 ticks), still in delay
         tick(world, times: 15)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(abs(pos.x) < 0.01)
     }
 
     @Test("Tween starts after delay")
-    func tweenStartsAfterDelay() {
+    func tweenStartsAfterDelay() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5,
-                      delay: 0.5, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            delay: 0.5,
+            in: world
+        )
         // After 1.0 seconds (60 ticks), delay + duration both done
         tick(world, times: 60)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(abs(pos.x - 100) < 2)
     }
 
     @Test("Zero delay starts immediately")
-    func zeroDelayStartsImmediately() {
+    func zeroDelayStartsImmediately() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5,
-                      delay: 0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            delay: 0,
+            in: world
+        )
         tick(world, times: 1)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(pos.x > 0)
     }
 
     @Test("Delay with easing combined")
-    func delayWithEasing() {
+    func delayWithEasing() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5,
-                      easing: .cubicOut, delay: 0.25, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            easing: .cubicOut,
+            delay: 0.25,
+            in: world
+        )
         // After delay (15 ticks) + half duration (15 ticks) = 30 ticks
         tick(world, times: 30)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
-        // cubicOut at t=0.5 ≈ 0.875 * 100 = ~87.5
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
+        // cubicOut at t=0.5 ~ 0.875 * 100 = ~87.5
         #expect(pos.x > 60)
     }
 }
@@ -522,17 +654,25 @@ struct DelayTests {
 @Suite("Tween Lifecycle")
 struct LifecycleTests {
     @Test("Cancel stops the tween")
-    func cancelStopsTween() {
+    func cancelStopsTween() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tick(world, times: 10)
         tweens.cancel(handle)
-        let posBeforeMore = world.getComponent(Transform2D.self, from: e)!.position.x
+        let posBeforeMore = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         tick(world, times: 30)
-        let posAfterMore = world.getComponent(Transform2D.self, from: e)!.position.x
+        let posAfterMore = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         // Position should not change after cancel
         #expect(abs(posBeforeMore - posAfterMore) < 0.01)
     }
@@ -542,7 +682,12 @@ struct LifecycleTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeSpriteEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tweens.fadeOut(e, duration: 1.0, in: world)
         #expect(tweens.tweenCount == 2)
 
@@ -551,34 +696,50 @@ struct LifecycleTests {
     }
 
     @Test("Pause freezes the tween")
-    func pauseFreezeTween() {
+    func pauseFreezeTween() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tick(world, times: 10)
         tweens.pause(handle)
-        let pausedPos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pausedPos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         tick(world, times: 30)
-        let afterPausePos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let afterPausePos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pausedPos - afterPausePos) < 0.01)
     }
 
     @Test("Resume continues from pause point")
-    func resumeFromPause() {
+    func resumeFromPause() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tick(world, times: 10)
         tweens.pause(handle)
-        let pausedPos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pausedPos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         tick(world, times: 10) // These should not advance
         tweens.resume(handle)
         tick(world, times: 10)
-        let afterResumePos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let afterResumePos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(afterResumePos > pausedPos + 5)
     }
 
@@ -587,7 +748,12 @@ struct LifecycleTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         #expect(tweens.tweenCount == 1)
 
         world.destroyEntity(e)
@@ -601,8 +767,12 @@ struct LifecycleTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world)
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         #expect(tweens.isActive(handle))
     }
 
@@ -611,8 +781,12 @@ struct LifecycleTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world)
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tweens.cancel(handle)
         #expect(!tweens.isActive(handle))
     }
@@ -622,8 +796,12 @@ struct LifecycleTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world)
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tick(world, times: 60) // Well past 0.5s
         #expect(!tweens.isActive(handle))
     }
@@ -633,8 +811,18 @@ struct LifecycleTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world)
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0, in: world)
-        tweens.moveTo(e, target: Vector2(x: 200, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 200, y: 0),
+            duration: 1.0,
+            in: world
+        )
         #expect(tweens.tweenCount == 2)
 
         tweens.removeAll()
@@ -642,27 +830,38 @@ struct LifecycleTests {
     }
 
     @Test("pauseAll and resumeAll for entity")
-    func pauseResumeAll() {
+    func pauseResumeAll() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeSpriteEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tweens.fadeOut(e, duration: 1.0, in: world)
 
         tick(world, times: 10)
         tweens.pauseAll(on: e)
-        let posX = world.getComponent(Transform2D.self, from: e)!.position.x
-        let alpha = world.getComponent(Sprite.self, from: e)!.tint.a
+        let posX = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
+        let alpha = try #require(world.getComponent(Sprite.self, from: e)).tint.a
 
         tick(world, times: 20) // Should not change
-        let posX2 = world.getComponent(Transform2D.self, from: e)!.position.x
-        let alpha2 = world.getComponent(Sprite.self, from: e)!.tint.a
+        let posX2 = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
+        let alpha2 = try #require(world.getComponent(Sprite.self, from: e)).tint.a
         #expect(abs(posX - posX2) < 0.01)
         #expect(alpha == alpha2)
 
         tweens.resumeAll(on: e)
         tick(world, times: 10)
-        let posX3 = world.getComponent(Transform2D.self, from: e)!.position.x
+        let posX3 = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(posX3 > posX + 5)
     }
 }
@@ -677,8 +876,12 @@ struct CallbackTests {
         let e = makeEntity(world)
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.onComplete(handle) { tracker.fire() }
 
         tick(world, times: 29) // Not quite done
@@ -693,8 +896,12 @@ struct CallbackTests {
         let e = makeEntity(world)
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tweens.onComplete(handle) { tracker.fire() }
 
         tick(world, times: 10)
@@ -709,8 +916,13 @@ struct CallbackTests {
         let e = makeEntity(world)
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, delay: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            delay: 0.5,
+            in: world
+        )
         tweens.onStart(handle) { tracker.fire() }
 
         tick(world, times: 15) // 0.25s into delay
@@ -726,8 +938,12 @@ struct CallbackTests {
 
         let counter = CallTracker()
         let lastTTracker = ValueTracker<Float>(-1)
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.onUpdate(handle) { t in
             counter.fire()
             lastTTracker.value = t
@@ -746,7 +962,12 @@ struct CallbackTests {
         let tracker = CallTracker()
         tweens.onTweenCompleted = { _, _ in tracker.fire() }
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tick(world, times: 31)
         #expect(tracker.wasCalled)
     }
@@ -759,7 +980,12 @@ struct CallbackTests {
         let tracker = CallTracker()
         world.on(TweenCompleted.self) { _ in tracker.fire() }
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tick(world, times: 31)
         #expect(tracker.wasCalled)
     }
@@ -770,8 +996,12 @@ struct CallbackTests {
         let e = makeEntity(world)
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         tweens.onComplete(handle) { tracker.fire() }
 
         tick(world, times: 5)
@@ -786,8 +1016,12 @@ struct CallbackTests {
         let e = makeEntity(world)
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.onComplete(handle) { tracker.fire() }
 
         tick(world, times: 60) // Way past completion
@@ -805,8 +1039,12 @@ struct RepeatYoyoTests {
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.setRepeat(handle, count: 2) // play 3 times total
         tweens.onComplete(handle) { tracker.fire() }
 
@@ -820,8 +1058,12 @@ struct RepeatYoyoTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.setRepeat(handle, count: -1) // infinite
 
         tick(world, times: 300) // 5 seconds of play
@@ -829,22 +1071,30 @@ struct RepeatYoyoTests {
     }
 
     @Test("Yoyo plays forward then backward")
-    func yoyoForwardBackward() {
+    func yoyoForwardBackward() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.setYoyo(handle)
 
         // After forward play (30 ticks), should be at ~100
         tick(world, times: 30)
-        let midPos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let midPos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(midPos - 100) < 5)
 
         // After reverse play (30 more ticks), should be back at ~0
         tick(world, times: 31)
-        let endPos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let endPos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(endPos) < 5)
     }
 
@@ -853,8 +1103,12 @@ struct RepeatYoyoTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.setYoyo(handle)
         tweens.setRepeat(handle, count: -1) // infinite yoyo
 
@@ -868,25 +1122,35 @@ struct RepeatYoyoTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world)
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         // Default repeatCount is 0 — plays once
         tick(world, times: 31) // Past duration
         #expect(!tweens.isActive(handle))
     }
 
     @Test("Yoyo midpoint returns to start")
-    func yoyoMidpointCheck() {
+    func yoyoMidpointCheck() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 50, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 150, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 150, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.setYoyo(handle)
 
         // Forward half: should be at ~midpoint (100) at 15 ticks
         tick(world, times: 15)
-        let halfwayForward = world.getComponent(Transform2D.self, from: e)!.position.x
+        let halfwayForward = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(halfwayForward - 100) < 10)
     }
 
@@ -896,8 +1160,12 @@ struct RepeatYoyoTests {
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         let counter = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         tweens.setRepeat(handle, count: 1)
         tweens.onUpdate(handle) { _ in counter.fire() }
 
@@ -907,24 +1175,33 @@ struct RepeatYoyoTests {
     }
 
     @Test("Yoyo correctly reverses with easing")
-    func yoyoReversesEasing() {
+    func yoyoReversesEasing() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, easing: .cubicOut, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            easing: .cubicOut,
+            in: world
+        )
         tweens.setYoyo(handle)
 
-        // cubicOut at t=0.5 ≈ 0.875, so position ≈ 87.5 at forward midpoint
+        // cubicOut at t=0.5 ~ 0.875, so position ~ 87.5 at forward midpoint
         tick(world, times: 30)
-        let forwardMid = world.getComponent(Transform2D.self, from: e)!.position.x
+        let forwardMid = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(forwardMid > 70)
 
         // Complete forward phase
         tick(world, times: 31)
-        // Now reversing — at reverse midpoint, directedT = 0.5, cubicOut(0.5) ≈ 0.875
+        // Now reversing — at reverse midpoint, directedT = 0.5, cubicOut(0.5) ~ 0.875
         tick(world, times: 30)
-        let reverseMid = world.getComponent(Transform2D.self, from: e)!.position.x
+        let reverseMid = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         // Reverse mid should be near 87.5 since easing is applied to reversed t
         #expect(reverseMid > 60)
     }
@@ -935,50 +1212,68 @@ struct RepeatYoyoTests {
 @Suite("Tween Sequences")
 struct SequenceTests {
     @Test("Two-step sequence moves then fades")
-    func twoStepSequence() {
+    func twoStepSequence() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeSpriteEntity(world, position: Vector2(x: 0, y: 0))
 
         tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 0.5, easing: .linear),
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 0.5,
+                easing: .linear
+            ),
             .fadeOut(duration: 0.5, easing: .linear)
         ], in: world)
 
         // After first step (30 ticks), should be at target position
         tick(world, times: 31)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(abs(pos.x - 100) < 3)
 
         // After second step (30 more ticks), alpha should be near 0
         tick(world, times: 31)
-        let alpha = world.getComponent(Sprite.self, from: e)!.tint.a
+        let alpha = try #require(world.getComponent(Sprite.self, from: e)).tint.a
         #expect(alpha < 10)
     }
 
     @Test("Wait step pauses between animations")
-    func waitStep() {
+    func waitStep() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 0.5, easing: .linear),
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 0.5,
+                easing: .linear
+            ),
             .wait(duration: 0.5),
-            .moveTo(target: Vector2(x: 200, y: 0), duration: 0.5, easing: .linear)
+            .moveTo(
+                target: Vector2(x: 200, y: 0),
+                duration: 0.5,
+                easing: .linear
+            )
         ], in: world)
 
         // After first move (30 ticks)
         tick(world, times: 31)
-        let pos1 = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos1 = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pos1 - 100) < 3)
 
         // During wait (15 ticks), position shouldn't change much
         tick(world, times: 15)
-        let pos2 = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos2 = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pos2 - 100) < 3)
 
         // After wait + second move
         tick(world, times: 46)
-        let pos3 = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos3 = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pos3 - 200) < 5)
     }
 
@@ -989,9 +1284,17 @@ struct SequenceTests {
 
         let tracker = CallTracker()
         tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 0.5, easing: .linear),
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 0.5,
+                easing: .linear
+            ),
             .callback { tracker.fire() },
-            .moveTo(target: Vector2(x: 200, y: 0), duration: 0.5, easing: .linear)
+            .moveTo(
+                target: Vector2(x: 200, y: 0),
+                duration: 0.5,
+                easing: .linear
+            )
         ], in: world)
 
         // Callback fires after first step completes
@@ -1002,20 +1305,30 @@ struct SequenceTests {
     }
 
     @Test("Sequence reads current value per step")
-    func sequenceReadsCurrentValue() {
+    func sequenceReadsCurrentValue() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 0.5, easing: .linear),
-            .moveTo(target: Vector2(x: 50, y: 0), duration: 0.5, easing: .linear)
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 0.5,
+                easing: .linear
+            ),
+            .moveTo(
+                target: Vector2(x: 50, y: 0),
+                duration: 0.5,
+                easing: .linear
+            )
         ], in: world)
 
         // After first step, at x=100
         tick(world, times: 31)
         // Second step starts from current (100) to 50
         tick(world, times: 15) // Halfway through second step
-        let pos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         // Should be between 100 and 50, around 75
         #expect(pos > 60 && pos < 90)
     }
@@ -1035,7 +1348,11 @@ struct SequenceTests {
 
         let tracker = CallTracker()
         tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 0.5, easing: .linear),
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 0.5,
+                easing: .linear
+            ),
             .callback { tracker.fire() }
         ], in: world)
 
@@ -1052,8 +1369,16 @@ struct SequenceTests {
 
         let tracker = CallTracker()
         let handle = tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 0.5, easing: .linear),
-            .moveTo(target: Vector2(x: 200, y: 0), duration: 0.5, easing: .linear)
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 0.5,
+                easing: .linear
+            ),
+            .moveTo(
+                target: Vector2(x: 200, y: 0),
+                duration: 0.5,
+                easing: .linear
+            )
         ], in: world)
         tweens.onSequenceComplete(handle) { tracker.fire() }
 
@@ -1064,20 +1389,32 @@ struct SequenceTests {
     }
 
     @Test("Cancel sequence cancels current step")
-    func cancelSequence() {
+    func cancelSequence() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         let handle = tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 1.0, easing: .linear),
-            .moveTo(target: Vector2(x: 200, y: 0), duration: 1.0, easing: .linear)
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 1.0,
+                easing: .linear
+            ),
+            .moveTo(
+                target: Vector2(x: 200, y: 0),
+                duration: 1.0,
+                easing: .linear
+            )
         ], in: world)
 
         tick(world, times: 10)
         tweens.cancel(handle)
-        let posX = world.getComponent(Transform2D.self, from: e)!.position.x
+        let posX = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         tick(world, times: 60)
-        let posX2 = world.getComponent(Transform2D.self, from: e)!.position.x
+        let posX2 = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(posX - posX2) < 0.01)
     }
 
@@ -1087,7 +1424,11 @@ struct SequenceTests {
         let e = makeEntity(world)
 
         let handle = tweens.sequence(e, steps: [
-            .moveTo(target: Vector2(x: 100, y: 0), duration: 0.5, easing: .linear)
+            .moveTo(
+                target: Vector2(x: 100, y: 0),
+                duration: 0.5,
+                easing: .linear
+            )
         ], in: world)
 
         #expect(tweens.isActive(handle))
@@ -1103,53 +1444,81 @@ struct SequenceTests {
 @Suite("Easing Integration")
 struct EasingIntegrationTests {
     @Test("cubicOut produces expected midpoint")
-    func cubicOutMidpoint() {
+    func cubicOutMidpoint() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0,
-                      easing: .cubicOut, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            easing: .cubicOut,
+            in: world
+        )
         // At t=0.5, cubicOut = 1 - (0.5)^3 = 0.875
         tick(world, times: 30)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pos - 87.5) < 5)
     }
 
     @Test("quadIn produces expected midpoint")
-    func quadInMidpoint() {
+    func quadInMidpoint() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0,
-                      easing: .quadIn, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            easing: .quadIn,
+            in: world
+        )
         // At t=0.5, quadIn = 0.25
         tick(world, times: 30)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pos - 25) < 5)
     }
 
     @Test("Linear easing produces straight interpolation")
-    func linearStraight() {
+    func linearStraight() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 60, y: 0), duration: 1.0,
-                      easing: .linear, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 60, y: 0),
+            duration: 1.0,
+            easing: .linear,
+            in: world
+        )
         // At exactly 30 ticks (0.5s), should be at 30
         tick(world, times: 30)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pos - 30) < 2)
     }
 
     @Test("Bounce easing reaches target at completion")
-    func bounceReachesTarget() {
+    func bounceReachesTarget() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5,
-                      easing: .bounceOut, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            easing: .bounceOut,
+            in: world
+        )
         tick(world, times: 31)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         #expect(abs(pos - 100) < 3)
     }
 }
@@ -1159,18 +1528,22 @@ struct EasingIntegrationTests {
 @Suite("Edge Cases")
 struct EdgeCaseTests {
     @Test("Zero duration tween completes instantly")
-    func zeroDurationInstant() {
+    func zeroDurationInstant() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0,
+            in: world
+        )
         tweens.onComplete(handle) { tracker.fire() }
 
         tick(world, times: 1)
         #expect(tracker.wasCalled)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position
+        let pos = try #require(world.getComponent(Transform2D.self, from: e)).position
         #expect(abs(pos.x - 100) < 0.01)
     }
 
@@ -1179,8 +1552,18 @@ struct EdgeCaseTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 1.0, in: world)
-        tweens.moveTo(e, target: Vector2(x: -100, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
+        tweens.moveTo(
+            e,
+            target: Vector2(x: -100, y: 0),
+            duration: 1.0,
+            in: world
+        )
         #expect(tweens.tweenCount == 2) // Both exist
         // Both will write to position — last iteration wins, but both are processing
     }
@@ -1191,9 +1574,13 @@ struct EdgeCaseTests {
         let e = makeEntity(world)
         world.destroyEntity(e)
 
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 1.0, in: world)
-        // moveTo reads component — entity is dead, so getComponent returns nil → .invalid
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
+        // moveTo reads component — entity is dead, so getComponent returns nil -> .invalid
         #expect(handle == .invalid)
     }
 
@@ -1203,9 +1590,19 @@ struct EdgeCaseTests {
         let e = makeEntity(world)
 
         #expect(tweens.tweenCount == 0)
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         #expect(tweens.tweenCount == 1)
-        tweens.moveTo(e, target: Vector2(x: 200, y: 0), duration: 0.5, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 200, y: 0),
+            duration: 0.5,
+            in: world
+        )
         #expect(tweens.tweenCount == 2)
 
         tick(world, times: 31) // Both should complete
@@ -1213,14 +1610,21 @@ struct EdgeCaseTests {
     }
 
     @Test("Negative delay is treated as zero")
-    func negativeDelay() {
+    func negativeDelay() throws {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e, target: Vector2(x: 100, y: 0), duration: 0.5,
-                      delay: -1.0, in: world)
+        tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            delay: -1.0,
+            in: world
+        )
         tick(world, times: 1)
-        let pos = world.getComponent(Transform2D.self, from: e)!.position.x
+        let pos = try #require(
+            world.getComponent(Transform2D.self, from: e)
+        ).position.x
         // Should start immediately, not be stuck in delay
         #expect(pos > 0)
     }
@@ -1231,8 +1635,12 @@ struct EdgeCaseTests {
         let e = makeEntity(world)
 
         let tracker = CallTracker()
-        let handle = tweens.moveTo(e, target: Vector2(x: 100, y: 0),
-                                   duration: 0.5, in: world)
+        let handle = tweens.moveTo(
+            e,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
         // Chain modifiers
         tweens.setYoyo(handle)
         tweens.setRepeat(handle, count: 1)
@@ -1250,18 +1658,32 @@ struct EdgeCaseTests {
 @Suite("Multiple Entities")
 struct MultipleEntityTests {
     @Test("Tweens on different entities are independent")
-    func independentTweens() {
+    func independentTweens() throws {
         let (world, tweens) = makeTweenWorld()
         let e1 = makeEntity(world, position: Vector2(x: 0, y: 0))
         let e2 = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.moveTo(e1, target: Vector2(x: 100, y: 0), duration: 0.5, in: world)
-        tweens.moveTo(e2, target: Vector2(x: -100, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e1,
+            target: Vector2(x: 100, y: 0),
+            duration: 0.5,
+            in: world
+        )
+        tweens.moveTo(
+            e2,
+            target: Vector2(x: -100, y: 0),
+            duration: 1.0,
+            in: world
+        )
 
         tick(world, times: 31) // e1 done, e2 halfway
 
-        let pos1 = world.getComponent(Transform2D.self, from: e1)!.position.x
-        let pos2 = world.getComponent(Transform2D.self, from: e2)!.position.x
+        let pos1 = try #require(
+            world.getComponent(Transform2D.self, from: e1)
+        ).position.x
+        let pos2 = try #require(
+            world.getComponent(Transform2D.self, from: e2)
+        ).position.x
 
         #expect(abs(pos1 - 100) < 3)
         #expect(abs(pos2 - (-50)) < 5)
@@ -1273,8 +1695,18 @@ struct MultipleEntityTests {
         let e1 = makeEntity(world)
         let e2 = makeEntity(world)
 
-        tweens.moveTo(e1, target: Vector2(x: 100, y: 0), duration: 1.0, in: world)
-        tweens.moveTo(e2, target: Vector2(x: 200, y: 0), duration: 1.0, in: world)
+        tweens.moveTo(
+            e1,
+            target: Vector2(x: 100, y: 0),
+            duration: 1.0,
+            in: world
+        )
+        tweens.moveTo(
+            e2,
+            target: Vector2(x: 200, y: 0),
+            duration: 1.0,
+            in: world
+        )
         #expect(tweens.tweenCount == 2)
 
         tweens.cancelAll(on: e1)

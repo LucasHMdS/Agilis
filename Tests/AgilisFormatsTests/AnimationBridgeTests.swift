@@ -1,7 +1,7 @@
-import Testing
-import Foundation
-@testable import AgilisFormats
 @testable import Agilis
+@testable import AgilisFormats
+import Foundation
+import Testing
 
 // MARK: - Aseprite Bridge Tests
 
@@ -11,29 +11,35 @@ struct AsepriteAnimationBridgeTests {
     /// Helper: create minimal Aseprite data with frames and optional tags.
     private func makeAsepriteData(
         frames: [(x: Int, y: Int, w: Int, h: Int, duration: Int)],
+        // swiftlint:disable:next discouraged_optional_collection
         tags: [(name: String, from: Int, to: Int, direction: String)]? = nil
     ) -> AsepriteData {
         let json = makeAsepriteJSON(frames: frames, tags: tags)
+        // swiftlint:disable:next force_try
         return try! AsepriteLoader().load(from: Data(json.utf8))
     }
 
     private func makeAsepriteJSON(
         frames: [(x: Int, y: Int, w: Int, h: Int, duration: Int)],
+        // swiftlint:disable:next discouraged_optional_collection
         tags: [(name: String, from: Int, to: Int, direction: String)]?
     ) -> String {
-        let framesJSON = frames.enumerated().map { (i, f) in
-            """
-            {
-                "filename": "frame_\(i).png",
-                "frame": {"x": \(f.x), "y": \(f.y), "w": \(f.w), "h": \(f.h)},
-                "rotated": false,
-                "trimmed": false,
-                "spriteSourceSize": {"x": 0, "y": 0, "w": \(f.w), "h": \(f.h)},
-                "sourceSize": {"w": \(f.w), "h": \(f.h)},
-                "duration": \(f.duration)
+        let framesJSON = frames
+            .enumerated()
+            .map { i, f in
+                """
+                {
+                    "filename": "frame_\(i).png",
+                    "frame": {"x": \(f.x), "y": \(f.y), "w": \(f.w), "h": \(f.h)},
+                    "rotated": false,
+                    "trimmed": false,
+                    "spriteSourceSize": {"x": 0, "y": 0, "w": \(f.w), "h": \(f.h)},
+                    "sourceSize": {"w": \(f.w), "h": \(f.h)},
+                    "duration": \(f.duration)
+                }
+                """
             }
-            """
-        }.joined(separator: ",\n")
+            .joined(separator: ",\n")
 
         var tagsJSON = ""
         if let tags = tags {
@@ -41,7 +47,8 @@ struct AsepriteAnimationBridgeTests {
                 """
                 {"name": "\(tag.name)", "from": \(tag.from), "to": \(tag.to), "direction": "\(tag.direction)"}
                 """
-            }.joined(separator: ",\n")
+            }
+            .joined(separator: ",\n")
             tagsJSON = ", \"frameTags\": [\(tagEntries)]"
         }
 
@@ -66,12 +73,12 @@ struct AsepriteAnimationBridgeTests {
                 (x: 64, y: 0, w: 32, h: 32, duration: 150),
                 (x: 96, y: 0, w: 32, h: 32, duration: 150),
                 (x: 0, y: 32, w: 32, h: 32, duration: 200),
-                (x: 32, y: 32, w: 32, h: 32, duration: 200),
+                (x: 32, y: 32, w: 32, h: 32, duration: 200)
             ],
             tags: [
                 (name: "idle", from: 0, to: 1, direction: "forward"),
                 (name: "walk", from: 2, to: 3, direction: "pingpong"),
-                (name: "die", from: 4, to: 5, direction: "forward"),
+                (name: "die", from: 4, to: 5, direction: "forward")
             ]
         )
 
@@ -105,10 +112,10 @@ struct AsepriteAnimationBridgeTests {
             frames: [
                 (x: 0, y: 0, w: 16, h: 16, duration: 50),
                 (x: 16, y: 0, w: 16, h: 16, duration: 250),
-                (x: 32, y: 0, w: 16, h: 16, duration: 1000),
+                (x: 32, y: 0, w: 16, h: 16, duration: 1_000)
             ],
             tags: [
-                (name: "test", from: 0, to: 2, direction: "forward"),
+                (name: "test", from: 0, to: 2, direction: "forward")
             ]
         )
 
@@ -124,12 +131,12 @@ struct AsepriteAnimationBridgeTests {
         let aseprite = makeAsepriteData(
             frames: [
                 (x: 0, y: 0, w: 16, h: 16, duration: 100),
-                (x: 16, y: 0, w: 16, h: 16, duration: 100),
+                (x: 16, y: 0, w: 16, h: 16, duration: 100)
             ],
             tags: [
                 (name: "fwd", from: 0, to: 1, direction: "forward"),
                 (name: "rev", from: 0, to: 1, direction: "reverse"),
-                (name: "pp", from: 0, to: 1, direction: "pingpong"),
+                (name: "pp", from: 0, to: 1, direction: "pingpong")
             ]
         )
 
@@ -143,7 +150,7 @@ struct AsepriteAnimationBridgeTests {
     func noTags() {
         let aseprite = makeAsepriteData(
             frames: [
-                (x: 0, y: 0, w: 16, h: 16, duration: 100),
+                (x: 0, y: 0, w: 16, h: 16, duration: 100)
             ],
             tags: nil
         )
@@ -158,7 +165,7 @@ struct AsepriteAnimationBridgeTests {
             frames: [
                 (x: 0, y: 0, w: 32, h: 32, duration: 100),
                 (x: 32, y: 0, w: 32, h: 32, duration: 200),
-                (x: 64, y: 0, w: 32, h: 32, duration: 150),
+                (x: 64, y: 0, w: 32, h: 32, duration: 150)
             ]
         )
 
@@ -175,7 +182,7 @@ struct AsepriteAnimationBridgeTests {
     func allFramesDefaults() {
         let aseprite = makeAsepriteData(
             frames: [
-                (x: 0, y: 0, w: 16, h: 16, duration: 100),
+                (x: 0, y: 0, w: 16, h: 16, duration: 100)
             ]
         )
 
@@ -216,6 +223,7 @@ struct TextureAtlasAnimationBridgeTests {
             }
         }
         """
+        // swiftlint:disable:next force_try
         return try! TextureAtlasLoader().load(from: Data(json.utf8))
     }
 
@@ -226,7 +234,7 @@ struct TextureAtlasAnimationBridgeTests {
             (name: "walk_0001", x: 32, y: 0, w: 32, h: 32),
             (name: "walk_0002", x: 64, y: 0, w: 32, h: 32),
             (name: "idle_0000", x: 0, y: 32, w: 32, h: 32),
-            (name: "idle_0001", x: 32, y: 32, w: 32, h: 32),
+            (name: "idle_0001", x: 32, y: 32, w: 32, h: 32)
         ])
 
         let walkClip = AnimationClip.fromTextureAtlas(atlas, prefix: "walk_", frameDuration: 0.1)
@@ -249,7 +257,7 @@ struct TextureAtlasAnimationBridgeTests {
     func prefixCustomMode() {
         let atlas = makeAtlas(frames: [
             (name: "run_0", x: 0, y: 0, w: 16, h: 16),
-            (name: "run_1", x: 16, y: 0, w: 16, h: 16),
+            (name: "run_1", x: 16, y: 0, w: 16, h: 16)
         ])
 
         let clip = AnimationClip.fromTextureAtlas(
@@ -263,7 +271,7 @@ struct TextureAtlasAnimationBridgeTests {
     @Test("fromTextureAtlas prefix no matches returns empty clip")
     func prefixNoMatch() {
         let atlas = makeAtlas(frames: [
-            (name: "walk_0", x: 0, y: 0, w: 16, h: 16),
+            (name: "walk_0", x: 0, y: 0, w: 16, h: 16)
         ])
 
         let clip = AnimationClip.fromTextureAtlas(atlas, prefix: "attack_", frameDuration: 0.1)
@@ -276,7 +284,7 @@ struct TextureAtlasAnimationBridgeTests {
             (name: "hero_stand", x: 0, y: 0, w: 32, h: 48),
             (name: "hero_crouch", x: 32, y: 0, w: 32, h: 48),
             (name: "hero_jump", x: 64, y: 0, w: 32, h: 48),
-            (name: "hero_fall", x: 96, y: 0, w: 32, h: 48),
+            (name: "hero_fall", x: 96, y: 0, w: 32, h: 48)
         ])
 
         let clip = AnimationClip.fromTextureAtlas(
@@ -301,7 +309,7 @@ struct TextureAtlasAnimationBridgeTests {
     func explicitNamesMissing() {
         let atlas = makeAtlas(frames: [
             (name: "a", x: 0, y: 0, w: 16, h: 16),
-            (name: "c", x: 32, y: 0, w: 16, h: 16),
+            (name: "c", x: 32, y: 0, w: 16, h: 16)
         ])
 
         let clip = AnimationClip.fromTextureAtlas(
@@ -323,7 +331,7 @@ struct TextureAtlasAnimationBridgeTests {
             (name: "anim_03", x: 48, y: 0, w: 16, h: 16),
             (name: "anim_01", x: 16, y: 0, w: 16, h: 16),
             (name: "anim_00", x: 0, y: 0, w: 16, h: 16),
-            (name: "anim_02", x: 32, y: 0, w: 16, h: 16),
+            (name: "anim_02", x: 32, y: 0, w: 16, h: 16)
         ])
 
         let clip = AnimationClip.fromTextureAtlas(atlas, prefix: "anim_", frameDuration: 0.1)

@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -176,10 +174,12 @@ public struct RigidBody2D: Component, Sendable, SerializableComponent {
         switch shape {
         case .circle(let radius):
             return 0.5 * mass * radius * radius
+
         case .aabb(let halfExtents):
             let w = halfExtents.x * 2
             let h = halfExtents.y * 2
             return mass * (w * w + h * h) / 12.0
+
         case .polygon(let poly):
             return computePolygonInertia(mass: mass, vertices: poly.vertices)
         }
@@ -232,8 +232,13 @@ public struct RigidBody2D: Component, Sendable, SerializableComponent {
         let linearDamping = try container.decode(Float.self, forKey: .linearDamping)
         let useCCD = try container.decodeIfPresent(Bool.self, forKey: .useCCD) ?? false
         self.init(
-            mass: mass, inertia: inertia, restitution: restitution, friction: friction,
-            gravityScale: gravityScale, bodyType: bodyType, linearDamping: linearDamping,
+            mass: mass,
+            inertia: inertia,
+            restitution: restitution,
+            friction: friction,
+            gravityScale: gravityScale,
+            bodyType: bodyType,
+            linearDamping: linearDamping,
             useCCD: useCCD
         )
     }

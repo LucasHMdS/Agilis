@@ -16,8 +16,8 @@ public protocol GameDelegate: AnyObject {
 
 /// Default implementations so delegates only need to implement what they use.
 public extension GameDelegate {
-    func gameDidStart(_ app: Application) {}
-    func gameDidUpdate(_ app: Application, deltaTime: Double) {}
-    func gameWillRender(_ app: Application, interpolation: Double) {}
-    func gameWillStop(_ app: Application) {}
+    func gameDidStart(_: Application) {}
+    func gameDidUpdate(_: Application, deltaTime _: Double) {}
+    func gameWillRender(_: Application, interpolation _: Double) {}
+    func gameWillStop(_: Application) {}
 }

@@ -1,5 +1,3 @@
-
-
 /// Manages a stack of scenes with push/pop/replace operations.
 ///
 /// Supports both instant scene changes and animated transitions:
@@ -11,6 +9,8 @@
 /// app.sceneManager.replace(with: nextScene, transition: .fade(), app: app)
 /// ```
 public final class SceneManager: @unchecked Sendable {
+    deinit {}
+
     private var sceneStack: [Scene] = []
     private var activeTransition: TransitionState?
 
@@ -234,6 +234,7 @@ public final class SceneManager: @unchecked Sendable {
             case .fadeOut:
                 let eased = transition.fadeOutEasing.apply(phaseProgress)
                 return UInt8(clamp(eased * 255, min: 0, max: 255))
+
             case .fadeIn:
                 let eased = transition.fadeInEasing.apply(phaseProgress)
                 return UInt8(clamp((1.0 - eased) * 255, min: 0, max: 255))

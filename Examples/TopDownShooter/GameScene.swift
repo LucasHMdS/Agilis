@@ -9,9 +9,13 @@ import CRT
 #endif
 
 final class GameScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: ShooterSounds.SoundSet!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var physics: PhysicsWorld2D!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var particleSystem: ParticleSystem!
     private var batch = SpriteBatch(sortMode: .byTexture)
 
@@ -36,7 +40,7 @@ final class GameScene: Scene {
     private var laserTimer: Float = 0
 
     // Seed for spawning
-    private var spawnSeed: UInt32 = 12345
+    private var spawnSeed: UInt32 = 12_345
 
     func didEnter(app: Application) {
         font = app.renderer.loadDefaultFont()
@@ -71,22 +75,23 @@ final class GameScene: Scene {
         // Events
         app.world.on(EnemyKilledEvent.self) { [weak self] event in
             guard let self = self else { return }
-            app.world.updateComponent(ScoreTracker.self, on: self.scoreEntity) { score in
+            app.world.updateComponent(ScoreTracker.self, on: scoreEntity) { score in
                 score.score += 100
                 score.kills += 1
             }
-            self.shakeTimer = Shooter.shakeDuration
-            self.shakeIntensity = Shooter.shakeIntensity
-            self.spawnDeathParticles(at: event.position, app: app)
-            app.audio.playSound(self.sounds.enemyDie, volume: 0.4, pitch: 1.0, looping: false)
+            shakeTimer = Shooter.shakeDuration
+            shakeIntensity = Shooter.shakeIntensity
+            spawnDeathParticles(at: event.position, app: app)
+            app.audio.playSound(sounds.enemyDie, volume: 0.4, pitch: 1.0, looping: false)
         }
 
-        app.world.on(WaveStartedEvent.self) { [weak self] event in
+        app.world.on(WaveStartedEvent.self) { [weak self] _ in
             guard let self = self else { return }
-            app.audio.playSound(self.sounds.waveStart, volume: 0.5, pitch: 1.0, looping: false)
+            app.audio.playSound(sounds.waveStart, volume: 0.5, pitch: 1.0, looping: false)
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func update(app: Application, deltaTime: Double) {
         let dt = Float(deltaTime)
 
@@ -292,7 +297,7 @@ final class GameScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
 
         app.renderer.beginCamera(camera)
@@ -692,7 +697,7 @@ final class GameScene: Scene {
     // MARK: - RNG
 
     private func nextRand() -> UInt32 {
-        spawnSeed = spawnSeed &* 1664525 &+ 1013904223
+        spawnSeed = spawnSeed &* 1_664_525 &+ 1_013_904_223
         return spawnSeed >> 16
     }
 }

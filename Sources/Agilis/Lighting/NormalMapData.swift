@@ -1,5 +1,3 @@
-
-
 /// Per-entity normal and specular map data for the 2D lighting system.
 ///
 /// Attach to entities that also have `Transform2D` and `Sprite` to enable

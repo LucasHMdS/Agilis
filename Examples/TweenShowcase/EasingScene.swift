@@ -9,6 +9,8 @@ import CRT
 #endif
 
 final class EasingScene: Scene {
+    deinit {}
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var tweens: TweenSystem!
     private var font: FontHandle = .invalid
     private var ballEntities: [Entity] = []
@@ -105,7 +107,7 @@ final class EasingScene: Scene {
         }
     }
 
-    func update(app: Application, deltaTime: Double) {
+    func update(app: Application, deltaTime _: Double) {
         // Escape returns to menu
         if app.input.isKeyPressed(.escape) {
             app.sceneManager.replace(
@@ -130,7 +132,7 @@ final class EasingScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
         let easings = Showcase.allEasings
 

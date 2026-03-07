@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - UIInputConfig Tests
 
@@ -772,7 +772,7 @@ struct RenderOverlayTests {
 struct UIDemoDropdownReproduction {
 
     // Helper: create the UIDemo-like widget tree
-    private static func makeUIDemoWidgets(app: Application, renderer: MockRenderer) -> (UIContext, UIDropdown, UILabel, UIListView) {
+    private static func makeUIDemoWidgets(app _: Application, renderer: MockRenderer) -> (UIContext, UIDropdown, UILabel, UIListView) {
         let font = renderer.loadDefaultFont()
         let ui = UIContext(font: font)
         ui.inputConfig = .keyboardAndGamepad

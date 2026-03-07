@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -132,7 +130,8 @@ extension RenderBackend {
             ))
             drawRectOutline(
                 Rect(x: xOffset, y: 10, width: w, height: h),
-                color: .green, thickness: 1
+                color: .green,
+                thickness: 1
             )
             xOffset += w + 10
         }
@@ -155,7 +154,8 @@ extension RenderBackend {
             ))
             drawRectOutline(
                 Rect(x: xOffset, y: 10, width: w, height: h),
-                color: .cyan, thickness: 1
+                color: .cyan,
+                thickness: 1
             )
             xOffset += w + 10
         }
@@ -178,7 +178,8 @@ extension RenderBackend {
             ))
             drawRectOutline(
                 Rect(x: xOffset, y: 10, width: w, height: h),
-                color: .magenta, thickness: 1
+                color: .magenta,
+                thickness: 1
             )
         }
     }

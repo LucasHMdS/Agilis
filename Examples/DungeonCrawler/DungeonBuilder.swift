@@ -25,13 +25,14 @@ enum DungeonBuilder {
         var centerY: Int { y + h / 2 }
 
         func overlaps(_ other: Room, margin: Int = 2) -> Bool {
-            return x - margin < other.x + other.w &&
+            x - margin < other.x + other.w &&
                    x + w + margin > other.x &&
                    y - margin < other.y + other.h &&
                    y + h + margin > other.y
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     static func generate(renderer: any RenderBackend, world: World) -> DungeonData {
         let cols = Dungeon.mapCols
         let rows = Dungeon.mapRows
@@ -45,13 +46,13 @@ enum DungeonBuilder {
         var seed: UInt32 = 42
         for _ in 0..<30 { // attempts
             guard rooms.count < 7 else { break }
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let rw = 4 + Int(seed % 5)
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let rh = 4 + Int(seed % 4)
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let rx = 1 + Int(seed % UInt32(cols - rw - 2))
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let ry = 1 + Int(seed % UInt32(rows - rh - 2))
 
             let room = Room(x: rx, y: ry, w: rw, h: rh)

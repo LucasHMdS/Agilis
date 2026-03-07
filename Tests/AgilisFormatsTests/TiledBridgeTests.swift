@@ -1,7 +1,7 @@
-import Testing
-import Foundation
-@testable import AgilisFormats
 @testable import Agilis
+@testable import AgilisFormats
+import Foundation
+import Testing
 
 // MARK: - Tiled Bridge Tests
 
@@ -58,7 +58,7 @@ struct TiledBridgeTests {
     }
 
     private func objectLayerJSON(name: String = "objects") -> String {
-        return """
+        """
         {
             "name": "\(name)",
             "type": "objectgroup",
@@ -83,7 +83,7 @@ struct TiledBridgeTests {
         imagewidth: Int = 64,
         imageheight: Int = 64
     ) -> String {
-        return """
+        """
         {
             "firstgid": \(firstgid),
             "name": "\(name)",

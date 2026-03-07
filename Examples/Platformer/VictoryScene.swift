@@ -9,10 +9,13 @@ import CRT
 #endif
 
 final class VictoryScene: Scene {
+    deinit {}
     let finalScore: Int
     let totalCoins: Int
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: MarioSounds.SoundSet!
     private var gameTime: Float = 0
 
@@ -128,7 +131,7 @@ final class VictoryScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let renderer = app.renderer
         let screen = renderer.screenSize
 

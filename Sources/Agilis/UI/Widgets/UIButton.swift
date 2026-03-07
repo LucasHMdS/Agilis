@@ -1,7 +1,7 @@
-
-
 /// A clickable button with text.
 public class UIButton: UINode, @unchecked Sendable {
+    deinit {}
+
     public var text: String { didSet { if text != oldValue { cachedTextSize = nil } } }
     public var fontSize: Float { didSet { if fontSize != oldValue { cachedTextSize = nil } } }
     public var action: () -> Void
@@ -27,13 +27,13 @@ public class UIButton: UINode, @unchecked Sendable {
         self.isFocusable = true
     }
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_: Size) -> Size {
         let textSize = cachedTextSize ?? Size(width: 100, height: fontSize + 4)
         return Size(width: textSize.width + horizontalPadding * 2,
                     height: textSize.height + verticalPadding * 2)
     }
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime _: Double) {
         guard isVisible, let app = context.app else { return }
         let input = app.input
         let mousePos = input.mousePosition
@@ -51,7 +51,7 @@ public class UIButton: UINode, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         let bgColor: Color

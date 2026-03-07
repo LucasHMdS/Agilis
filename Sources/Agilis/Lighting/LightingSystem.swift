@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -247,7 +245,8 @@ public final class LightingSystem: System, @unchecked Sendable {
 
         // Create normal buffer RT
         normalBufferRT = renderer.createRenderTarget(
-            width: lightMapWidth, height: lightMapHeight
+            width: lightMapWidth,
+            height: lightMapHeight
         )
 
         // Load specular shaders and RT if specular is enabled
@@ -261,7 +260,8 @@ public final class LightingSystem: System, @unchecked Sendable {
                 fragmentSource: LightingShaders.specularSpotFragment
             )
             specularBufferRT = renderer.createRenderTarget(
-                width: lightMapWidth, height: lightMapHeight
+                width: lightMapWidth,
+                height: lightMapHeight
             )
         }
 
@@ -301,10 +301,12 @@ public final class LightingSystem: System, @unchecked Sendable {
         )
 
         shadowBufferRT = renderer.createRenderTarget(
-            width: lightMapWidth, height: lightMapHeight
+            width: lightMapWidth,
+            height: lightMapHeight
         )
         shadowBlurRT = renderer.createRenderTarget(
-            width: lightMapWidth, height: lightMapHeight
+            width: lightMapWidth,
+            height: lightMapHeight
         )
 
         isSoftShadowsInitialized = true
@@ -506,7 +508,7 @@ public final class LightingSystem: System, @unchecked Sendable {
     ///   - camera: The camera used to draw the scene, or `nil` for no camera transform.
     public func renderLightMap(renderer: any RenderBackend, camera: Camera2D? = nil) {
         guard isInitialized, lightMapRT != .invalid, perLightRT != .invalid else { return }
-               debugFrameCount += 1
+        debugFrameCount += 1
         debugTotalShadowVolumes = 0
         debugTotalTriangles = 0
         if debugShadowVolumes { debugShadowData = [] }
@@ -643,18 +645,25 @@ public final class LightingSystem: System, @unchecked Sendable {
                 switch light.lightType {
                 case .point:
                     specShader = specularPointShader
+
                 case .spot(let direction, let coneAngle):
                     specShader = specularSpotShader
-                    renderer.setShaderVec2(specShader, name: "lightDirection",
-                        value: Vector2(x: cosf(direction), y: sinf(direction)))
+                    renderer.setShaderVec2(
+                        specShader,
+                        name: "lightDirection",
+                        value: Vector2(x: cosf(direction), y: sinf(direction))
+                    )
                     renderer.setShaderFloat(specShader, name: "lightConeAngle", value: coneAngle)
                 }
 
                 renderer.setShaderVec2(specShader, name: "lightPos", value: screenPos)
-                renderer.setShaderVec3(specShader, name: "lightColor",
+                renderer.setShaderVec3(
+                    specShader,
+                    name: "lightColor",
                     x: Float(light.color.r) / 255.0,
                     y: Float(light.color.g) / 255.0,
-                    z: Float(light.color.b) / 255.0)
+                    z: Float(light.color.b) / 255.0
+                )
                 renderer.setShaderFloat(specShader, name: "lightRadius", value: scaledRadius)
                 renderer.setShaderFloat(specShader, name: "lightIntensity", value: light.intensity)
                 renderer.setShaderFloat(specShader, name: "lightFalloff", value: light.falloff)
@@ -761,14 +770,19 @@ public final class LightingSystem: System, @unchecked Sendable {
             let y: Float = padding + 14
 
             // Label
-            renderer.drawText("Light Map (\(lightMapWidth)x\(lightMapHeight))",
-                              position: Vector2(x: x, y: y - 13),
-                              font: font, size: textSize, color: .white)
+            renderer.drawText(
+                "Light Map (\(lightMapWidth)x\(lightMapHeight))",
+                position: Vector2(x: x, y: y - 13),
+                font: font,
+                size: textSize,
+                color: .white
+            )
 
             // Border
             renderer.drawRectOutline(
                 Rect(x: x - 1, y: y - 1, width: thumbW + 2, height: thumbH + 2),
-                color: .white, thickness: 1
+                color: .white,
+                thickness: 1
             )
 
             // Thumbnail (no multiply blend — show raw light map colors)
@@ -789,13 +803,18 @@ public final class LightingSystem: System, @unchecked Sendable {
             let x: Float = padding
             let y: Float = padding + 14 + thumbH + 20 + 14
 
-            renderer.drawText("Per-Light Buffer (last)",
-                              position: Vector2(x: x, y: y - 13),
-                              font: font, size: textSize, color: .white)
+            renderer.drawText(
+                "Per-Light Buffer (last)",
+                position: Vector2(x: x, y: y - 13),
+                font: font,
+                size: textSize,
+                color: .white
+            )
 
             renderer.drawRectOutline(
                 Rect(x: x - 1, y: y - 1, width: thumbW + 2, height: thumbH + 2),
-                color: .yellow, thickness: 1
+                color: .yellow,
+                thickness: 1
             )
 
             renderer.drawSprite(Sprite(
@@ -812,20 +831,43 @@ public final class LightingSystem: System, @unchecked Sendable {
         let statsX = screenSize.width - 220
         var statsY: Float = padding
 
+        let gray = Color(r: 180, g: 180, b: 180)
+        let okColor = Color(r: 100, g: 255, b: 100)
+        let missingColor = Color(r: 255, g: 80, b: 80)
+        let ambientR = options.ambientColor.r
+        let ambientG = options.ambientColor.g
+        let ambientB = options.ambientColor.b
+        let gradientOk = lightGradientTexture != .invalid
+        let perLightOk = perLightRT != .invalid
+        let lightMapOk = lightMapRT != .invalid
         let lines: [(String, Color)] = [
             ("-- Lighting Debug --", .white),
             ("Lights: \(lightSnapshots.count)", .yellow),
             ("Occluders: \(occluderSnapshots.count)", .yellow),
-            ("LightMap: \(lightMapWidth)x\(lightMapHeight)", Color(r: 180, g: 180, b: 180)),
-            ("Ambient: (\(options.ambientColor.r),\(options.ambientColor.g),\(options.ambientColor.b))", Color(r: 180, g: 180, b: 180)),
-            ("Gradient tex: \(lightGradientTexture != .invalid ? "OK" : "MISSING")", lightGradientTexture != .invalid ? Color(r: 100, g: 255, b: 100) : Color(r: 255, g: 80, b: 80)),
-            ("PerLight RT: \(perLightRT != .invalid ? "OK" : "MISSING")", perLightRT != .invalid ? Color(r: 100, g: 255, b: 100) : Color(r: 255, g: 80, b: 80)),
-            ("LightMap RT: \(lightMapRT != .invalid ? "OK" : "MISSING")", lightMapRT != .invalid ? Color(r: 100, g: 255, b: 100) : Color(r: 255, g: 80, b: 80)),
+            ("LightMap: \(lightMapWidth)x\(lightMapHeight)", gray),
+            ("Ambient: (\(ambientR),\(ambientG),\(ambientB))", gray),
+            (
+                "Gradient tex: \(gradientOk ? "OK" : "MISSING")",
+                gradientOk ? okColor : missingColor
+            ),
+            (
+                "PerLight RT: \(perLightOk ? "OK" : "MISSING")",
+                perLightOk ? okColor : missingColor
+            ),
+            (
+                "LightMap RT: \(lightMapOk ? "OK" : "MISSING")",
+                lightMapOk ? okColor : missingColor
+            )
         ]
 
         for (text, color) in lines {
-            renderer.drawText(text, position: Vector2(x: statsX, y: statsY),
-                              font: font, size: textSize, color: color)
+            renderer.drawText(
+                text,
+                position: Vector2(x: statsX, y: statsY),
+                font: font,
+                size: textSize,
+                color: color
+            )
             statsY += 14
         }
 
@@ -837,11 +879,25 @@ public final class LightingSystem: System, @unchecked Sendable {
             let typeStr: String
             switch light.lightType {
             case .point: typeStr = "pt"
+
             case .spot: typeStr = "sp"
             }
-            let text = "L\(i) \(typeStr) pos=(\(Int(snapshot.position.x)),\(Int(snapshot.position.y))) scr=(\(Int(screenPos.x)),\(Int(screenPos.y))) r=\(Int(light.radius)) i=\(String(format: "%.1f", light.intensity))"
-            renderer.drawText(text, position: Vector2(x: statsX, y: statsY),
-                              font: font, size: 9, color: Color(r: 200, g: 200, b: 200))
+            let posX = Int(snapshot.position.x)
+            let posY = Int(snapshot.position.y)
+            let scrX = Int(screenPos.x)
+            let scrY = Int(screenPos.y)
+            let intensityStr = String(format: "%.1f", light.intensity)
+            let text = "L\(i) \(typeStr) pos=(\(posX),\(posY))"
+                + " scr=(\(scrX),\(scrY))"
+                + " r=\(Int(light.radius)) i=\(intensityStr)"
+            let detailColor = Color(r: 200, g: 200, b: 200)
+            renderer.drawText(
+                text,
+                position: Vector2(x: statsX, y: statsY),
+                font: font,
+                size: 9,
+                color: detailColor
+            )
             statsY += 12
         }
 
@@ -851,13 +907,19 @@ public final class LightingSystem: System, @unchecked Sendable {
         for occ in occluderSnapshots {
             switch occ.shape {
             case .aabb: aabbCount += 1
+
             case .circle: circleCount += 1
+
             case .polygon: polyCount += 1
             }
         }
-        renderer.drawText("Occluders: \(aabbCount) aabb, \(circleCount) circle, \(polyCount) poly",
-                          position: Vector2(x: statsX, y: statsY),
-                          font: font, size: 9, color: Color(r: 200, g: 200, b: 200))
+        renderer.drawText(
+            "Occluders: \(aabbCount) aabb, \(circleCount) circle, \(polyCount) poly",
+            position: Vector2(x: statsX, y: statsY),
+            font: font,
+            size: 9,
+            color: Color(r: 200, g: 200, b: 200)
+        )
     }
 
     // MARK: - Helpers
@@ -908,7 +970,6 @@ public final class LightingSystem: System, @unchecked Sendable {
         }
     }
 
-
     /// Draw a triangle with automatic CCW winding (GL_CULL_FACE may be enabled).
     private func drawTriCCW(_ a: Vector2, _ b: Vector2, _ c: Vector2, renderer: any RenderBackend) {
         let cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
@@ -950,15 +1011,33 @@ public final class LightingSystem: System, @unchecked Sendable {
                 let color = isTiny ? Color(r: 0, g: 255, b: 255) : Color(r: 255, g: 0, b: 255)
                 renderer.drawRectOutline(
                     Rect(x: pos.x - he.x, y: pos.y - he.y, width: size.x, height: size.y),
-                    color: color, thickness: isTiny ? 1 : 2
+                    color: color,
+                    thickness: isTiny ? 1 : 2
                 )
+
             case .circle(let r):
-                renderer.drawCircleOutline(center: pos, radius: r, color: Color(r: 255, g: 0, b: 255), thickness: 2)
+                renderer.drawCircleOutline(
+                    center: pos,
+                    radius: r,
+                    color: Color(r: 255, g: 0, b: 255),
+                    thickness: 2
+                )
+
             case .polygon(let poly):
-                let worldVerts = ShadowGeometry.transformVertices(poly.vertices, position: pos, rotation: occluder.rotation)
+                let worldVerts = ShadowGeometry.transformVertices(
+                    poly.vertices,
+                    position: pos,
+                    rotation: occluder.rotation
+                )
+                let magenta = Color(r: 255, g: 0, b: 255)
                 for i in 0..<worldVerts.count {
                     let j = (i + 1) % worldVerts.count
-                    renderer.drawLine(from: worldVerts[i], to: worldVerts[j], color: Color(r: 255, g: 0, b: 255), thickness: 2)
+                    renderer.drawLine(
+                        from: worldVerts[i],
+                        to: worldVerts[j],
+                        color: magenta,
+                        thickness: 2
+                    )
                 }
             }
         }
@@ -968,7 +1047,7 @@ public final class LightingSystem: System, @unchecked Sendable {
             Color(r: 0, g: 255, b: 0),      // green
             Color(r: 0, g: 200, b: 255),     // light blue
             Color(r: 255, g: 255, b: 0),     // yellow
-            Color(r: 255, g: 128, b: 0),     // orange
+            Color(r: 255, g: 128, b: 0)     // orange
         ]
 
         for (lightIdx, entry) in debugShadowData.enumerated() {

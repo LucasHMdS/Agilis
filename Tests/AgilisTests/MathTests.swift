@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Vector2
 
@@ -305,6 +305,7 @@ struct Matrix3Tests {
     }
 
     @Test func equatable() {
+        // swiftlint:disable:next identical_operands
         #expect(Matrix3.identity == Matrix3.identity)
         #expect(Matrix3.identity != Matrix3.translation(1, 0))
     }

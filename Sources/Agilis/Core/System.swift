@@ -35,7 +35,7 @@ public extension System {
         ComponentAccess(reads: [], writes: [], mutatesEntities: true, emitsEvents: true)
     }
 
-    func setup(world: World) {}
+    func setup(world _: World) {}
 
     /// Default implementation bridges the new `update(context:)` to the legacy
     /// `update(world:deltaTime:)` signature for backward compatibility.
@@ -43,5 +43,5 @@ public extension System {
         update(world: context.world, deltaTime: context.deltaTime)
     }
 
-    func update(world: World, deltaTime: Double) {}
+    func update(world _: World, deltaTime _: Double) {}
 }

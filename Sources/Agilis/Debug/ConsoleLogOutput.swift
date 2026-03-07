@@ -1,5 +1,3 @@
-
-
 /// Prints log entries to stdout with level and category tags.
 ///
 /// ## Usage
@@ -7,6 +5,8 @@
 /// Log.addOutput(ConsoleLogOutput(minimumLevel: .info))
 /// ```
 public final class ConsoleLogOutput: LogOutput, @unchecked Sendable {
+
+    deinit {}
 
     public var minimumLevel: LogLevel
 

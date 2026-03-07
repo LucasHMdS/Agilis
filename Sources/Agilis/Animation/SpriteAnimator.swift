@@ -1,5 +1,3 @@
-
-
 // MARK: - AnimationEvent
 
 /// Events emitted by the animation system during playback.

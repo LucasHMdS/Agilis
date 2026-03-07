@@ -9,16 +9,22 @@ import CRT
 #endif
 
 final class GameScene: Scene {
+    deinit {}
     // Entity handles
     private var playerEntity: Entity = .null
     private var allEntities: [Entity] = []
     private var particleEntities: [Entity] = []
 
     // Systems
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var physicsWorld: PhysicsWorld2D!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var enemyAI: EnemyAISystem!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var gameplay: GameplaySystem!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var postPhysics: PostPhysicsSystem!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var particleSystem: ParticleSystem!
 
     // Camera
@@ -41,9 +47,11 @@ final class GameScene: Scene {
     private var font: FontHandle = .invalid
 
     // Sprites
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var spriteAtlas: MarioSprites.Atlas!
 
     // Audio
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: MarioSounds.SoundSet!
 
     // Debug
@@ -94,19 +102,19 @@ final class GameScene: Scene {
         // Subscribe to events
         world.on(CoinCollectedEvent.self) { [weak self] event in
             guard let self else { return }
-            self.score += Mario.coinScore
-            self.coins += 1
-            app.audio.playSound(self.sounds.coin, volume: 0.5, pitch: 1.0, looping: false)
+            score += Mario.coinScore
+            coins += 1
+            app.audio.playSound(sounds.coin, volume: 0.5, pitch: 1.0, looping: false)
             if let coinPos = world.getComponent(Transform2D.self, from: event.coinEntity) {
-                self.spawnCoinSparkle(at: coinPos.position, in: world)
+                spawnCoinSparkle(at: coinPos.position, in: world)
             }
             world.destroyEntity(event.coinEntity)
         }
 
         world.on(EnemyStompedEvent.self) { [weak self] event in
             guard let self else { return }
-            self.score += 200
-            app.audio.playSound(self.sounds.stomp, volume: 0.5, pitch: 1.0, looping: false)
+            score += 200
+            app.audio.playSound(sounds.stomp, volume: 0.5, pitch: 1.0, looping: false)
             world.updateComponent(Enemy.self, on: event.enemyEntity) { e in
                 e.isDead = true
                 e.deathTimer = Mario.goombaSquishedTime
@@ -119,13 +127,13 @@ final class GameScene: Scene {
                 v.linear.y = Mario.stompBounceVelocity
             }
             if let enemyPos = world.getComponent(Transform2D.self, from: event.enemyEntity) {
-                self.spawnStompPoof(at: enemyPos.position, in: world)
+                spawnStompPoof(at: enemyPos.position, in: world)
             }
         }
 
         world.on(BlockHitEvent.self) { [weak self] event in
             guard let self else { return }
-            app.audio.playSound(self.sounds.blockHit, volume: 0.5, pitch: 1.0, looping: false)
+            app.audio.playSound(sounds.blockHit, volume: 0.5, pitch: 1.0, looping: false)
             world.updateComponent(QuestionBlock.self, on: event.blockEntity) { block in
                 guard block.state == .active else { return }
                 block.coinsRemaining -= 1
@@ -135,7 +143,7 @@ final class GameScene: Scene {
                 self.coins += 1
             }
             if let blockPos = world.getComponent(Transform2D.self, from: event.blockEntity) {
-                self.spawnCoinSparkle(
+                spawnCoinSparkle(
                     at: Vector2(x: blockPos.position.x,
                                 y: blockPos.position.y - Mario.tileSize),
                     in: world)
@@ -148,15 +156,15 @@ final class GameScene: Scene {
                player.isInvincible || player.isDead {
                 return
             }
-            app.audio.playSound(self.sounds.hurt, volume: 0.6, pitch: 1.0, looping: false)
-            self.killPlayer(in: world)
+            app.audio.playSound(sounds.hurt, volume: 0.6, pitch: 1.0, looping: false)
+            killPlayer(in: world)
         }
 
         world.on(LevelCompleteEvent.self) { [weak self] event in
-            guard let self, !self.levelComplete else { return }
-            self.levelComplete = true
-            app.audio.playSound(self.sounds.levelComplete, volume: 0.6, pitch: 1.0, looping: false)
-            self.levelCompleteTimer = 2.5
+            guard let self, !levelComplete else { return }
+            levelComplete = true
+            app.audio.playSound(sounds.levelComplete, volume: 0.6, pitch: 1.0, looping: false)
+            levelCompleteTimer = 2.5
             // Stop player movement
             world.updateComponent(Velocity2D.self, on: event.playerEntity) { v in
                 v.linear = .zero
@@ -223,8 +231,7 @@ final class GameScene: Scene {
                      atlas: self.spriteAtlas, renderer: renderer)
         }
         // Enemies (with interpolation)
-        world.forEach { (_: Entity, pos: inout Transform2D,
-                         prev: inout PreviousTransform2D, enemy: inout Enemy) in
+        world.forEach { (_: Entity, pos: inout Transform2D, prev: inout PreviousTransform2D, enemy: inout Enemy) in
             let drawPos = prev.position.lerp(to: pos.position, t: t)
             drawGoomba(pos: drawPos, enemy: enemy, gameTime: self.gameTime,
                        atlas: self.spriteAtlas, renderer: renderer)
@@ -244,8 +251,7 @@ final class GameScene: Scene {
                          renderer: renderer)
         }
         // Particles
-        world.forEach { (_: Entity, emitter: inout ParticleEmitter,
-                         pos: inout Transform2D) in
+        world.forEach { (_: Entity, emitter: inout ParticleEmitter, pos: inout Transform2D) in
             renderer.drawParticles(emitter, at: pos.position)
         }
 
@@ -365,8 +371,7 @@ final class GameScene: Scene {
         vel.linear.x = moveInput * Mario.playerMoveSpeed
 
         // Face direction
-        if moveInput > 0.1 { player.facingRight = true }
-        else if moveInput < -0.1 { player.facingRight = false }
+        if moveInput > 0.1 { player.facingRight = true } else if moveInput < -0.1 { player.facingRight = false }
 
         // Walk animation
         if abs(moveInput) > 0.1 && player.isGrounded {

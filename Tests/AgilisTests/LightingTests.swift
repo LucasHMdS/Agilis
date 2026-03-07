@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 // MARK: - ShaderHandle
 
@@ -132,9 +132,9 @@ struct Light2DTests {
     @Test("Codable backward compatibility - missing new fields use defaults")
     func codableBackwardCompatibility() throws {
         // Simulate old JSON without specular/zHeight/softShadowRadius fields
-        let json = """
-        {"lightType":{"point":{}},"color":{"r":255,"g":255,"b":255,"a":255},"intensity":1.0,"radius":200,"castsShadows":false,"falloff":1.0,"isEnabled":true,"shadowLayerMask":4294967295}
-        """
+        // swiftlint:disable:next line_length
+        let json = #"{"lightType":{"point":{}},"color":{"r":255,"g":255,"b":255,"a":255},"intensity":1.0,"radius":200,"castsShadows":false,"falloff":1.0,"isEnabled":true,"shadowLayerMask":4294967295}"#
+        // swiftlint:disable:next force_unwrapping
         let data = json.data(using: .utf8)!
         let decoded = try JSONDecoder().decode(Light2D.self, from: data)
         #expect(decoded.specularEnabled == false)
@@ -243,12 +243,12 @@ struct LightingOptionsTests {
         let options = LightingOptions(
             ambientColor: .black,
             lightMapScale: 0.5,
-            shadowExtent: 2000,
+            shadowExtent: 2_000,
             debugDraw: true
         )
         #expect(options.ambientColor == .black)
         #expect(options.lightMapScale == 0.5)
-        #expect(options.shadowExtent == 2000)
+        #expect(options.shadowExtent == 2_000)
         #expect(options.debugDraw == true)
     }
 
@@ -269,6 +269,7 @@ struct LightTypeTests {
 
     @Test("Point lights are equal")
     func pointEquality() {
+        // swiftlint:disable:next identical_operands
         #expect(LightType.point == LightType.point)
     }
 

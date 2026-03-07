@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 #if canImport(Darwin)
 import Darwin
@@ -47,7 +47,10 @@ private func createDynamicBody(
     world.addComponent(Transform2D(position: position), to: e)
     world.addComponent(PreviousTransform2D(position: position), to: e)
     world.addComponent(Velocity2D(), to: e)
-    world.addComponent(RigidBody2D(mass: mass, inertia: inertia, bodyType: .dynamic), to: e)
+    world.addComponent(
+        RigidBody2D(mass: mass, inertia: inertia, bodyType: .dynamic),
+        to: e
+    )
     world.addComponent(Collider2D(shape: shape), to: e)
     return e
 }
@@ -91,25 +94,40 @@ struct RigidBody2DInertiaTests {
 
     @Test("Static body has zero effectiveInverseInertia")
     func staticInertia() {
-        let body = RigidBody2D(mass: 1, inertia: 10, bodyType: .static)
+        let body = RigidBody2D(
+            mass: 1,
+            inertia: 10,
+            bodyType: .static
+        )
         #expect(body.effectiveInverseInertia == 0)
     }
 
     @Test("Kinematic body has zero effectiveInverseInertia")
     func kinematicInertia() {
-        let body = RigidBody2D(mass: 1, inertia: 10, bodyType: .kinematic)
+        let body = RigidBody2D(
+            mass: 1,
+            inertia: 10,
+            bodyType: .kinematic
+        )
         #expect(body.effectiveInverseInertia == 0)
     }
 
     @Test("Dynamic body has non-zero effectiveInverseInertia when inertia set")
     func dynamicInertia() {
-        let body = RigidBody2D(mass: 1, inertia: 5.0, bodyType: .dynamic)
+        let body = RigidBody2D(
+            mass: 1,
+            inertia: 5.0,
+            bodyType: .dynamic
+        )
         #expect(abs(body.effectiveInverseInertia - 0.2) < 0.001)
     }
 
     @Test("computeInertia for circle")
     func circleInertia() {
-        let inertia = RigidBody2D.computeInertia(mass: 2.0, shape: .circle(radius: 10))
+        let inertia = RigidBody2D.computeInertia(
+            mass: 2.0,
+            shape: .circle(radius: 10)
+        )
         // I = 0.5 * m * r^2 = 0.5 * 2.0 * 100 = 100
         #expect(abs(inertia - 100.0) < 0.01)
     }
@@ -126,15 +144,26 @@ struct RigidBody2DInertiaTests {
 
     @Test("computeInertia for zero mass returns zero")
     func zeroMassInertia() {
-        let inertia = RigidBody2D.computeInertia(mass: 0, shape: .circle(radius: 10))
+        let inertia = RigidBody2D.computeInertia(
+            mass: 0,
+            shape: .circle(radius: 10)
+        )
         #expect(inertia == 0)
     }
 
     @Test("Inertia survives encode/decode")
     func inertiaCodable() throws {
-        let original = RigidBody2D(mass: 5, inertia: 20, restitution: 0.3, friction: 0.5)
+        let original = RigidBody2D(
+            mass: 5,
+            inertia: 20,
+            restitution: 0.3,
+            friction: 0.5
+        )
         let data = try JSONEncoder().encode(original)
-        let decoded = try JSONDecoder().decode(RigidBody2D.self, from: data)
+        let decoded = try JSONDecoder().decode(
+            RigidBody2D.self,
+            from: data
+        )
         #expect(decoded.inertia == 20)
         #expect(abs(decoded.inverseInertia - 0.05) < 0.001)
     }
@@ -142,13 +171,22 @@ struct RigidBody2DInertiaTests {
     @Test("Backward-compatible decode without inertia field")
     func backwardCompatDecode() throws {
         // Encode a body, strip the "inertia" key, and verify decode still works
-        let original = RigidBody2D(mass: 1, inertia: 0, restitution: 0.2, friction: 0.3)
+        let original = RigidBody2D(
+            mass: 1,
+            inertia: 0,
+            restitution: 0.2,
+            friction: 0.3
+        )
         let data = try JSONEncoder().encode(original)
         // Decode to dictionary, remove inertia, re-encode
+        // swiftlint:disable:next force_cast
         var dict = try JSONSerialization.jsonObject(with: data) as! [String: Any]
         dict.removeValue(forKey: "inertia")
         let modifiedData = try JSONSerialization.data(withJSONObject: dict)
-        let decoded = try JSONDecoder().decode(RigidBody2D.self, from: modifiedData)
+        let decoded = try JSONDecoder().decode(
+            RigidBody2D.self,
+            from: modifiedData
+        )
         #expect(decoded.inertia == 0)
         #expect(decoded.inverseInertia == 0)
     }
@@ -161,13 +199,28 @@ struct JointLifecycleTests {
 
     @Test("createRevoluteJoint returns valid handle")
     func createRevolute() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let handle = physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let handle = physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
             #expect(handle != .invalid)
             #expect(physics.jointCount == 1)
         }
@@ -176,14 +229,29 @@ struct JointLifecycleTests {
 
     @Test("createDistanceJoint returns valid handle")
     func createDistance() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let handle = physics.createJoint(.distance(DistanceJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 200, y: 100)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let handle = physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 200, y: 100)
+                )),
+                in: world
+            )
             #expect(handle != .invalid)
             #expect(physics.jointCount == 1)
         }
@@ -192,13 +260,28 @@ struct JointLifecycleTests {
 
     @Test("createWeldJoint returns valid handle")
     func createWeld() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let handle = physics.createJoint(.weld(WeldJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let handle = physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
             #expect(handle != .invalid)
             #expect(physics.jointCount == 1)
         }
@@ -207,13 +290,28 @@ struct JointLifecycleTests {
 
     @Test("destroyJoint removes from store")
     func destroyJoint() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let handle = physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let handle = physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
             #expect(physics.jointCount == 1)
             physics.destroyJoint(handle)
             #expect(physics.jointCount == 0)
@@ -223,13 +321,28 @@ struct JointLifecycleTests {
 
     @Test("destroyJoint with invalid handle is no-op")
     func destroyInvalid() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
             physics.destroyJoint(.invalid)
             physics.destroyJoint(JointHandle(id: 999))
             #expect(physics.jointCount == 1)
@@ -239,17 +352,37 @@ struct JointLifecycleTests {
 
     @Test("removeAllJoints clears store")
     func removeAll() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: a, entityB: b, anchor: Vector2(x: 150, y: 100)
-            )), in: world)
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 200, y: 100)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 200, y: 100)
+                )),
+                in: world
+            )
             #expect(physics.jointCount == 2)
             physics.removeAllJoints()
             #expect(physics.jointCount == 0)
@@ -259,17 +392,38 @@ struct JointLifecycleTests {
 
     @Test("jointCount tracks active joints")
     func jointCount() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
             #expect(physics.jointCount == 0)
-            let h1 = physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: a, entityB: b, anchor: Vector2(x: 150, y: 100)
-            )), in: world)
+            let h1 = physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
             #expect(physics.jointCount == 1)
-            let h2 = physics.createJoint(.weld(WeldJointDef(
-                entityA: a, entityB: b, anchor: Vector2(x: 150, y: 100)
-            )), in: world)
+            let h2 = physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
             #expect(physics.jointCount == 2)
             physics.destroyJoint(h1)
             #expect(physics.jointCount == 1)
@@ -286,20 +440,37 @@ struct JointLifecycleTests {
 struct DistanceJointSolverTests {
 
     @Test("Bodies at rest length do not move")
-    func atRestLength() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 10) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 100, y: 0))
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 0, y: 0),
-                anchorB: Vector2(x: 100, y: 0),
-                length: 100
-            )), in: world)
+    func atRestLength() throws {
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 10
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 100, y: 0)
+            )
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 0, y: 0),
+                    anchorB: Vector2(x: 100, y: 0),
+                    length: 100
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
         #expect(abs(posA.x - 0) < 1.0)
         #expect(abs(posA.y - 0) < 1.0)
         #expect(abs(posB.x - 100) < 1.0)
@@ -307,69 +478,132 @@ struct DistanceJointSolverTests {
     }
 
     @Test("Bodies stretched beyond rest length pull together")
-    func stretchedBodies() {
+    func stretchedBodies() throws {
         // Bodies 200 apart, rest length 100 — should pull toward each other
-        let (world, _) = runPhysics(gravity: .zero, ticks: 30) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 0))
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchorA: Vector2(x: 0, y: 0),
-                anchorB: Vector2(x: 200, y: 0),
-                length: 100
-            )), in: world)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 30
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 0)
+            )
+            let entityA = world.entity(named: "a")
+            let entityB = world.entity(named: "b")
+            guard let entityA, let entityB else { return }
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchorA: Vector2(x: 0, y: 0),
+                    anchorB: Vector2(x: 200, y: 0),
+                    length: 100
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let dist = sqrtf((posB.x - posA.x) * (posB.x - posA.x) + (posB.y - posA.y) * (posB.y - posA.y))
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let dx = posB.x - posA.x
+        let dy = posB.y - posA.y
+        let dist = sqrtf(dx * dx + dy * dy)
         // After 30 ticks the distance should be closer to 100 than the initial 200
         #expect(dist < 180, "Distance should decrease toward rest length, got \(dist)")
     }
 
     @Test("Bodies closer than rest length push apart")
-    func compressedBodies() {
+    func compressedBodies() throws {
         // Bodies 20 apart, rest length 100 — should push apart
-        let (world, _) = runPhysics(gravity: .zero, ticks: 30) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 20, y: 0))
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchorA: Vector2(x: 0, y: 0),
-                anchorB: Vector2(x: 20, y: 0),
-                length: 100
-            )), in: world)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 30
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 20, y: 0)
+            )
+            let entityA = world.entity(named: "a")
+            let entityB = world.entity(named: "b")
+            guard let entityA, let entityB else { return }
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchorA: Vector2(x: 0, y: 0),
+                    anchorB: Vector2(x: 20, y: 0),
+                    length: 100
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let dist = sqrtf((posB.x - posA.x) * (posB.x - posA.x) + (posB.y - posA.y) * (posB.y - posA.y))
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let dx = posB.x - posA.x
+        let dy = posB.y - posA.y
+        let dist = sqrtf(dx * dx + dy * dy)
         // Should be further apart than initial 20
         #expect(dist > 30, "Distance should increase toward rest length, got \(dist)")
     }
 
     @Test("Spring joint with damping converges")
-    func springDamping() {
+    func springDamping() throws {
         // Use a spring joint — should oscillate and converge
-        let (world, _) = runPhysics(gravity: .zero, ticks: 120) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 0))
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchorA: Vector2(x: 0, y: 0),
-                anchorB: Vector2(x: 200, y: 0),
-                length: 100,
-                frequencyHz: 4.0,
-                dampingRatio: 0.8
-            )), in: world)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 120
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 0)
+            )
+            let entityA = world.entity(named: "a")
+            let entityB = world.entity(named: "b")
+            guard let entityA, let entityB else { return }
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchorA: Vector2(x: 0, y: 0),
+                    anchorB: Vector2(x: 200, y: 0),
+                    length: 100,
+                    frequencyHz: 4.0,
+                    dampingRatio: 0.8
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let dist = sqrtf((posB.x - posA.x) * (posB.x - posA.x) + (posB.y - posA.y) * (posB.y - posA.y))
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let dx = posB.x - posA.x
+        let dy = posB.y - posA.y
+        let dist = sqrtf(dx * dx + dy * dy)
         // After 120 ticks at 60fps (2 seconds) with damping, should be close to rest length
         #expect(abs(dist - 100) < 30, "Spring should converge near rest length, got dist \(dist)")
     }
@@ -381,39 +615,79 @@ struct DistanceJointSolverTests {
 struct RevoluteJointSolverTests {
 
     @Test("Bodies already at anchor stay together")
-    func bodiesAtAnchor() {
+    func bodiesAtAnchor() throws {
         // Two bodies positioned so the anchor is exactly between them
-        let (world, _) = runPhysics(gravity: .zero, ticks: 20) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 100, y: 100))
-            physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchor: Vector2(x: 100, y: 100)
-            )), in: world)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 20
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 100, y: 100)
+            )
+            let entityA = world.entity(named: "a")
+            let entityB = world.entity(named: "b")
+            guard let entityA, let entityB else { return }
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchor: Vector2(x: 100, y: 100)
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let dist = sqrtf((posB.x - posA.x) * (posB.x - posA.x) + (posB.y - posA.y) * (posB.y - posA.y))
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let dx = posB.x - posA.x
+        let dy = posB.y - posA.y
+        let dist = sqrtf(dx * dx + dy * dy)
         #expect(dist < 1.0, "Bodies at anchor should stay together, got dist \(dist)")
     }
 
     @Test("Bodies offset from anchor converge")
-    func bodiesConverge() {
+    func bodiesConverge() throws {
         // Bodies separated, joint should pull them toward the anchor
-        let (world, _) = runPhysics(gravity: .zero, ticks: 30) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 50, y: 100))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 250, y: 100))
-            physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchor: Vector2(x: 150, y: 100)
-            )), in: world)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 30
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 50, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 250, y: 100)
+            )
+            let entityA = world.entity(named: "a")
+            let entityB = world.entity(named: "b")
+            guard let entityA, let entityB else { return }
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
 
         // The anchors on both bodies should be getting closer to the same point
         // posA's anchor = posA + localAnchorA rotated, but since no rotation, it's approximately posA + (100, 0)
@@ -421,31 +695,49 @@ struct RevoluteJointSolverTests {
         // These should converge
         let anchorFromA = Vector2(x: posA.x + 100, y: posA.y)
         let anchorFromB = Vector2(x: posB.x - 100, y: posB.y)
-        let anchorDist = sqrtf((anchorFromB.x - anchorFromA.x) * (anchorFromB.x - anchorFromA.x)
-                              + (anchorFromB.y - anchorFromA.y) * (anchorFromB.y - anchorFromA.y))
+        let dx = anchorFromB.x - anchorFromA.x
+        let dy = anchorFromB.y - anchorFromA.y
+        let anchorDist = sqrtf(dx * dx + dy * dy)
         // Initial anchor distance was (50+100) vs (250-100) = 150 vs 150 = 0
         // But positions drift due to solver — at least shouldn't diverge significantly
         #expect(anchorDist < 50, "Anchor points should converge, got \(anchorDist)")
     }
 
     @Test("Revolute joint with static body constrains dynamic body")
-    func staticAndDynamic() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 20) { world, physics in
-            createStaticBody(world: world, name: "wall", position: Vector2(x: 100, y: 100))
-            createDynamicBody(world: world, name: "ball", position: Vector2(x: 100, y: 100))
+    func staticAndDynamic() throws {
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 20
+        ) { world, physics in
+            createStaticBody(
+                world: world,
+                name: "wall",
+                position: Vector2(x: 100, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "ball",
+                position: Vector2(x: 100, y: 100)
+            )
             // Initial velocity to test constraint
-            world.updateComponent(Velocity2D.self, on: world.entity(named: "ball")!) { v in
+            guard let ball = world.entity(named: "ball") else { return }
+            world.updateComponent(Velocity2D.self, on: ball) { v in
                 v.linear = Vector2(x: 50, y: 0)
             }
-            physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: world.entity(named: "wall")!,
-                entityB: world.entity(named: "ball")!,
-                anchor: Vector2(x: 100, y: 100)
-            )), in: world)
+            guard let wall = world.entity(named: "wall") else { return }
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: wall,
+                    entityB: ball,
+                    anchor: Vector2(x: 100, y: 100)
+                )),
+                in: world
+            )
         }
 
         // Static body should not move
-        let wallPos = world.getComponent(Transform2D.self, from: world.entity(named: "wall")!)!.position
+        let wallEntity = try #require(world.entity(named: "wall"))
+        let wallPos = try #require(world.getComponent(Transform2D.self, from: wallEntity)).position
         #expect(abs(wallPos.x - 100) < 0.1)
         #expect(abs(wallPos.y - 100) < 0.1)
     }
@@ -457,44 +749,85 @@ struct RevoluteJointSolverTests {
 struct WeldJointSolverTests {
 
     @Test("Weld joint locks relative position")
-    func locksPosition() {
+    func locksPosition() throws {
         // Two bodies welded together should maintain relative position
-        let (world, _) = runPhysics(gravity: .zero, ticks: 20) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 100, y: 100))
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 20
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 100, y: 100)
+            )
             // Give one body velocity
-            world.updateComponent(Velocity2D.self, on: world.entity(named: "a")!) { v in
+            guard let entityA = world.entity(named: "a") else { return }
+            world.updateComponent(Velocity2D.self, on: entityA) { v in
                 v.linear = Vector2(x: 100, y: 0)
             }
-            physics.createJoint(.weld(WeldJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchor: Vector2(x: 100, y: 100)
-            )), in: world)
+            guard let entityB = world.entity(named: "b") else { return }
+            physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchor: Vector2(x: 100, y: 100)
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let dist = sqrtf((posB.x - posA.x) * (posB.x - posA.x) + (posB.y - posA.y) * (posB.y - posA.y))
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let dx = posB.x - posA.x
+        let dy = posB.y - posA.y
+        let dist = sqrtf(dx * dx + dy * dy)
         // Welded bodies should stay very close
         #expect(dist < 5.0, "Welded bodies should maintain relative position, got dist \(dist)")
     }
 
     @Test("Weld joint resists gravity separation")
-    func resistsGravity() {
+    func resistsGravity() throws {
         // Two welded bodies with gravity — should fall together
-        let (world, _) = runPhysics(gravity: Vector2(x: 0, y: 100), ticks: 30) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100), inertia: 100)
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 120, y: 100), inertia: 100)
-            physics.createJoint(.weld(WeldJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchor: Vector2(x: 110, y: 100)
-            )), in: world)
+        let (world, _) = runPhysics(
+            gravity: Vector2(x: 0, y: 100),
+            ticks: 30
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100),
+                inertia: 100
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 120, y: 100),
+                inertia: 100
+            )
+            let entityA = world.entity(named: "a")
+            let entityB = world.entity(named: "b")
+            guard let entityA, let entityB else { return }
+            physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchor: Vector2(x: 110, y: 100)
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
 
         // Both should have fallen (y increased)
         #expect(posA.y > 100, "Body A should fall under gravity")
@@ -514,21 +847,38 @@ struct BreakingJointTests {
     func breakableJoint() {
         var brokenEvents: [JointEvent] = []
 
-        let (_, physics) = runPhysics(gravity: Vector2(x: 0, y: 5000), ticks: 30) { world, physics in
+        let (_, physics) = runPhysics(
+            gravity: Vector2(x: 0, y: 5_000),
+            ticks: 30
+        ) { world, physics in
             // Static anchor + dynamic body with strong gravity
-            createStaticBody(world: world, name: "anchor", position: Vector2(x: 100, y: 100))
-            createDynamicBody(world: world, name: "ball", position: Vector2(x: 100, y: 100), mass: 10)
+            createStaticBody(
+                world: world,
+                name: "anchor",
+                position: Vector2(x: 100, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "ball",
+                position: Vector2(x: 100, y: 100),
+                mass: 10
+            )
             // Add Velocity2D for static body so solver can read it
-            world.addComponent(Velocity2D(), to: world.entity(named: "anchor")!)
+            guard let anchor = world.entity(named: "anchor") else { return }
+            world.addComponent(Velocity2D(), to: anchor)
 
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: world.entity(named: "anchor")!,
-                entityB: world.entity(named: "ball")!,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 100, y: 100),
-                length: 0.01,
-                maxForce: 1.0  // Very low max force
-            )), in: world)
+            guard let ball = world.entity(named: "ball") else { return }
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: anchor,
+                    entityB: ball,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 100, y: 100),
+                    length: 0.01,
+                    maxForce: 1.0  // Very low max force
+                )),
+                in: world
+            )
 
             physics.onJointBroken = { event in
                 brokenEvents.append(event)
@@ -537,24 +887,41 @@ struct BreakingJointTests {
 
         // The joint should have broken due to strong gravity on heavy body
         #expect(physics.jointCount == 0, "Joint should have been destroyed")
-        #expect(brokenEvents.count > 0, "Should have received broken event")
+        #expect(!brokenEvents.isEmpty, "Should have received broken event")
     }
 
     @Test("Unbreakable joint (maxForce=0) never breaks")
     func unbreakableJoint() {
-        let (_, physics) = runPhysics(gravity: Vector2(x: 0, y: 5000), ticks: 30) { world, physics in
-            createStaticBody(world: world, name: "anchor", position: Vector2(x: 100, y: 100))
-            createDynamicBody(world: world, name: "ball", position: Vector2(x: 100, y: 100), mass: 10)
-            world.addComponent(Velocity2D(), to: world.entity(named: "anchor")!)
+        let (_, physics) = runPhysics(
+            gravity: Vector2(x: 0, y: 5_000),
+            ticks: 30
+        ) { world, physics in
+            createStaticBody(
+                world: world,
+                name: "anchor",
+                position: Vector2(x: 100, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "ball",
+                position: Vector2(x: 100, y: 100),
+                mass: 10
+            )
+            guard let anchor = world.entity(named: "anchor") else { return }
+            world.addComponent(Velocity2D(), to: anchor)
 
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: world.entity(named: "anchor")!,
-                entityB: world.entity(named: "ball")!,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 100, y: 100),
-                length: 0.01,
-                maxForce: 0  // 0 = unbreakable
-            )), in: world)
+            guard let ball = world.entity(named: "ball") else { return }
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: anchor,
+                    entityB: ball,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 100, y: 100),
+                    length: 0.01,
+                    maxForce: 0  // 0 = unbreakable
+                )),
+                in: world
+            )
         }
 
         #expect(physics.jointCount == 1, "Unbreakable joint should still be alive")
@@ -567,49 +934,105 @@ struct BreakingJointTests {
 struct JointIntegrationTests {
 
     @Test("Pendulum: revolute joint + gravity swings")
-    func pendulumSwings() {
+    func pendulumSwings() throws {
         // Pin a body to a static anchor, let gravity swing it
-        let (world, _) = runPhysics(gravity: Vector2(x: 0, y: 200), ticks: 60) { world, physics in
-            createStaticBody(world: world, name: "pivot", position: Vector2(x: 200, y: 100))
-            createDynamicBody(world: world, name: "bob", position: Vector2(x: 300, y: 100), inertia: 50)
-            world.addComponent(Velocity2D(), to: world.entity(named: "pivot")!)
+        let (world, _) = runPhysics(
+            gravity: Vector2(x: 0, y: 200),
+            ticks: 60
+        ) { world, physics in
+            createStaticBody(
+                world: world,
+                name: "pivot",
+                position: Vector2(x: 200, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "bob",
+                position: Vector2(x: 300, y: 100),
+                inertia: 50
+            )
+            guard let pivot = world.entity(named: "pivot") else { return }
+            world.addComponent(Velocity2D(), to: pivot)
 
-            physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: world.entity(named: "pivot")!,
-                entityB: world.entity(named: "bob")!,
-                anchor: Vector2(x: 200, y: 100)
-            )), in: world)
+            guard let bob = world.entity(named: "bob") else { return }
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: pivot,
+                    entityB: bob,
+                    anchor: Vector2(x: 200, y: 100)
+                )),
+                in: world
+            )
         }
 
-        let bobPos = world.getComponent(Transform2D.self, from: world.entity(named: "bob")!)!.position
+        let bob = try #require(world.entity(named: "bob"))
+        let bobPos = try #require(world.getComponent(Transform2D.self, from: bob)).position
         // Bob should have swung down (y > initial 100)
         #expect(bobPos.y > 100, "Pendulum bob should swing down under gravity, y=\(bobPos.y)")
     }
 
     @Test("Composite object: weld joints move as unit")
-    func compositeObject() {
+    func compositeObject() throws {
         // Three bodies welded together, given initial velocity — should move together
-        let (world, _) = runPhysics(gravity: .zero, ticks: 20) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 120, y: 100))
-            createDynamicBody(world: world, name: "c", position: Vector2(x: 140, y: 100))
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 20
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 120, y: 100)
+            )
+            createDynamicBody(
+                world: world,
+                name: "c",
+                position: Vector2(x: 140, y: 100)
+            )
 
-            let a = world.entity(named: "a")!
-            let b = world.entity(named: "b")!
-            let c = world.entity(named: "c")!
+            guard let a = world.entity(named: "a") else { return }
+            guard let b = world.entity(named: "b") else { return }
+            guard let c = world.entity(named: "c") else { return }
 
             // Give all bodies same initial velocity
-            world.updateComponent(Velocity2D.self, on: a) { v in v.linear = Vector2(x: 60, y: 0) }
-            world.updateComponent(Velocity2D.self, on: b) { v in v.linear = Vector2(x: 60, y: 0) }
-            world.updateComponent(Velocity2D.self, on: c) { v in v.linear = Vector2(x: 60, y: 0) }
+            world.updateComponent(Velocity2D.self, on: a) { v in
+                v.linear = Vector2(x: 60, y: 0)
+            }
+            world.updateComponent(Velocity2D.self, on: b) { v in
+                v.linear = Vector2(x: 60, y: 0)
+            }
+            world.updateComponent(Velocity2D.self, on: c) { v in
+                v.linear = Vector2(x: 60, y: 0)
+            }
 
-            physics.createJoint(.weld(WeldJointDef(entityA: a, entityB: b, anchor: Vector2(x: 110, y: 100))), in: world)
-            physics.createJoint(.weld(WeldJointDef(entityA: b, entityB: c, anchor: Vector2(x: 130, y: 100))), in: world)
+            physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 110, y: 100)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: b,
+                    entityB: c,
+                    anchor: Vector2(x: 130, y: 100)
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let posC = world.getComponent(Transform2D.self, from: world.entity(named: "c")!)!.position
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let entityC = try #require(world.entity(named: "c"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let posC = try #require(world.getComponent(Transform2D.self, from: entityC)).position
 
         // All should have moved right
         #expect(posA.x > 100, "Body A should have moved right")
@@ -626,17 +1049,34 @@ struct JointIntegrationTests {
     @Test("Joint persists through multiple ticks")
     func persistence() {
         var jointAlive = true
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 60, afterTick: { _, physics, _ in
-            if physics.jointCount == 0 { jointAlive = false }
-        }) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 200, y: 100)
-            )), in: world)
-        }
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 60,
+            afterTick: { _, physics, _ in
+                if physics.jointCount == 0 { jointAlive = false }
+            },
+            setup: { world, physics in
+                let a = createDynamicBody(
+                    world: world,
+                    name: "a",
+                    position: Vector2(x: 100, y: 100)
+                )
+                let b = createDynamicBody(
+                    world: world,
+                    name: "b",
+                    position: Vector2(x: 200, y: 100)
+                )
+                physics.createJoint(
+                    .distance(DistanceJointDef(
+                        entityA: a,
+                        entityB: b,
+                        anchorA: Vector2(x: 100, y: 100),
+                        anchorB: Vector2(x: 200, y: 100)
+                    )),
+                    in: world
+                )
+            }
+        )
 
         #expect(jointAlive, "Joint should persist through all ticks")
         #expect(physics.jointCount == 1)
@@ -644,16 +1084,57 @@ struct JointIntegrationTests {
 
     @Test("Mixed joint types in same scene")
     func mixedTypes() {
-        let (_, physics) = runPhysics(gravity: Vector2(x: 0, y: 100), ticks: 30) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let c = createDynamicBody(world: world, name: "c", position: Vector2(x: 300, y: 100))
-            let d = createDynamicBody(world: world, name: "d", position: Vector2(x: 400, y: 100))
+        let (_, physics) = runPhysics(
+            gravity: Vector2(x: 0, y: 100),
+            ticks: 30
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let c = createDynamicBody(
+                world: world,
+                name: "c",
+                position: Vector2(x: 300, y: 100)
+            )
+            let d = createDynamicBody(
+                world: world,
+                name: "d",
+                position: Vector2(x: 400, y: 100)
+            )
 
             // Mix of all three joint types
-            physics.createJoint(.revolute(RevoluteJointDef(entityA: a, entityB: b, anchor: Vector2(x: 150, y: 100))), in: world)
-            physics.createJoint(.distance(DistanceJointDef(entityA: b, entityB: c, anchorA: Vector2(x: 200, y: 100), anchorB: Vector2(x: 300, y: 100))), in: world)
-            physics.createJoint(.weld(WeldJointDef(entityA: c, entityB: d, anchor: Vector2(x: 350, y: 100))), in: world)
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: b,
+                    entityB: c,
+                    anchorA: Vector2(x: 200, y: 100),
+                    anchorB: Vector2(x: 300, y: 100)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: c,
+                    entityB: d,
+                    anchor: Vector2(x: 350, y: 100)
+                )),
+                in: world
+            )
         }
 
         // Should not crash and all joints should survive
@@ -686,18 +1167,37 @@ struct JointDebugTests {
 
     @Test("debugJointInfo returns correct data")
     func debugInfo() {
-        let (world, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            physics.createJoint(.revolute(RevoluteJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100)
-            )), in: world)
-            physics.createJoint(.distance(DistanceJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 200, y: 100)
-            )), in: world)
+        let (world, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 200, y: 100)
+                )),
+                in: world
+            )
         }
 
         let infos = physics.debugJointInfo(world: world)
@@ -710,22 +1210,45 @@ struct JointDebugTests {
 
     @Test("debugJointInfo returns correct types for new joints")
     func debugInfoNewJoints() {
-        let (world, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100),
-                axis: Vector2(x: 1, y: 0)
-            )), in: world)
-            physics.createJoint(.rope(RopeJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 200, y: 100)
-            )), in: world)
-            physics.createJoint(.motor(MotorJointDef(
-                entityA: a, entityB: b
-            )), in: world)
+        let (world, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 200, y: 100)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .motor(MotorJointDef(
+                    entityA: a,
+                    entityB: b
+                )),
+                in: world
+            )
         }
 
         let infos = physics.debugJointInfo(world: world)
@@ -738,25 +1261,40 @@ struct JointDebugTests {
     }
 
     @Test("Prismatic debug info includes axis")
-    func prismaticDebugAxis() {
-        let (world, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100),
-                axis: Vector2(x: 1, y: 0)
-            )), in: world)
+    func prismaticDebugAxis() throws {
+        let (world, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
         }
 
         let infos = physics.debugJointInfo(world: world)
         #expect(infos.count == 1)
         let info = infos[0]
         #expect(info.jointType == "prismatic")
-        #expect(info.axis != nil)
+        let axis = try #require(info.axis)
         // Axis should be approximately (1, 0) since body A has no rotation
-        #expect(abs(info.axis!.x - 1.0) < 0.01)
-        #expect(abs(info.axis!.y) < 0.01)
+        #expect(abs(axis.x - 1.0) < 0.01)
+        #expect(abs(axis.y) < 0.01)
     }
 }
 
@@ -767,14 +1305,29 @@ struct PrismaticJointLifecycleTests {
 
     @Test("createPrismaticJoint returns valid handle")
     func createPrismatic() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let handle = physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 150, y: 100),
-                axis: Vector2(x: 1, y: 0)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let handle = physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 150, y: 100),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
             #expect(handle != .invalid)
             #expect(physics.jointCount == 1)
         }
@@ -783,14 +1336,29 @@ struct PrismaticJointLifecycleTests {
 
     @Test("createRopeJoint returns valid handle")
     func createRope() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let handle = physics.createJoint(.rope(RopeJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 200, y: 100)
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let handle = physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 200, y: 100)
+                )),
+                in: world
+            )
             #expect(handle != .invalid)
             #expect(physics.jointCount == 1)
         }
@@ -799,15 +1367,30 @@ struct PrismaticJointLifecycleTests {
 
     @Test("createMotorJoint returns valid handle")
     func createMotor() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 0) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 100))
-            let handle = physics.createJoint(.motor(MotorJointDef(
-                entityA: a, entityB: b,
-                linearOffset: Vector2(x: 50, y: 0),
-                maxForce: 100,
-                maxTorque: 100
-            )), in: world)
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 0
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 100)
+            )
+            let handle = physics.createJoint(
+                .motor(MotorJointDef(
+                    entityA: a,
+                    entityB: b,
+                    linearOffset: Vector2(x: 50, y: 0),
+                    maxForce: 100,
+                    maxTorque: 100
+                )),
+                in: world
+            )
             #expect(handle != .invalid)
             #expect(physics.jointCount == 1)
         }
@@ -821,139 +1404,245 @@ struct PrismaticJointLifecycleTests {
 struct PrismaticJointSolverTests {
 
     @Test("Bodies constrained to horizontal axis stay on axis")
-    func staysOnAxis() {
+    func staysOnAxis() throws {
         // Two bodies with prismatic joint on horizontal axis, apply perpendicular velocity
-        let (world, _) = runPhysics(gravity: .zero, ticks: 30) { world, physics in
-            let a = createStaticBody(world: world, name: "rail", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "slider", position: Vector2(x: 100, y: 100), inertia: 10)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 30
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "rail",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "slider",
+                position: Vector2(x: 100, y: 100),
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
             // Apply velocity perpendicular to axis (downward)
             world.updateComponent(Velocity2D.self, on: b) { v in
                 v.linear = Vector2(x: 0, y: 200) // perpendicular to horizontal axis
             }
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 100, y: 100),
-                axis: Vector2(x: 1, y: 0)
-            )), in: world)
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 100, y: 100),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
         }
 
-        let pos = world.getComponent(Transform2D.self, from: world.entity(named: "slider")!)!.position
+        let slider = try #require(world.entity(named: "slider"))
+        let pos = try #require(world.getComponent(Transform2D.self, from: slider)).position
         // Should not have moved significantly off the horizontal axis
         #expect(abs(pos.y - 100) < 20, "Slider should stay on axis, y=\(pos.y)")
     }
 
     @Test("Bodies slide freely along axis")
-    func slidesFreelyAlongAxis() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 20) { world, physics in
-            let a = createStaticBody(world: world, name: "rail", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "slider", position: Vector2(x: 100, y: 100), inertia: 10)
+    func slidesFreelyAlongAxis() throws {
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 20
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "rail",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "slider",
+                position: Vector2(x: 100, y: 100),
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
             // Apply velocity along the axis
             world.updateComponent(Velocity2D.self, on: b) { v in
                 v.linear = Vector2(x: 100, y: 0)
             }
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 100, y: 100),
-                axis: Vector2(x: 1, y: 0)
-            )), in: world)
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 100, y: 100),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
         }
 
-        let pos = world.getComponent(Transform2D.self, from: world.entity(named: "slider")!)!.position
+        let slider = try #require(world.entity(named: "slider"))
+        let pos = try #require(world.getComponent(Transform2D.self, from: slider)).position
         // Should have moved along the axis
         #expect(pos.x > 110, "Slider should move along axis, x=\(pos.x)")
     }
 
     @Test("Rotation is locked between bodies")
-    func rotationLocked() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 30) { world, physics in
-            let a = createStaticBody(world: world, name: "rail", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "slider", position: Vector2(x: 100, y: 100), inertia: 10)
+    func rotationLocked() throws {
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 30
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "rail",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "slider",
+                position: Vector2(x: 100, y: 100),
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
             // Apply angular velocity
             world.updateComponent(Velocity2D.self, on: b) { v in
                 v.angular = 5.0
             }
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 100, y: 100),
-                axis: Vector2(x: 1, y: 0)
-            )), in: world)
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 100, y: 100),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
         }
 
-        let rot = world.getComponent(Transform2D.self, from: world.entity(named: "slider")!)!.rotation
+        let slider = try #require(world.entity(named: "slider"))
+        let rot = try #require(world.getComponent(Transform2D.self, from: slider)).rotation
         // Rotation should be constrained near 0 (reference angle)
         #expect(abs(rot) < 0.5, "Rotation should be locked, rot=\(rot)")
     }
 
     @Test("Translation limits restrict movement")
-    func translationLimits() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 60) { world, physics in
-            let a = createStaticBody(world: world, name: "rail", position: Vector2(x: 200, y: 100))
-            let b = createDynamicBody(world: world, name: "slider", position: Vector2(x: 200, y: 100), inertia: 10)
+    func translationLimits() throws {
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 60
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "rail",
+                position: Vector2(x: 200, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "slider",
+                position: Vector2(x: 200, y: 100),
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
             // Apply velocity along axis
             world.updateComponent(Velocity2D.self, on: b) { v in
                 v.linear = Vector2(x: 200, y: 0)
             }
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 200, y: 100),
-                axis: Vector2(x: 1, y: 0),
-                enableLimit: true,
-                lowerTranslation: -50,
-                upperTranslation: 50
-            )), in: world)
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 200, y: 100),
+                    axis: Vector2(x: 1, y: 0),
+                    enableLimit: true,
+                    lowerTranslation: -50,
+                    upperTranslation: 50
+                )),
+                in: world
+            )
         }
 
-        let pos = world.getComponent(Transform2D.self, from: world.entity(named: "slider")!)!.position
+        let slider = try #require(world.entity(named: "slider"))
+        let pos = try #require(world.getComponent(Transform2D.self, from: slider)).position
         // Should not exceed the upper limit by much
         let translation = pos.x - 200 // displacement from anchor
         #expect(translation < 80, "Translation should be limited, got \(translation)")
     }
 
     @Test("Motor drives body along axis")
-    func motorDrivesAlongAxis() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 60) { world, physics in
-            let a = createStaticBody(world: world, name: "rail", position: Vector2(x: 200, y: 100))
-            let b = createDynamicBody(world: world, name: "slider", position: Vector2(x: 200, y: 100), inertia: 10)
+    func motorDrivesAlongAxis() throws {
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 60
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "rail",
+                position: Vector2(x: 200, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "slider",
+                position: Vector2(x: 200, y: 100),
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 200, y: 100),
-                axis: Vector2(x: 1, y: 0),
-                enableMotor: true,
-                motorSpeed: 100,
-                maxMotorForce: 500
-            )), in: world)
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 200, y: 100),
+                    axis: Vector2(x: 1, y: 0),
+                    enableMotor: true,
+                    motorSpeed: 100,
+                    maxMotorForce: 500
+                )),
+                in: world
+            )
         }
 
-        let pos = world.getComponent(Transform2D.self, from: world.entity(named: "slider")!)!.position
+        let slider = try #require(world.entity(named: "slider"))
+        let pos = try #require(world.getComponent(Transform2D.self, from: slider)).position
         // Motor should have driven the slider to the right
         #expect(pos.x > 210, "Motor should drive slider along axis, x=\(pos.x)")
     }
 
     @Test("Prismatic with static body works as rail")
-    func staticBodyRail() {
-        let (world, _) = runPhysics(gravity: Vector2(x: 0, y: 200), ticks: 30) { world, physics in
-            let a = createStaticBody(world: world, name: "rail", position: Vector2(x: 200, y: 200))
-            let b = createDynamicBody(world: world, name: "slider", position: Vector2(x: 200, y: 200), inertia: 10)
+    func staticBodyRail() throws {
+        let (world, _) = runPhysics(
+            gravity: Vector2(x: 0, y: 200),
+            ticks: 30
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "rail",
+                position: Vector2(x: 200, y: 200)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "slider",
+                position: Vector2(x: 200, y: 200),
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 200, y: 200),
-                axis: Vector2(x: 1, y: 0)
-            )), in: world)
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 200, y: 200),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
         }
 
-        let railPos = world.getComponent(Transform2D.self, from: world.entity(named: "rail")!)!.position
-        let sliderPos = world.getComponent(Transform2D.self, from: world.entity(named: "slider")!)!.position
+        let rail = try #require(world.entity(named: "rail"))
+        let railPos = try #require(world.getComponent(Transform2D.self, from: rail)).position
+        let slider = try #require(world.entity(named: "slider"))
+        let sliderPos = try #require(world.getComponent(Transform2D.self, from: slider)).position
         // Static body should not move
         #expect(abs(railPos.x - 200) < 0.1)
         #expect(abs(railPos.y - 200) < 0.1)
         // Slider should stay on horizontal axis despite gravity
-        #expect(abs(sliderPos.y - 200) < 20, "Slider should stay on rail despite gravity, y=\(sliderPos.y)")
+        #expect(
+            abs(sliderPos.y - 200) < 20,
+            "Slider should stay on rail despite gravity, y=\(sliderPos.y)"
+        )
     }
 }
 
@@ -963,97 +1652,186 @@ struct PrismaticJointSolverTests {
 struct RopeJointSolverTests {
 
     @Test("Bodies within max length move freely (slack)")
-    func slackMovesFreely() {
+    func slackMovesFreely() throws {
         // Bodies are 50 apart, maxLength is 200 — should move freely
-        let (world, _) = runPhysics(gravity: .zero, ticks: 10) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 150, y: 100))
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 10
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 150, y: 100)
+            )
             // Move them toward each other
-            world.updateComponent(Velocity2D.self, on: a) { v in v.linear = Vector2(x: 50, y: 0) }
-            world.updateComponent(Velocity2D.self, on: b) { v in v.linear = Vector2(x: -50, y: 0) }
-            physics.createJoint(.rope(RopeJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 150, y: 100),
-                maxLength: 200
-            )), in: world)
+            world.updateComponent(Velocity2D.self, on: a) { v in
+                v.linear = Vector2(x: 50, y: 0)
+            }
+            world.updateComponent(Velocity2D.self, on: b) { v in
+                v.linear = Vector2(x: -50, y: 0)
+            }
+            physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 150, y: 100),
+                    maxLength: 200
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
         // Bodies should move freely — A moves right, B moves left
         #expect(posA.x > 100, "Body A should move right when slack, x=\(posA.x)")
         #expect(posB.x < 150, "Body B should move left when slack, x=\(posB.x)")
     }
 
     @Test("Bodies beyond max length are pulled back (taut)")
-    func tautPullsBack() {
+    func tautPullsBack() throws {
         // Bodies are 200 apart, maxLength is 100 — should pull together
-        let (world, _) = runPhysics(gravity: .zero, ticks: 30) { world, physics in
-            createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            createDynamicBody(world: world, name: "b", position: Vector2(x: 200, y: 0))
-            physics.createJoint(.rope(RopeJointDef(
-                entityA: world.entity(named: "a")!,
-                entityB: world.entity(named: "b")!,
-                anchorA: Vector2(x: 0, y: 0),
-                anchorB: Vector2(x: 200, y: 0),
-                maxLength: 100
-            )), in: world)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 30
+        ) { world, physics in
+            createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 200, y: 0)
+            )
+            let entityA = world.entity(named: "a")
+            let entityB = world.entity(named: "b")
+            guard let entityA, let entityB else { return }
+            physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: entityA,
+                    entityB: entityB,
+                    anchorA: Vector2(x: 0, y: 0),
+                    anchorB: Vector2(x: 200, y: 0),
+                    maxLength: 100
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let dist = sqrtf((posB.x - posA.x) * (posB.x - posA.x) + (posB.y - posA.y) * (posB.y - posA.y))
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let dx = posB.x - posA.x
+        let dy = posB.y - posA.y
+        let dist = sqrtf(dx * dx + dy * dy)
         // Should be closer to maxLength than the initial 200
         #expect(dist < 180, "Rope should pull bodies toward maxLength, dist=\(dist)")
     }
 
     @Test("Rope only pulls, never pushes")
-    func pullOnlyNeverPush() {
+    func pullOnlyNeverPush() throws {
         // Bodies at 50 apart, maxLength 100 — moving toward each other should not be resisted
-        let (world, _) = runPhysics(gravity: .zero, ticks: 10) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 50, y: 0))
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 10
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 50, y: 0)
+            )
             // Move toward each other
-            world.updateComponent(Velocity2D.self, on: a) { v in v.linear = Vector2(x: 100, y: 0) }
-            world.updateComponent(Velocity2D.self, on: b) { v in v.linear = Vector2(x: -100, y: 0) }
-            physics.createJoint(.rope(RopeJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 0, y: 0),
-                anchorB: Vector2(x: 50, y: 0),
-                maxLength: 100
-            )), in: world)
+            world.updateComponent(Velocity2D.self, on: a) { v in
+                v.linear = Vector2(x: 100, y: 0)
+            }
+            world.updateComponent(Velocity2D.self, on: b) { v in
+                v.linear = Vector2(x: -100, y: 0)
+            }
+            physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 0, y: 0),
+                    anchorB: Vector2(x: 50, y: 0),
+                    maxLength: 100
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
         // Bodies should pass each other or get very close — rope doesn't push
         let dist = abs(posB.x - posA.x)
         #expect(dist < 50, "Rope should allow bodies to move closer, dist=\(dist)")
     }
 
     @Test("Auto-computed max length from initial distance")
-    func autoMaxLength() {
-        // Bodies are 80 apart, maxLength = 0 (auto) → should use 80
-        let (world, _) = runPhysics(gravity: .zero, ticks: 30) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 80, y: 0))
+    func autoMaxLength() throws {
+        // Bodies are 80 apart, maxLength = 0 (auto) -> should use 80
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 30
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 80, y: 0)
+            )
             // Try to pull them apart
-            world.updateComponent(Velocity2D.self, on: a) { v in v.linear = Vector2(x: -100, y: 0) }
-            world.updateComponent(Velocity2D.self, on: b) { v in v.linear = Vector2(x: 100, y: 0) }
-            physics.createJoint(.rope(RopeJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 0, y: 0),
-                anchorB: Vector2(x: 80, y: 0),
-                maxLength: 0 // auto-compute
-            )), in: world)
+            world.updateComponent(Velocity2D.self, on: a) { v in
+                v.linear = Vector2(x: -100, y: 0)
+            }
+            world.updateComponent(Velocity2D.self, on: b) { v in
+                v.linear = Vector2(x: 100, y: 0)
+            }
+            physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 0, y: 0),
+                    anchorB: Vector2(x: 80, y: 0),
+                    maxLength: 0 // auto-compute
+                )),
+                in: world
+            )
         }
 
-        let posA = world.getComponent(Transform2D.self, from: world.entity(named: "a")!)!.position
-        let posB = world.getComponent(Transform2D.self, from: world.entity(named: "b")!)!.position
-        let dist = sqrtf((posB.x - posA.x) * (posB.x - posA.x) + (posB.y - posA.y) * (posB.y - posA.y))
+        let entityA = try #require(world.entity(named: "a"))
+        let entityB = try #require(world.entity(named: "b"))
+        let posA = try #require(world.getComponent(Transform2D.self, from: entityA)).position
+        let posB = try #require(world.getComponent(Transform2D.self, from: entityB)).position
+        let dx = posB.x - posA.x
+        let dy = posB.y - posA.y
+        let dist = sqrtf(dx * dx + dy * dy)
         // Should not stretch far beyond the initial 80 distance
-        #expect(dist < 120, "Auto maxLength should keep bodies near initial distance, dist=\(dist)")
+        #expect(
+            dist < 120,
+            "Auto maxLength should keep bodies near initial distance, dist=\(dist)"
+        )
     }
 }
 
@@ -1063,66 +1841,116 @@ struct RopeJointSolverTests {
 struct MotorJointSolverTests {
 
     @Test("Motor drives body B toward linear offset")
-    func drivesTowardOffset() {
+    func drivesTowardOffset() throws {
         // Body B starts 100 units right of A; motor targets B at 50 units right (closer)
-        let (world, _) = runPhysics(gravity: .zero, ticks: 60) { world, physics in
-            let a = createStaticBody(world: world, name: "anchor", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "follower", position: Vector2(x: 200, y: 100))
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 60
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "anchor",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "follower",
+                position: Vector2(x: 200, y: 100)
+            )
             world.addComponent(Velocity2D(), to: a)
-            physics.createJoint(.motor(MotorJointDef(
-                entityA: a, entityB: b,
-                linearOffset: Vector2(x: 50, y: 0),
-                correctionFactor: 0.5,
-                maxForce: 500,
-                maxTorque: 100
-            )), in: world)
+            physics.createJoint(
+                .motor(MotorJointDef(
+                    entityA: a,
+                    entityB: b,
+                    linearOffset: Vector2(x: 50, y: 0),
+                    correctionFactor: 0.5,
+                    maxForce: 500,
+                    maxTorque: 100
+                )),
+                in: world
+            )
         }
 
-        let pos = world.getComponent(Transform2D.self, from: world.entity(named: "follower")!)!.position
+        let follower = try #require(world.entity(named: "follower"))
+        let pos = try #require(world.getComponent(Transform2D.self, from: follower)).position
         // Should have moved closer to target (100 + 50 = 150)
         #expect(pos.x < 200, "Motor should drive body toward offset, x=\(pos.x)")
     }
 
     @Test("Motor drives angular alignment")
-    func drivesAngularAlignment() {
+    func drivesAngularAlignment() throws {
         // Body B starts at rotation 1.0, motor targets rotation 0
-        let (world, _) = runPhysics(gravity: .zero, ticks: 60) { world, physics in
-            let a = createStaticBody(world: world, name: "anchor", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "follower", position: Vector2(x: 100, y: 100), inertia: 10)
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 60
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "anchor",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "follower",
+                position: Vector2(x: 100, y: 100),
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
             // Start B with a rotation offset
             world.updateComponent(Transform2D.self, on: b) { t in t.rotation = 1.0 }
-            physics.createJoint(.motor(MotorJointDef(
-                entityA: a, entityB: b,
-                angularOffset: 0,
-                correctionFactor: 0.5,
-                maxForce: 100,
-                maxTorque: 500
-            )), in: world)
+            physics.createJoint(
+                .motor(MotorJointDef(
+                    entityA: a,
+                    entityB: b,
+                    angularOffset: 0,
+                    correctionFactor: 0.5,
+                    maxForce: 100,
+                    maxTorque: 500
+                )),
+                in: world
+            )
         }
 
-        let rot = world.getComponent(Transform2D.self, from: world.entity(named: "follower")!)!.rotation
+        let follower = try #require(world.entity(named: "follower"))
+        let rot = try #require(world.getComponent(Transform2D.self, from: follower)).rotation
         // Should have rotated back toward 0
         #expect(abs(rot) < 0.8, "Motor should drive rotation toward offset, rot=\(rot)")
     }
 
     @Test("Motor respects maxForce limit")
-    func respectsMaxForce() {
+    func respectsMaxForce() throws {
         // Motor with very low maxForce vs strong push — should not fully reach target
-        let (world, _) = runPhysics(gravity: Vector2(x: 0, y: 500), ticks: 30) { world, physics in
-            let a = createStaticBody(world: world, name: "anchor", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "follower", position: Vector2(x: 100, y: 100), mass: 10)
+        let (world, _) = runPhysics(
+            gravity: Vector2(x: 0, y: 500),
+            ticks: 30
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "anchor",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "follower",
+                position: Vector2(x: 100, y: 100),
+                mass: 10
+            )
             world.addComponent(Velocity2D(), to: a)
-            physics.createJoint(.motor(MotorJointDef(
-                entityA: a, entityB: b,
-                linearOffset: .zero,
-                correctionFactor: 1.0,
-                maxForce: 0.1, // Very weak motor
-                maxTorque: 0.1
-            )), in: world)
+            physics.createJoint(
+                .motor(MotorJointDef(
+                    entityA: a,
+                    entityB: b,
+                    linearOffset: .zero,
+                    correctionFactor: 1.0,
+                    maxForce: 0.1, // Very weak motor
+                    maxTorque: 0.1
+                )),
+                in: world
+            )
         }
 
-        let pos = world.getComponent(Transform2D.self, from: world.entity(named: "follower")!)!.position
+        let follower = try #require(world.entity(named: "follower"))
+        let pos = try #require(world.getComponent(Transform2D.self, from: follower)).position
         // With strong gravity and weak motor, body should have fallen significantly
         #expect(pos.y > 120, "Weak motor should not hold against strong gravity, y=\(pos.y)")
     }
@@ -1130,17 +1958,33 @@ struct MotorJointSolverTests {
     @Test("Motor joint does not break")
     func doesNotBreak() {
         var brokenEvents: [JointEvent] = []
-        let (_, physics) = runPhysics(gravity: Vector2(x: 0, y: 5000), ticks: 60) { world, physics in
-            let a = createStaticBody(world: world, name: "anchor", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "follower", position: Vector2(x: 100, y: 100), mass: 10)
+        let (_, physics) = runPhysics(
+            gravity: Vector2(x: 0, y: 5_000),
+            ticks: 60
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "anchor",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "follower",
+                position: Vector2(x: 100, y: 100),
+                mass: 10
+            )
             world.addComponent(Velocity2D(), to: a)
-            physics.createJoint(.motor(MotorJointDef(
-                entityA: a, entityB: b,
-                linearOffset: .zero,
-                correctionFactor: 1.0,
-                maxForce: 0.01, // Extremely weak
-                maxTorque: 0.01
-            )), in: world)
+            physics.createJoint(
+                .motor(MotorJointDef(
+                    entityA: a,
+                    entityB: b,
+                    linearOffset: .zero,
+                    correctionFactor: 1.0,
+                    maxForce: 0.01, // Extremely weak
+                    maxTorque: 0.01
+                )),
+                in: world
+            )
             physics.onJointBroken = { event in
                 brokenEvents.append(event)
             }
@@ -1159,21 +2003,98 @@ struct NewJointIntegrationTests {
 
     @Test("All six joint types coexist")
     func sixJointTypes() {
-        let (_, physics) = runPhysics(gravity: .zero, ticks: 10) { world, physics in
-            let a = createDynamicBody(world: world, name: "a", position: Vector2(x: 0, y: 0))
-            let b = createDynamicBody(world: world, name: "b", position: Vector2(x: 100, y: 0))
-            let c = createDynamicBody(world: world, name: "c", position: Vector2(x: 200, y: 0))
-            let d = createDynamicBody(world: world, name: "d", position: Vector2(x: 300, y: 0))
-            let e = createDynamicBody(world: world, name: "e", position: Vector2(x: 400, y: 0))
-            let f = createDynamicBody(world: world, name: "f", position: Vector2(x: 500, y: 0))
-            let g = createDynamicBody(world: world, name: "g", position: Vector2(x: 600, y: 0))
+        let (_, physics) = runPhysics(
+            gravity: .zero,
+            ticks: 10
+        ) { world, physics in
+            let a = createDynamicBody(
+                world: world,
+                name: "a",
+                position: Vector2(x: 0, y: 0)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "b",
+                position: Vector2(x: 100, y: 0)
+            )
+            let c = createDynamicBody(
+                world: world,
+                name: "c",
+                position: Vector2(x: 200, y: 0)
+            )
+            let d = createDynamicBody(
+                world: world,
+                name: "d",
+                position: Vector2(x: 300, y: 0)
+            )
+            let e = createDynamicBody(
+                world: world,
+                name: "e",
+                position: Vector2(x: 400, y: 0)
+            )
+            let f = createDynamicBody(
+                world: world,
+                name: "f",
+                position: Vector2(x: 500, y: 0)
+            )
+            let g = createDynamicBody(
+                world: world,
+                name: "g",
+                position: Vector2(x: 600, y: 0)
+            )
 
-            physics.createJoint(.revolute(RevoluteJointDef(entityA: a, entityB: b, anchor: Vector2(x: 50, y: 0))), in: world)
-            physics.createJoint(.distance(DistanceJointDef(entityA: b, entityB: c, anchorA: Vector2(x: 100, y: 0), anchorB: Vector2(x: 200, y: 0))), in: world)
-            physics.createJoint(.weld(WeldJointDef(entityA: c, entityB: d, anchor: Vector2(x: 250, y: 0))), in: world)
-            physics.createJoint(.prismatic(PrismaticJointDef(entityA: d, entityB: e, anchor: Vector2(x: 350, y: 0), axis: Vector2(x: 1, y: 0))), in: world)
-            physics.createJoint(.rope(RopeJointDef(entityA: e, entityB: f, anchorA: Vector2(x: 400, y: 0), anchorB: Vector2(x: 500, y: 0))), in: world)
-            physics.createJoint(.motor(MotorJointDef(entityA: f, entityB: g, maxForce: 100, maxTorque: 100)), in: world)
+            physics.createJoint(
+                .revolute(RevoluteJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 50, y: 0)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .distance(DistanceJointDef(
+                    entityA: b,
+                    entityB: c,
+                    anchorA: Vector2(x: 100, y: 0),
+                    anchorB: Vector2(x: 200, y: 0)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .weld(WeldJointDef(
+                    entityA: c,
+                    entityB: d,
+                    anchor: Vector2(x: 250, y: 0)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: d,
+                    entityB: e,
+                    anchor: Vector2(x: 350, y: 0),
+                    axis: Vector2(x: 1, y: 0)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: e,
+                    entityB: f,
+                    anchorA: Vector2(x: 400, y: 0),
+                    anchorB: Vector2(x: 500, y: 0)
+                )),
+                in: world
+            )
+            physics.createJoint(
+                .motor(MotorJointDef(
+                    entityA: f,
+                    entityB: g,
+                    maxForce: 100,
+                    maxTorque: 100
+                )),
+                in: world
+            )
         }
 
         // All 6 joints should survive 10 physics ticks without crashing
@@ -1183,46 +2104,79 @@ struct NewJointIntegrationTests {
     @Test("Breaking prismatic joint emits event")
     func breakingPrismatic() {
         var brokenEvents: [JointEvent] = []
-        let (_, physics) = runPhysics(gravity: Vector2(x: 0, y: 5000), ticks: 30) { world, physics in
-            let a = createStaticBody(world: world, name: "rail", position: Vector2(x: 100, y: 100))
-            let b = createDynamicBody(world: world, name: "slider", position: Vector2(x: 100, y: 100), mass: 10, inertia: 10)
+        let (_, physics) = runPhysics(
+            gravity: Vector2(x: 0, y: 5_000),
+            ticks: 30
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "rail",
+                position: Vector2(x: 100, y: 100)
+            )
+            let b = createDynamicBody(
+                world: world,
+                name: "slider",
+                position: Vector2(x: 100, y: 100),
+                mass: 10,
+                inertia: 10
+            )
             world.addComponent(Velocity2D(), to: a)
-            physics.createJoint(.prismatic(PrismaticJointDef(
-                entityA: a, entityB: b,
-                anchor: Vector2(x: 100, y: 100),
-                axis: Vector2(x: 1, y: 0),
-                maxForce: 1.0 // Very low
-            )), in: world)
+            physics.createJoint(
+                .prismatic(PrismaticJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchor: Vector2(x: 100, y: 100),
+                    axis: Vector2(x: 1, y: 0),
+                    maxForce: 1.0 // Very low
+                )),
+                in: world
+            )
             physics.onJointBroken = { event in
                 brokenEvents.append(event)
             }
         }
 
         #expect(physics.jointCount == 0, "Prismatic joint should have broken")
-        #expect(brokenEvents.count > 0, "Should have received broken event")
+        #expect(!brokenEvents.isEmpty, "Should have received broken event")
     }
 
     @Test("Breaking rope joint emits event")
     func breakingRope() {
         var brokenEvents: [JointEvent] = []
-        let (_, physics) = runPhysics(gravity: Vector2(x: 0, y: 5000), ticks: 30) { world, physics in
-            let a = createStaticBody(world: world, name: "anchor", position: Vector2(x: 100, y: 100))
+        let (_, physics) = runPhysics(
+            gravity: Vector2(x: 0, y: 5_000),
+            ticks: 30
+        ) { world, physics in
+            let a = createStaticBody(
+                world: world,
+                name: "anchor",
+                position: Vector2(x: 100, y: 100)
+            )
             // Start ball beyond maxLength so rope is immediately taut
-            let b = createDynamicBody(world: world, name: "ball", position: Vector2(x: 100, y: 250), mass: 10)
+            let b = createDynamicBody(
+                world: world,
+                name: "ball",
+                position: Vector2(x: 100, y: 250),
+                mass: 10
+            )
             world.addComponent(Velocity2D(), to: a)
-            physics.createJoint(.rope(RopeJointDef(
-                entityA: a, entityB: b,
-                anchorA: Vector2(x: 100, y: 100),
-                anchorB: Vector2(x: 100, y: 250),
-                maxLength: 80,  // Less than initial 150 distance — immediately taut
-                maxForce: 1.0   // Very low
-            )), in: world)
+            physics.createJoint(
+                .rope(RopeJointDef(
+                    entityA: a,
+                    entityB: b,
+                    anchorA: Vector2(x: 100, y: 100),
+                    anchorB: Vector2(x: 100, y: 250),
+                    maxLength: 80,  // Less than initial 150 distance — immediately taut
+                    maxForce: 1.0   // Very low
+                )),
+                in: world
+            )
             physics.onJointBroken = { event in
                 brokenEvents.append(event)
             }
         }
 
         #expect(physics.jointCount == 0, "Rope joint should have broken")
-        #expect(brokenEvents.count > 0, "Should have received broken event")
+        #expect(!brokenEvents.isEmpty, "Should have received broken event")
     }
 }

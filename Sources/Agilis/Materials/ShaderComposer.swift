@@ -18,6 +18,8 @@
 /// Use `ComposableEffects` for pre-built effect snippets.
 public final class ShaderComposer: @unchecked Sendable {
 
+    deinit {}
+
     /// A single composable effect step.
     private struct Effect {
         let name: String

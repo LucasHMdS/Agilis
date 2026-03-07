@@ -10,9 +10,13 @@ import CRT
 #endif
 
 final class GameScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var physics: PhysicsWorld2D!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: RPGSounds.SoundSet!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var serializer: WorldSerializer!
     private var savedData: Data?
 
@@ -23,10 +27,15 @@ final class GameScene: Scene {
     private var npcEntities: [Entity] = []
 
     // UI
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var inventoryList: UIListView!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var weaponLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var armorLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var statusLabel: UILabel!
 
     func didEnter(app: Application) {
@@ -104,7 +113,7 @@ final class GameScene: Scene {
         ui.update(app: app, deltaTime: Double(dt))
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
 
         // Draw floor
@@ -288,7 +297,7 @@ final class GameScene: Scene {
             (Vector2(x: 200, y: 100), { ItemPrefabs.sword(at: Vector2(x: 200, y: 100)) }),
             (Vector2(x: 300, y: 200), { ItemPrefabs.shield(at: Vector2(x: 300, y: 200)) }),
             (Vector2(x: 120, y: 300), { ItemPrefabs.healthPotion(at: Vector2(x: 120, y: 300)) }),
-            (Vector2(x: 400, y: 150), { ItemPrefabs.healthPotion(at: Vector2(x: 400, y: 150)) }),
+            (Vector2(x: 400, y: 150), { ItemPrefabs.healthPotion(at: Vector2(x: 400, y: 150)) })
         ]
         for (_, factory) in positions {
             let entity = factory().instantiate(in: app.world)
@@ -297,27 +306,33 @@ final class GameScene: Scene {
     }
 
     private func spawnChests(app: Application) {
-        let chest1 = ItemPrefabs.chest(
-            at: Vector2(x: 350, y: 350),
-            containsItemId: "gold_sword",
-            containsName: "Golden Sword"
-        ).instantiate(in: app.world)
+        let chest1 = ItemPrefabs
+            .chest(
+                at: Vector2(x: 350, y: 350),
+                containsItemId: "gold_sword",
+                containsName: "Golden Sword"
+            )
+            .instantiate(in: app.world)
         chestEntities.append(chest1)
 
-        let chest2 = ItemPrefabs.chest(
-            at: Vector2(x: 450, y: 250),
-            containsItemId: "magic_armor",
-            containsName: "Magic Armor"
-        ).instantiate(in: app.world)
+        let chest2 = ItemPrefabs
+            .chest(
+                at: Vector2(x: 450, y: 250),
+                containsItemId: "magic_armor",
+                containsName: "Magic Armor"
+            )
+            .instantiate(in: app.world)
         chestEntities.append(chest2)
     }
 
     private func spawnNPCs(app: Application) {
-        let npc1 = ItemPrefabs.npc(
-            at: Vector2(x: 250, y: 300),
-            name: "Elder",
-            dialogue: "Welcome, adventurer!"
-        ).instantiate(in: app.world)
+        let npc1 = ItemPrefabs
+            .npc(
+                at: Vector2(x: 250, y: 300),
+                name: "Elder",
+                dialogue: "Welcome, adventurer!"
+            )
+            .instantiate(in: app.world)
         npcEntities.append(npc1)
     }
 
@@ -326,24 +341,24 @@ final class GameScene: Scene {
     private func setupEvents(app: Application) {
         app.world.on(ItemPickedUp.self) { [weak self] event in
             guard let self = self else { return }
-            app.world.updateComponent(Inventory.self, on: self.playerEntity) { inv in
+            app.world.updateComponent(Inventory.self, on: playerEntity) { inv in
                 if inv.items.count < inv.maxSlots {
                     inv.items.append(event.displayName)
                 }
             }
-            app.world.emit(InventoryChanged(playerEntity: self.playerEntity))
-            app.audio.playSound(self.sounds.pickup, volume: 0.5, pitch: 1.0, looping: false)
+            app.world.emit(InventoryChanged(playerEntity: playerEntity))
+            app.audio.playSound(sounds.pickup, volume: 0.5, pitch: 1.0, looping: false)
         }
 
         app.world.on(ChestOpened.self) { [weak self] event in
             guard let self = self else { return }
-            app.world.updateComponent(Inventory.self, on: self.playerEntity) { inv in
+            app.world.updateComponent(Inventory.self, on: playerEntity) { inv in
                 if inv.items.count < inv.maxSlots {
                     inv.items.append(event.displayName)
                 }
             }
-            app.world.emit(InventoryChanged(playerEntity: self.playerEntity))
-            app.audio.playSound(self.sounds.chestOpen, volume: 0.5, pitch: 1.0, looping: false)
+            app.world.emit(InventoryChanged(playerEntity: playerEntity))
+            app.audio.playSound(sounds.chestOpen, volume: 0.5, pitch: 1.0, looping: false)
         }
 
         app.world.on(InventoryChanged.self) { [weak self] _ in
@@ -458,6 +473,7 @@ final class GameScene: Scene {
     private func saveGame(app: Application) {
         do {
             savedData = try serializer.encode(world: app.world)
+            // swiftlint:disable:next force_unwrapping
             statusLabel.text = "Saved! (\(savedData!.count) bytes)"
             app.audio.playSound(sounds.save, volume: 0.5, pitch: 1.0, looping: false)
         } catch {

@@ -1,7 +1,7 @@
-
-
 /// A widget that displays a texture.
 public class UIImage: UINode, @unchecked Sendable {
+    deinit {}
+
     public var texture: TextureHandle
     public var tint: Color
 
@@ -16,7 +16,7 @@ public class UIImage: UINode, @unchecked Sendable {
         super.init()
     }
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_ available: Size) -> Size {
         if let fixed = fixedSize {
             return fixed
         }
@@ -24,7 +24,7 @@ public class UIImage: UINode, @unchecked Sendable {
         return Size(width: min(available.width, 64), height: min(available.height, 64))
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme _: UITheme) {
         guard isVisible else { return }
 
         let texSize = renderer.textureSize(texture)

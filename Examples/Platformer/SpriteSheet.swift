@@ -125,8 +125,8 @@ enum MarioSprites {
     }
 
     private static func fillRect(_ pixels: inout [UInt8], _ x: Int, _ y: Int,
-                                  _ w: Int, _ h: Int,
-                                  _ r: UInt8, _ g: UInt8, _ b: UInt8, _ a: UInt8 = 255) {
+                                 _ w: Int, _ h: Int,
+                                 _ r: UInt8, _ g: UInt8, _ b: UInt8, _ a: UInt8 = 255) {
         for dy in 0..<h {
             for dx in 0..<w {
                 set(&pixels, x + dx, y + dy, r, g, b, a)
@@ -376,7 +376,7 @@ enum MarioSprites {
     // MARK: - Coin Sprites (8x16 each)
 
     private static func drawCoinFrame(_ pixels: inout [UInt8], x ox: Int, y oy: Int,
-                                       widthPx: Int) {
+                                      widthPx: Int) {
         let coinR: UInt8 = 255, coinG: UInt8 = 215, coinB: UInt8 = 0
         let darkR: UInt8 = 200, darkG: UInt8 = 170, darkB: UInt8 = 0
 

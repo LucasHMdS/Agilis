@@ -1,5 +1,3 @@
-
-
 /// Maximum number of gamepads supported.
 private let maxGamepads = 4
 
@@ -21,6 +19,8 @@ private let maxGamepads = 4
 /// if app.input.isActionJustActivated("jump") { ... }
 /// ```
 public final class InputManager: @unchecked Sendable {
+    deinit {}
+
     private var backend: (any InputBackend)?
 
     // Current "held" state (updated per frame via polling)
@@ -63,18 +63,16 @@ public final class InputManager: @unchecked Sendable {
     /// The character typed this frame (for text input), or nil if none.
     public private(set) var charPressed: Character?
 
-    /// Call once per frame before processing game logic.
-    /// Polls platform state and accumulates press/release transitions.
+    // Call once per frame before processing game logic.
+    // Polls platform state and accumulates press/release transitions.
     public func update() {
         guard let backend else { return }
 
         // --- Keyboard ---
         let oldKeyDown = keyDownState
         keyDownState = []
-        for key in Key.allCases {
-            if backend.isKeyDown(key) {
-                keyDownState.insert(key)
-            }
+        for key in Key.allCases where backend.isKeyDown(key) {
+            keyDownState.insert(key)
         }
 
         // Detect transitions from polled state changes
@@ -97,10 +95,8 @@ public final class InputManager: @unchecked Sendable {
         // --- Mouse ---
         let oldMouseDown = mouseDownState
         mouseDownState = []
-        for button in MouseButton.allCases {
-            if backend.isMouseButtonDown(button) {
-                mouseDownState.insert(button)
-            }
+        for button in MouseButton.allCases where backend.isMouseButtonDown(button) {
+            mouseDownState.insert(button)
         }
 
         for button in mouseDownState where !oldMouseDown.contains(button) {
@@ -134,10 +130,8 @@ public final class InputManager: @unchecked Sendable {
             let oldDown = gamepadDownState[gamepad]
             gamepadDownState[gamepad] = []
             guard available else { continue }
-            for button in GamepadButton.allCases {
-                if backend.isGamepadButtonDown(gamepad, button) {
-                    gamepadDownState[gamepad].insert(button)
-                }
+            for button in GamepadButton.allCases where backend.isGamepadButtonDown(gamepad, button) {
+                gamepadDownState[gamepad].insert(button)
             }
 
             for button in gamepadDownState[gamepad] where !oldDown.contains(button) {
@@ -350,6 +344,7 @@ public final class InputManager: @unchecked Sendable {
         case .left:
             xAxis = .leftX
             yAxis = .leftY
+
         case .right:
             xAxis = .rightX
             yAxis = .rightY

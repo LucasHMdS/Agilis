@@ -1,5 +1,3 @@
-
-
 // MARK: - PlaybackMode
 
 /// How an animation clip plays back.

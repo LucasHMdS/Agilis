@@ -1,10 +1,12 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Spy Renderer
 
 /// Records drawSprite calls for tilemap rendering verification.
 private final class TileSpyRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var drawnSprites: [Sprite] = []
 
     func drawSprite(_ sprite: Sprite) {
@@ -13,31 +15,31 @@ private final class TileSpyRenderer: @unchecked Sendable, RenderBackend {
 
     // Unused Renderer stubs
     func drawSprites(_ sprites: [Sprite]) { for s in sprites { drawSprite(s) } }
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
-    func initialize(config: WindowConfig) throws {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { _screenSize }
-    var _screenSize: Size = Size(width: 800, height: 600)
+    var _screenSize = Size(width: 800, height: 600)
 }
 
 // MARK: - Test Helpers
@@ -55,7 +57,7 @@ private func makeTestTileMap() -> TileMap {
     )
     let tiles = [
         Tile(id: 1), Tile(id: 2), Tile(id: 3),
-        Tile(id: 4), Tile(id: 0), Tile(id: 6),
+        Tile(id: 4), Tile(id: 0), Tile(id: 6)
     ]
     let layer = TileLayer(name: "ground", width: 3, height: 2, tiles: tiles)
     return TileMap(
@@ -80,7 +82,7 @@ struct TileMapDrawingTests {
 
         renderer.drawTileMap(tileMap)
 
-        // 3x2 = 6 tiles, but tile at (1,1) is empty (id=0) → 5 sprites
+        // 3x2 = 6 tiles, but tile at (1,1) is empty (id=0) -> 5 sprites
         #expect(renderer.drawnSprites.count == 5)
     }
 
@@ -89,16 +91,25 @@ struct TileMapDrawingTests {
         let renderer = TileSpyRenderer()
         let tileset = Tileset(
             texture: TextureHandle(id: 1),
-            tileWidth: 16, tileHeight: 16, columns: 10, firstGid: 1
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
         )
         let tiles = [Tile(id: 0), Tile(id: 0), Tile(id: 0), Tile(id: 0)]
         let layer = TileLayer(name: "empty", width: 2, height: 2, tiles: tiles)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset],
-                              tileWidth: 16, tileHeight: 16, width: 2, height: 2)
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 2,
+            height: 2
+        )
 
         renderer.drawTileMap(tileMap)
 
-        #expect(renderer.drawnSprites.count == 0)
+        #expect(renderer.drawnSprites.isEmpty)
     }
 
     @Test("Tile position matches grid coordinates")
@@ -124,11 +135,11 @@ struct TileMapDrawingTests {
 
         renderer.drawTileMap(tileMap)
 
-        // Tile id=1 → localId=0 → col 0, row 0 → sourceRect (0, 0, 16, 16)
+        // Tile id=1 -> localId=0 -> col 0, row 0 -> sourceRect (0, 0, 16, 16)
         let first = renderer.drawnSprites[0]
         #expect(first.sourceRect == Rect(x: 0, y: 0, width: 16, height: 16))
 
-        // Tile id=2 → localId=1 → col 1, row 0 → sourceRect (16, 0, 16, 16)
+        // Tile id=2 -> localId=1 -> col 1, row 0 -> sourceRect (16, 0, 16, 16)
         let second = renderer.drawnSprites[1]
         #expect(second.sourceRect == Rect(x: 16, y: 0, width: 16, height: 16))
     }
@@ -138,12 +149,24 @@ struct TileMapDrawingTests {
         let renderer = TileSpyRenderer()
         let tileset = Tileset(
             texture: TextureHandle(id: 1),
-            tileWidth: 16, tileHeight: 16, columns: 10, firstGid: 1
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
         )
-        let tiles = [Tile(id: 1, flipX: true, flipY: false), Tile(id: 2, flipX: false, flipY: true)]
+        let tiles = [
+            Tile(id: 1, flipX: true, flipY: false),
+            Tile(id: 2, flipX: false, flipY: true)
+        ]
         let layer = TileLayer(name: "test", width: 2, height: 1, tiles: tiles)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset],
-                              tileWidth: 16, tileHeight: 16, width: 2, height: 1)
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 2,
+            height: 1
+        )
 
         renderer.drawTileMap(tileMap)
 
@@ -158,17 +181,32 @@ struct TileMapDrawingTests {
         let renderer = TileSpyRenderer()
         let tileset = Tileset(
             texture: TextureHandle(id: 1),
-            tileWidth: 16, tileHeight: 16, columns: 10, firstGid: 1
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
         )
         let tiles = [Tile(id: 1)]
-        let layer = TileLayer(name: "test", width: 1, height: 1, tiles: tiles, opacity: 0.5)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset],
-                              tileWidth: 16, tileHeight: 16, width: 1, height: 1)
+        let layer = TileLayer(
+            name: "test",
+            width: 1,
+            height: 1,
+            tiles: tiles,
+            opacity: 0.5
+        )
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 1,
+            height: 1
+        )
 
         renderer.drawTileMap(tileMap)
 
         #expect(renderer.drawnSprites.count == 1)
-        // 255 * 0.5 = 127.5 → UInt8(127)
+        // 255 * 0.5 = 127.5 -> UInt8(127)
         #expect(renderer.drawnSprites[0].tint.a == 127)
     }
 
@@ -177,13 +215,34 @@ struct TileMapDrawingTests {
         let renderer = TileSpyRenderer()
         let tileset = Tileset(
             texture: TextureHandle(id: 1),
-            tileWidth: 16, tileHeight: 16, columns: 10, firstGid: 1
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
         )
         let tiles = [Tile(id: 1)]
-        let visible = TileLayer(name: "visible", width: 1, height: 1, tiles: tiles, visible: true)
-        let hidden = TileLayer(name: "hidden", width: 1, height: 1, tiles: tiles, visible: false)
-        let tileMap = TileMap(layers: [visible, hidden], tilesets: [tileset],
-                              tileWidth: 16, tileHeight: 16, width: 1, height: 1)
+        let visible = TileLayer(
+            name: "visible",
+            width: 1,
+            height: 1,
+            tiles: tiles,
+            visible: true
+        )
+        let hidden = TileLayer(
+            name: "hidden",
+            width: 1,
+            height: 1,
+            tiles: tiles,
+            visible: false
+        )
+        let tileMap = TileMap(
+            layers: [visible, hidden],
+            tilesets: [tileset],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 1,
+            height: 1
+        )
 
         renderer.drawTileMap(tileMap)
 
@@ -210,20 +269,38 @@ struct TileMapDrawingTests {
         let renderer = TileSpyRenderer()
         let tex1 = TextureHandle(id: 1)
         let tex2 = TextureHandle(id: 2)
-        let tileset1 = Tileset(texture: tex1, tileWidth: 16, tileHeight: 16,
-                               columns: 10, firstGid: 1, tileCount: 10)
-        let tileset2 = Tileset(texture: tex2, tileWidth: 16, tileHeight: 16,
-                               columns: 10, firstGid: 11, tileCount: 10)
+        let tileset1 = Tileset(
+            texture: tex1,
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1,
+            tileCount: 10
+        )
+        let tileset2 = Tileset(
+            texture: tex2,
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 11,
+            tileCount: 10
+        )
         let tiles = [Tile(id: 5), Tile(id: 15)]
         let layer = TileLayer(name: "test", width: 2, height: 1, tiles: tiles)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset1, tileset2],
-                              tileWidth: 16, tileHeight: 16, width: 2, height: 1)
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset1, tileset2],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 2,
+            height: 1
+        )
 
         renderer.drawTileMap(tileMap)
 
         #expect(renderer.drawnSprites.count == 2)
-        #expect(renderer.drawnSprites[0].texture == tex1) // id=5 → tileset1
-        #expect(renderer.drawnSprites[1].texture == tex2) // id=15 → tileset2
+        #expect(renderer.drawnSprites[0].texture == tex1) // id=5 -> tileset1
+        #expect(renderer.drawnSprites[1].texture == tex2) // id=15 -> tileset2
     }
 }
 
@@ -249,17 +326,28 @@ struct TileMapCullingTests {
         renderer._screenSize = Size(width: 32, height: 32)
 
         // Large 10x10 map
-        let tileset = Tileset(texture: TextureHandle(id: 1),
-                              tileWidth: 16, tileHeight: 16, columns: 10, firstGid: 1)
+        let tileset = Tileset(
+            texture: TextureHandle(id: 1),
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
+        )
         var tiles: [Tile] = []
         for i in 0..<100 { tiles.append(Tile(id: i + 1)) }
         let layer = TileLayer(name: "ground", width: 10, height: 10, tiles: tiles)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset],
-                              tileWidth: 16, tileHeight: 16, width: 10, height: 10)
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 10,
+            height: 10
+        )
 
         // Camera centered at (24, 24) with screen 32x32 at zoom 1
-        // Viewport: x=24-16=8, y=24-16=8, w=32, h=32 → covers 8..40, 8..40
-        // Tile range: col 0..2, row 0..2 → 3x3 = 9 tiles
+        // Viewport: x=24-16=8, y=24-16=8, w=32, h=32 -> covers 8..40, 8..40
+        // Tile range: col 0..2, row 0..2 -> 3x3 = 9 tiles
         let camera = Camera2D(
             target: Vector2(x: 24, y: 24),
             offset: Vector2(x: 16, y: 16),
@@ -276,15 +364,26 @@ struct TileMapCullingTests {
         let renderer = TileSpyRenderer()
         renderer._screenSize = Size(width: 32, height: 32)
 
-        let tileset = Tileset(texture: TextureHandle(id: 1),
-                              tileWidth: 16, tileHeight: 16, columns: 10, firstGid: 1)
+        let tileset = Tileset(
+            texture: TextureHandle(id: 1),
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
+        )
         var tiles: [Tile] = []
         for i in 0..<100 { tiles.append(Tile(id: i + 1)) }
         let layer = TileLayer(name: "ground", width: 10, height: 10, tiles: tiles)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset],
-                              tileWidth: 16, tileHeight: 16, width: 10, height: 10)
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 10,
+            height: 10
+        )
 
-        // Zoom 2.0 → viewport is 16x16 pixels in world space → fewer visible tiles
+        // Zoom 2.0 -> viewport is 16x16 pixels in world space -> fewer visible tiles
         let camera = Camera2D(
             target: Vector2(x: 24, y: 24),
             offset: Vector2(x: 16, y: 16),
@@ -295,7 +394,7 @@ struct TileMapCullingTests {
 
         let zoomedCount = renderer.drawnSprites.count
 
-        // Zoom 0.5 → viewport is 64x64 pixels → more visible tiles
+        // Zoom 0.5 -> viewport is 64x64 pixels -> more visible tiles
         renderer.drawnSprites.removeAll()
         let camera2 = Camera2D(
             target: Vector2(x: 24, y: 24),
@@ -315,9 +414,9 @@ struct TileMapCullingTests {
         let tileMap = makeTestTileMap()
 
         // Position the map far off-screen
-        renderer.drawTileMap(tileMap, position: Vector2(x: 5000, y: 5000))
+        renderer.drawTileMap(tileMap, position: Vector2(x: 5_000, y: 5_000))
 
-        #expect(renderer.drawnSprites.count == 0)
+        #expect(renderer.drawnSprites.isEmpty)
     }
 }
 
@@ -370,17 +469,32 @@ struct TileMapBatchTests {
     @Test("Empty map adds nothing to batch")
     func emptyMapBatch() {
         let renderer = TileSpyRenderer()
-        let tileset = Tileset(texture: TextureHandle(id: 1),
-                              tileWidth: 16, tileHeight: 16, columns: 10, firstGid: 1)
-        let layer = TileLayer(name: "empty", width: 2, height: 2,
-                              tiles: [.empty, .empty, .empty, .empty])
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset],
-                              tileWidth: 16, tileHeight: 16, width: 2, height: 2)
+        let tileset = Tileset(
+            texture: TextureHandle(id: 1),
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
+        )
+        let layer = TileLayer(
+            name: "empty",
+            width: 2,
+            height: 2,
+            tiles: [.empty, .empty, .empty, .empty]
+        )
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 2,
+            height: 2
+        )
         let batch = SpriteBatch()
 
         renderer.batchTileMap(tileMap, into: batch)
 
-        #expect(batch.count == 0)
+        #expect(batch.isEmpty)
     }
 
     @Test("Multiple tilesets in batch resolved correctly")
@@ -388,14 +502,30 @@ struct TileMapBatchTests {
         let renderer = TileSpyRenderer()
         let tex1 = TextureHandle(id: 1)
         let tex2 = TextureHandle(id: 2)
-        let tileset1 = Tileset(texture: tex1, tileWidth: 16, tileHeight: 16,
-                               columns: 10, firstGid: 1)
-        let tileset2 = Tileset(texture: tex2, tileWidth: 16, tileHeight: 16,
-                               columns: 10, firstGid: 11)
+        let tileset1 = Tileset(
+            texture: tex1,
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 1
+        )
+        let tileset2 = Tileset(
+            texture: tex2,
+            tileWidth: 16,
+            tileHeight: 16,
+            columns: 10,
+            firstGid: 11
+        )
         let tiles = [Tile(id: 3), Tile(id: 15)]
         let layer = TileLayer(name: "test", width: 2, height: 1, tiles: tiles)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset1, tileset2],
-                              tileWidth: 16, tileHeight: 16, width: 2, height: 1)
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset1, tileset2],
+            tileWidth: 16,
+            tileHeight: 16,
+            width: 2,
+            height: 1
+        )
         let batch = SpriteBatch(sortMode: .none)
 
         renderer.batchTileMap(tileMap, into: batch)

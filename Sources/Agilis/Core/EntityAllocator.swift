@@ -5,6 +5,8 @@
 /// operations to this type.
 internal final class EntityAllocator: @unchecked Sendable {
 
+    deinit {}
+
     /// Per-slot state for generational entity allocation.
     private struct EntitySlot {
         var generation: UInt32 = 0
@@ -81,20 +83,16 @@ internal final class EntityAllocator: @unchecked Sendable {
     var allEntities: [Entity] {
         var result: [Entity] = []
         result.reserveCapacity(livingCount)
-        for i in 0..<slots.count {
-            if slots[i].alive {
-                result.append(Entity(index: UInt32(i), generation: slots[i].generation))
-            }
+        for i in 0..<slots.count where slots[i].alive {
+            result.append(Entity(index: UInt32(i), generation: slots[i].generation))
         }
         return result
     }
 
     /// Iterate all living entities without allocating an array.
     func forEachEntity(_ body: (Entity) -> Void) {
-        for i in 0..<slots.count {
-            if slots[i].alive {
-                body(Entity(index: UInt32(i), generation: slots[i].generation))
-            }
+        for i in 0..<slots.count where slots[i].alive {
+            body(Entity(index: UInt32(i), generation: slots[i].generation))
         }
     }
 

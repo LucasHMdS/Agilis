@@ -12,10 +12,12 @@ import WinSDK
 
 /// A high-resolution clock for timing game loops.
 public final class Clock: @unchecked Sendable {
+    deinit {}
+
     #if os(Windows)
-    private var frequency: LARGE_INTEGER = LARGE_INTEGER()
-    private var startTime: LARGE_INTEGER = LARGE_INTEGER()
-    private var lastTime: LARGE_INTEGER = LARGE_INTEGER()
+    private var frequency = LARGE_INTEGER()
+    private var startTime = LARGE_INTEGER()
+    private var lastTime = LARGE_INTEGER()
     #else
     private var startTime: UInt64 = 0
     private var lastTime: UInt64 = 0

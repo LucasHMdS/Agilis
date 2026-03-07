@@ -1,5 +1,3 @@
-
-
 /// Tracks collision pairs across frames to generate began/ongoing/ended events.
 ///
 /// At the start of each physics step, `beginFrame()` clears the current frame data.
@@ -7,6 +5,8 @@
 /// At the end, `endFrame()` compares current pairs against previous pairs to
 /// produce `CollisionEvent`s.
 internal final class ContactTracker: @unchecked Sendable {
+    deinit {}
+
     /// Pairs that were colliding last frame.
     private var previousPairs: Set<CollisionPair> = []
 
@@ -57,15 +57,13 @@ internal final class ContactTracker: @unchecked Sendable {
         }
 
         // Ended: pairs that were in previous frame but not current
-        for pair in previousPairs {
-            if !currentPairs.contains(pair) {
-                events.append(CollisionEvent(
-                    entityA: pair.entityA,
-                    entityB: pair.entityB,
-                    type: .ended,
-                    contact: nil
-                ))
-            }
+        for pair in previousPairs where !currentPairs.contains(pair) {
+            events.append(CollisionEvent(
+                entityA: pair.entityA,
+                entityB: pair.entityB,
+                type: .ended,
+                contact: nil
+            ))
         }
 
         // Swap for next frame — reuses hash table capacity

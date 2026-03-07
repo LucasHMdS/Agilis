@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -98,7 +96,7 @@ internal enum GeometryHelpers {
             Vector2(x: -half.x, y: -half.y),
             Vector2(x: -half.x, y: half.y),
             Vector2(x: half.x, y: half.y),
-            Vector2(x: half.x, y: -half.y),
+            Vector2(x: half.x, y: -half.y)
         ]
         return transformVertices(local, position: pos, rotation: rot)
     }

@@ -1,5 +1,3 @@
-
-
 /// A modal dialog that overlays the entire screen with a dimmed background.
 ///
 /// When presented via `UIContext.presentModal()`, the dialog blocks input to the
@@ -16,6 +14,8 @@
 /// uiContext.presentModal(modal)
 /// ```
 public class UIModalDialog: UINode, @unchecked Sendable {
+    deinit {}
+
     /// The dialog title text.
     public var title: String
 
@@ -29,7 +29,7 @@ public class UIModalDialog: UINode, @unchecked Sendable {
     public var onDismiss: (() -> Void)?
 
     /// Whether the cancel input binding (from UIInputConfig) dismisses the dialog.
-    public var dismissOnCancel: Bool = true
+    public var dismissOnCancel = true
 
     /// The semi-transparent overlay color behind the dialog.
     public var overlayColor: Color
@@ -47,14 +47,14 @@ public class UIModalDialog: UINode, @unchecked Sendable {
     public var sectionSpacing: Float = 12
 
     /// The computed dialog rect (set during layout).
-    internal var dialogRect: Rect = Rect(x: 0, y: 0, width: 0, height: 0)
+    internal var dialogRect = Rect(x: 0, y: 0, width: 0, height: 0)
 
     /// Cached title text size.
     internal var cachedTitleSize: Size?
 
     /// Focus order within the modal.
     private var modalFocusOrder: [UINode] = []
-    private var modalFocusIndex: Int = -1
+    private var modalFocusIndex = -1
 
     public init(title: String, overlayColor: Color? = nil) {
         self.title = title
@@ -137,7 +137,7 @@ public class UIModalDialog: UINode, @unchecked Sendable {
     // MARK: - Modal Layout
 
     /// Called by UIContext to layout the modal centered on screen.
-    internal func layoutModal(renderer: any RenderBackend, font: FontHandle, screenSize: Size, theme: UITheme) {
+    internal func layoutModal(renderer: any RenderBackend, font: FontHandle, screenSize: Size, theme _: UITheme) {
         // Measure title
         cachedTitleSize = renderer.measureText(title, font: font, size: titleFontSize)
 
@@ -164,17 +164,33 @@ public class UIModalDialog: UINode, @unchecked Sendable {
 
         // Layout content area
         let contentY = y + titleHeight + sectionSpacing
-        let contentBounds = Rect(x: x + dialogPadding, y: contentY,
-                                 width: contentWidth, height: contentSize.height)
-        UILayoutEngine.performLayout(on: contentContainer, in: contentBounds,
-                                     renderer: renderer, font: font)
+        let contentBounds = Rect(
+            x: x + dialogPadding,
+            y: contentY,
+            width: contentWidth,
+            height: contentSize.height
+        )
+        UILayoutEngine.performLayout(
+            on: contentContainer,
+            in: contentBounds,
+            renderer: renderer,
+            font: font
+        )
 
         // Layout button area (centered at bottom)
         let buttonY = y + dialogHeight - dialogPadding - buttonSize.height
-        let buttonBounds = Rect(x: x + dialogPadding, y: buttonY,
-                                width: contentWidth, height: buttonSize.height)
-        UILayoutEngine.performLayout(on: buttonContainer, in: buttonBounds,
-                                     renderer: renderer, font: font)
+        let buttonBounds = Rect(
+            x: x + dialogPadding,
+            y: buttonY,
+            width: contentWidth,
+            height: buttonSize.height
+        )
+        UILayoutEngine.performLayout(
+            on: buttonContainer,
+            in: buttonBounds,
+            renderer: renderer,
+            font: font
+        )
 
         // Rebuild modal focus order
         rebuildModalFocusOrder()
@@ -193,17 +209,25 @@ public class UIModalDialog: UINode, @unchecked Sendable {
 
         // Title bar
         let titleBarHeight = (cachedTitleSize?.height ?? titleFontSize) + dialogPadding * 2
-        let titleBarRect = Rect(x: dialogRect.x, y: dialogRect.y,
-                                width: dialogRect.width, height: titleBarHeight)
+        let titleBarRect = Rect(
+            x: dialogRect.x,
+            y: dialogRect.y,
+            width: dialogRect.width,
+            height: titleBarHeight
+        )
         renderer.drawRect(titleBarRect, color: theme.modalTitleBarColor)
 
         // Title text centered in title bar
         let titleSize = cachedTitleSize ?? Size(width: 0, height: titleFontSize)
         let titleX = dialogRect.x + (dialogRect.width - titleSize.width) / 2
         let titleY = dialogRect.y + (titleBarHeight - titleSize.height) / 2
-        renderer.drawText(title,
-                          position: Vector2(x: titleX, y: titleY),
-                          font: theme.font, size: titleFontSize, color: theme.modalTitleColor)
+        renderer.drawText(
+            title,
+            position: Vector2(x: titleX, y: titleY),
+            font: theme.font,
+            size: titleFontSize,
+            color: theme.modalTitleColor
+        )
 
         // Content
         contentContainer.render(renderer: renderer, theme: theme)

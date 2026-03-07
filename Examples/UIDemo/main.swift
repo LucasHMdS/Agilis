@@ -1,15 +1,24 @@
 import Agilis
 
 final class UIDemoScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
     private var clickCount = 0
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var counterLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var progressBar: UIProgressBar!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var toggleLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var difficultyLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var listSelectionLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var nameLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var uiImage: UIImage!
 
     func didEnter(app: Application) {
@@ -55,10 +64,10 @@ final class UIDemoScene: Scene {
 
         let button = UIButton("Click Me!", fontSize: 22) { [weak self] in
             guard let self else { return }
-            self.clickCount += 1
-            self.counterLabel.text = "Clicks: \(self.clickCount)"
-            self.progressBar.value = min(Float(self.clickCount) / 10.0, 1.0)
-            self.ui.invalidateLayout()
+            clickCount += 1
+            counterLabel.text = "Clicks: \(clickCount)"
+            progressBar.value = min(Float(clickCount) / 10.0, 1.0)
+            ui.invalidateLayout()
         }
         scrollContainer.add(button)
 
@@ -131,7 +140,7 @@ final class UIDemoScene: Scene {
                 onOK: { [weak self] in self?.ui.dismissModal() },
                 onCancel: { [weak self] in self?.ui.dismissModal() }
             )
-            self.ui.presentModal(modal)
+            ui.presentModal(modal)
         }
         scrollContainer.add(modalButton)
 
@@ -150,7 +159,7 @@ final class UIDemoScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         // Draw some background shapes
         app.renderer.drawRect(
             Rect(x: 50, y: 50, width: 120, height: 80),

@@ -9,6 +9,8 @@ import CRT
 #endif
 
 final class SequenceScene: Scene, @unchecked Sendable {
+    deinit {}
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var tweens: TweenSystem!
     private var font: FontHandle = .invalid
     private var entities: [Entity] = []
@@ -29,7 +31,7 @@ final class SequenceScene: Scene, @unchecked Sendable {
         setupDemos(app: app)
     }
 
-    func update(app: Application, deltaTime: Double) {
+    func update(app: Application, deltaTime _: Double) {
         if app.input.isKeyPressed(.escape) {
             app.sceneManager.replace(
                 with: MenuScene(),
@@ -68,7 +70,7 @@ final class SequenceScene: Scene, @unchecked Sendable {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
         let ninePatch = NinePatchSprite(texture: ninePatchTex, sourceRect: ninePatchSourceRect, border: 12)
 
@@ -92,7 +94,7 @@ final class SequenceScene: Scene, @unchecked Sendable {
             Vector2(x: d1x + 40, y: d1y + 40),
             Vector2(x: d1x + 240, y: d1y + 40),
             Vector2(x: d1x + 240, y: d1y + 200),
-            Vector2(x: d1x + 40, y: d1y + 200),
+            Vector2(x: d1x + 40, y: d1y + 200)
         ]
         for i in 0..<4 {
             app.renderer.drawLine(
@@ -102,7 +104,7 @@ final class SequenceScene: Scene, @unchecked Sendable {
             )
         }
         // Ball at entity 0
-        if entities.count > 0,
+        if !entities.isEmpty,
            let pos = app.world.getComponent(Transform2D.self, from: entities[0]) {
             app.renderer.drawCircle(center: pos.position, radius: 10, color: Showcase.accentColor)
         }
@@ -240,7 +242,7 @@ final class SequenceScene: Scene, @unchecked Sendable {
             .fadeOut(duration: 0.8, easing: .quadIn),
             .wait(duration: 0.4),
             .fadeIn(duration: 0.8, easing: .quadOut),
-            .wait(duration: 0.4),
+            .wait(duration: 0.4)
         ], repeatCount: -1, in: world)
         _ = fadeHandle
 

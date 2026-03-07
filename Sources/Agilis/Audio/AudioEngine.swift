@@ -6,6 +6,8 @@ import MiniaudioC
 /// volume control, and the audio device lifecycle.
 public final class AudioEngine: @unchecked Sendable {
 
+    deinit {}
+
     // MARK: - Internal Types
 
     private struct SoundInfo {
@@ -29,7 +31,7 @@ public final class AudioEngine: @unchecked Sendable {
 
     // MARK: - Lifecycle
 
-    public func initialize() throws {
+    public func initialize() {
         let eng = UnsafeMutablePointer<ma_engine>.allocate(capacity: 1)
         var config = ma_engine_config_init()
         let result = ma_engine_init(&config, eng)
@@ -211,7 +213,7 @@ public final class AudioEngine: @unchecked Sendable {
         ma_sound_seek_to_pcm_frame(info.sound, 0)
     }
 
-    public func updateMusicStream(_ handle: MusicHandle) {
+    public func updateMusicStream(_: MusicHandle) {
         // No-op — miniaudio handles streaming internally
     }
 
@@ -233,10 +235,10 @@ public final class AudioEngine: @unchecked Sendable {
 
     // MARK: - Master Volume
 
+    // swiftlint:disable:next inclusive_language
     public func setMasterVolume(_ volume: Float) {
         guard let eng = engine else { return }
         ma_engine_set_volume(eng, volume)
     }
 
 }
-

@@ -1,5 +1,3 @@
-
-
 /// Configuration for UI debug rendering.
 public struct UIDebugRendererOptions: Sendable {
     /// Draw bounding rect outlines for each UI node.
@@ -52,9 +50,13 @@ extension RenderBackend {
 
             // Node ID label
             if !node.id.isEmpty {
-                drawText(node.id,
-                         position: Vector2(x: frame.x + 2, y: frame.y + 1),
-                         font: font, size: options.fontSize, color: options.boundsColor)
+                drawText(
+                    node.id,
+                    position: Vector2(x: frame.x + 2, y: frame.y + 1),
+                    font: font,
+                    size: options.fontSize,
+                    color: options.boundsColor
+                )
             }
         }
 

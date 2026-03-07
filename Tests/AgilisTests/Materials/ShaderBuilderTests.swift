@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 @Suite("ShaderBuilder")
 struct ShaderBuilderTests {
@@ -110,8 +110,11 @@ struct ShaderBuilderTests {
             uniforms: ["zeta": "float", "alpha": "int", "mid": "vec2"],
             body: "finalColor = vec4(1.0);"
         )
+        // swiftlint:disable:next force_unwrapping
         let alphaIndex = source.range(of: "uniform int alpha;")!.lowerBound
+        // swiftlint:disable:next force_unwrapping
         let midIndex = source.range(of: "uniform vec2 mid;")!.lowerBound
+        // swiftlint:disable:next force_unwrapping
         let zetaIndex = source.range(of: "uniform float zeta;")!.lowerBound
         #expect(alphaIndex < midIndex)
         #expect(midIndex < zetaIndex)
@@ -124,8 +127,11 @@ struct ShaderBuilderTests {
             body: "finalColor = vec4(1.0);"
         )
         // easing < math < uv alphabetically
+        // swiftlint:disable:next force_unwrapping
         let easingIndex = source.range(of: "easeQuadIn")!.lowerBound
+        // swiftlint:disable:next force_unwrapping
         let mathIndex = source.range(of: "remap")!.lowerBound
+        // swiftlint:disable:next force_unwrapping
         let uvIndex = source.range(of: "rotateUV")!.lowerBound
         #expect(easingIndex < mathIndex)
         #expect(mathIndex < uvIndex)

@@ -3,7 +3,9 @@ import Agilis
 // MARK: - Menu Scene
 
 final class MenuScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
 
     func didEnter(app: Application) {
@@ -55,7 +57,7 @@ final class MenuScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
         let cx = screen.width / 2
         let cy = screen.height / 2

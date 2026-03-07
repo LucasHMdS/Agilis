@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import AgilisFormats
+import Foundation
+import Testing
 
 @Suite("Tiled JSON Parser Tests")
 struct TiledTests {

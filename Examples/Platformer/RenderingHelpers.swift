@@ -26,7 +26,7 @@ private func makeSprite(texture: TextureHandle, source: Rect,
 
 // MARK: - Player Drawing
 
-func drawPlayer(pos: Vector2, player: Player, gameTime: Float,
+func drawPlayer(pos: Vector2, player: Player, gameTime _: Float,
                 atlas: MarioSprites.Atlas, renderer: any RenderBackend) {
     // Blink when invincible
     if player.isInvincible {
@@ -204,7 +204,7 @@ func drawBackground(cameraTargetX: Float, screenSize: Size,
     let parallaxX = cameraTargetX * 0.3
     for i in 0..<8 {
         let hillX = Float(i) * 300 - parallaxX
-            .truncatingRemainder(dividingBy: 2400)
+            .truncatingRemainder(dividingBy: 2_400)
         let hillY = screenSize.height - 50
         let hillSprite = makeSprite(
             texture: atlas.texture, source: atlas.rect("hill"),
@@ -218,7 +218,7 @@ func drawBackground(cameraTargetX: Float, screenSize: Size,
     let cloudParallax = cameraTargetX * 0.1
     for i in 0..<6 {
         let cx = Float(i) * 350 + 100 - cloudParallax
-            .truncatingRemainder(dividingBy: 2100)
+            .truncatingRemainder(dividingBy: 2_100)
         let cy: Float = 50 + Float(i % 3) * 25
         let cloudSprite = makeSprite(
             texture: atlas.texture, source: atlas.rect("cloud"),

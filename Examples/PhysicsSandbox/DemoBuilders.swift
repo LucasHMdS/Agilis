@@ -365,7 +365,7 @@ enum DemoBuilders {
         let dir = Vector2(x: target.x - pos.x, y: target.y - pos.y)
         let len = sqrtf(dir.x * dir.x + dir.y * dir.y)
         let norm = len > 0.001 ? Vector2(x: dir.x / len, y: dir.y / len) : Vector2(x: 1, y: 0)
-        let speed: Float = 2000
+        let speed: Float = 2_000
 
         world.addComponent(Transform2D(position: pos), to: entity)
         world.addComponent(Velocity2D(linear: Vector2(x: norm.x * speed, y: norm.y * speed)), to: entity)

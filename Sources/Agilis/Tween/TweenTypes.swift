@@ -1,5 +1,3 @@
-
-
 // MARK: - Tween Play State
 
 /// Internal state of a tween's lifecycle.
