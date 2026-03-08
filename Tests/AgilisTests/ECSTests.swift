@@ -374,11 +374,11 @@ struct QueryTests {
 
     @Test func forEachEmptyWorld() {
         let world = World()
-        var count = 0
+        var worldCount = 0
         world.forEach { (_: Entity, _: inout Position) in
-            count += 1
+            worldCount += 1
         }
-        #expect(count == 0)
+        #expect(worldCount == 0)
     }
 }
 
