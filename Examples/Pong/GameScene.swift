@@ -67,11 +67,14 @@ final class GameScene: Scene {
         world.addComponent(RigidBody2D(restitution: 1.0, friction: 0, bodyType: .kinematic), to: leftPaddle)
         world.addComponent(Collider2D(
             shape: .aabb(halfExtents: Vector2(x: Pong.paddleWidth / 2, y: Pong.paddleHeight / 2)),
-            layer: PongLayers.paddle, mask: PongLayers.ball
+            layer: PongLayers.paddle,
+            mask: PongLayers.ball
         ), to: leftPaddle)
-        world.addComponent(Paddle(halfWidth: Pong.paddleWidth / 2,
-                                  halfHeight: Pong.paddleHeight / 2,
-                                  speed: Pong.paddleSpeed), to: leftPaddle)
+        world.addComponent(Paddle(
+            halfWidth: Pong.paddleWidth / 2,
+            halfHeight: Pong.paddleHeight / 2,
+            speed: Pong.paddleSpeed
+        ), to: leftPaddle)
 
         // --- Create right paddle (AI) ---
         rightPaddle = world.createEntity()
@@ -82,11 +85,14 @@ final class GameScene: Scene {
         world.addComponent(RigidBody2D(restitution: 1.0, friction: 0, bodyType: .kinematic), to: rightPaddle)
         world.addComponent(Collider2D(
             shape: .aabb(halfExtents: Vector2(x: Pong.paddleWidth / 2, y: Pong.paddleHeight / 2)),
-            layer: PongLayers.paddle, mask: PongLayers.ball
+            layer: PongLayers.paddle,
+            mask: PongLayers.ball
         ), to: rightPaddle)
-        world.addComponent(Paddle(halfWidth: Pong.paddleWidth / 2,
-                                  halfHeight: Pong.paddleHeight / 2,
-                                  speed: Pong.aiSpeed), to: rightPaddle)
+        world.addComponent(Paddle(
+            halfWidth: Pong.paddleWidth / 2,
+            halfHeight: Pong.paddleHeight / 2,
+            speed: Pong.aiSpeed
+        ), to: rightPaddle)
         world.addComponent(AIControlled(targetY: centerY), to: rightPaddle)
 
         // --- Create ball ---
@@ -98,7 +104,8 @@ final class GameScene: Scene {
         world.addComponent(RigidBody2D(restitution: 1.0, friction: 0, gravityScale: 0, bodyType: .dynamic), to: ball)
         world.addComponent(Collider2D(
             shape: .circle(radius: Pong.ballRadius),
-            layer: PongLayers.ball, mask: PongLayers.paddle | PongLayers.wall
+            layer: PongLayers.ball,
+            mask: PongLayers.paddle | PongLayers.wall
         ), to: ball)
         world.addComponent(Ball(radius: Pong.ballRadius, speed: Pong.ballInitialSpeed), to: ball)
 
@@ -110,7 +117,8 @@ final class GameScene: Scene {
         world.addComponent(RigidBody2D(restitution: 1.0, friction: 0, bodyType: .static), to: topWall)
         world.addComponent(Collider2D(
             shape: .aabb(halfExtents: Vector2(x: Pong.screenWidth / 2, y: wallThickness)),
-            layer: PongLayers.wall, mask: PongLayers.ball
+            layer: PongLayers.wall,
+            mask: PongLayers.ball
         ), to: topWall)
 
         // Bottom wall: top edge sits at y=screenHeight
@@ -120,7 +128,8 @@ final class GameScene: Scene {
         world.addComponent(RigidBody2D(restitution: 1.0, friction: 0, bodyType: .static), to: bottomWall)
         world.addComponent(Collider2D(
             shape: .aabb(halfExtents: Vector2(x: Pong.screenWidth / 2, y: wallThickness)),
-            layer: PongLayers.wall, mask: PongLayers.ball
+            layer: PongLayers.wall,
+            mask: PongLayers.ball
         ), to: bottomWall)
 
         // --- Register systems ---
@@ -272,15 +281,21 @@ final class GameScene: Scene {
 
         // Paddles
         app.renderer.drawRect(
-            Rect(x: leftPos.position.x - leftPaddleComp.halfWidth,
-                 y: drawLeftY - leftPaddleComp.halfHeight,
-                 width: leftPaddleComp.halfWidth * 2, height: leftPaddleComp.halfHeight * 2),
+            Rect(
+                x: leftPos.position.x - leftPaddleComp.halfWidth,
+                y: drawLeftY - leftPaddleComp.halfHeight,
+                width: leftPaddleComp.halfWidth * 2,
+                height: leftPaddleComp.halfHeight * 2
+            ),
             color: .white
         )
         app.renderer.drawRect(
-            Rect(x: rightPos.position.x - rightPaddleComp.halfWidth,
-                 y: drawRightY - rightPaddleComp.halfHeight,
-                 width: rightPaddleComp.halfWidth * 2, height: rightPaddleComp.halfHeight * 2),
+            Rect(
+                x: rightPos.position.x - rightPaddleComp.halfWidth,
+                y: drawRightY - rightPaddleComp.halfHeight,
+                width: rightPaddleComp.halfWidth * 2,
+                height: rightPaddleComp.halfHeight * 2
+            ),
             color: .white
         )
 
@@ -297,16 +312,24 @@ final class GameScene: Scene {
         // Rally counter (driven by event bus)
         if rallyCount > 0 {
             let rallyColor = Color(r: 120, g: 120, b: 120)
-            app.renderer.drawText("Rally: \(rallyCount)",
-                                  position: Vector2(x: screen.width / 2 - 30, y: screen.height - 18),
-                                  font: fpsFont, size: 14, color: rallyColor)
+            app.renderer.drawText(
+                "Rally: \(rallyCount)",
+                position: Vector2(x: screen.width / 2 - 30, y: screen.height - 18),
+                font: fpsFont,
+                size: 14,
+                color: rallyColor
+            )
         }
 
         // FPS counter
         let fpsColor = Color(r: 80, g: 80, b: 80)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: 4, y: screen.height - 18),
-                              font: fpsFont, size: 14, color: fpsColor)
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: 4, y: screen.height - 18),
+            font: fpsFont,
+            size: 14,
+            color: fpsColor
+        )
 
         // Physics debug overlay (toggle with D key or gamepad Y)
         if showPhysicsDebug {
@@ -318,9 +341,13 @@ final class GameScene: Scene {
                 events: physicsWorld.events,
                 options: debugOptions
             )
-            app.renderer.drawText("[D] Debug ON",
-                                  position: Vector2(x: screen.width - 120, y: screen.height - 18),
-                                  font: fpsFont, size: 14, color: .cyan)
+            app.renderer.drawText(
+                "[D] Debug ON",
+                position: Vector2(x: screen.width - 120, y: screen.height - 18),
+                font: fpsFont,
+                size: 14,
+                color: .cyan
+            )
         }
     }
 
@@ -380,8 +407,11 @@ final class GameScene: Scene {
     private func checkWin(app: Application) -> Bool {
         if leftScore >= Pong.winningScore || rightScore >= Pong.winningScore {
             app.sceneManager.replace(
-                with: GameOverScene(leftScore: leftScore, rightScore: rightScore,
-                                    leftWon: leftScore >= Pong.winningScore),
+                with: GameOverScene(
+                    leftScore: leftScore,
+                    rightScore: rightScore,
+                    leftWon: leftScore >= Pong.winningScore
+                ),
                 app: app
             )
             return true

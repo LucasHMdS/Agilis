@@ -276,14 +276,16 @@ struct AreaQueryTests {
 
         let overlaps = SpatialQuery.rectOverlapsPolygon(
             rect: Rect(x: 35, y: 45, width: 20, height: 10),
-            vertices: vertices, normals: normals
+            vertices: vertices,
+            normals: normals
         )
         #expect(overlaps == true)
 
         // Far away rect
         let noOverlap = SpatialQuery.rectOverlapsPolygon(
             rect: Rect(x: 200, y: 200, width: 10, height: 10),
-            vertices: vertices, normals: normals
+            vertices: vertices,
+            normals: normals
         )
         #expect(noOverlap == false)
     }

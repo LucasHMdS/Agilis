@@ -316,8 +316,12 @@ final class GameScene: Scene {
                let col = app.world.getComponent(Collider2D.self, from: entity) {
                 if case .aabb(let he) = col.shape {
                     app.renderer.drawRect(
-                        Rect(x: pos.position.x - he.x, y: pos.position.y - he.y,
-                             width: he.x * 2, height: he.y * 2),
+                        Rect(
+                            x: pos.position.x - he.x,
+                            y: pos.position.y - he.y,
+                            width: he.x * 2,
+                            height: he.y * 2
+                        ),
                         color: Shooter.wallColor
                     )
                 }
@@ -342,7 +346,12 @@ final class GameScene: Scene {
                     let ratio = Float(ai.health) / maxHP
                     let barW: Float = 20
                     app.renderer.drawRect(
-                        Rect(x: pos.position.x - barW / 2, y: pos.position.y - 18, width: barW * ratio, height: 3),
+                        Rect(
+                            x: pos.position.x - barW / 2,
+                            y: pos.position.y - 18,
+                            width: barW * ratio,
+                            height: 3
+                        ),
                         color: Color(r: 100, g: 220, b: 100)
                     )
                 }
@@ -360,10 +369,18 @@ final class GameScene: Scene {
         // Laser beam
         if laserActive && laserTimer > 0 {
             let alpha = UInt8(min(255, laserTimer / 0.05 * 255))
-            app.renderer.drawLine(from: laserStart, to: laserEnd,
-                                  color: Color(r: 255, g: 50, b: 50, a: alpha), thickness: 3)
-            app.renderer.drawLine(from: laserStart, to: laserEnd,
-                                  color: Color(r: 255, g: 200, b: 200, a: alpha / 2), thickness: 6)
+            app.renderer.drawLine(
+                from: laserStart,
+                to: laserEnd,
+                color: Color(r: 255, g: 50, b: 50, a: alpha),
+                thickness: 3
+            )
+            app.renderer.drawLine(
+                from: laserStart,
+                to: laserEnd,
+                color: Color(r: 255, g: 200, b: 200, a: alpha / 2),
+                thickness: 6
+            )
         }
         app.renderer.endBlendMode()
 
@@ -392,11 +409,17 @@ final class GameScene: Scene {
             // Health bar
             let hpRatio = Float(max(0, player.health)) / Float(Shooter.playerMaxHealth)
             app.renderer.drawRect(Rect(x: 10, y: 10, width: 150, height: 12), color: Color(r: 40, g: 40, b: 40))
-            app.renderer.drawRect(Rect(x: 10, y: 10, width: 150 * hpRatio, height: 12),
-                                  color: Color(r: UInt8(200 * (1 - hpRatio)), g: UInt8(200 * hpRatio), b: 50))
-            app.renderer.drawText("HP: \(player.health)",
-                                  position: Vector2(x: 12, y: 9),
-                                  font: font, size: 11, color: .white)
+            app.renderer.drawRect(
+                Rect(x: 10, y: 10, width: 150 * hpRatio, height: 12),
+                color: Color(r: UInt8(200 * (1 - hpRatio)), g: UInt8(200 * hpRatio), b: 50)
+            )
+            app.renderer.drawText(
+                "HP: \(player.health)",
+                position: Vector2(x: 12, y: 9),
+                font: font,
+                size: 11,
+                color: .white
+            )
 
             // Weapon indicator
             let weaponName: String
@@ -405,31 +428,51 @@ final class GameScene: Scene {
             case .shotgun: weaponName = "Shotgun"
             case .laser: weaponName = "Laser"
             }
-            app.renderer.drawText("[TAB/1-3] \(weaponName)",
-                                  position: Vector2(x: 10, y: 28),
-                                  font: font, size: 12, color: Shooter.textBright)
+            app.renderer.drawText(
+                "[TAB/1-3] \(weaponName)",
+                position: Vector2(x: 10, y: 28),
+                font: font,
+                size: 12,
+                color: Shooter.textBright
+            )
         }
 
         // Score and wave
         if let score = app.world.getComponent(ScoreTracker.self, from: scoreEntity),
            let wave = app.world.getComponent(WaveManager.self, from: waveEntity) {
-            app.renderer.drawText("Score: \(score.score)  Wave: \(wave.currentWave)  Kills: \(score.kills)",
-                                  position: Vector2(x: 10, y: 45),
-                                  font: font, size: 12, color: Shooter.textDim)
+            app.renderer.drawText(
+                "Score: \(score.score)  Wave: \(wave.currentWave)  Kills: \(score.kills)",
+                position: Vector2(x: 10, y: 45),
+                font: font,
+                size: 12,
+                color: Shooter.textDim
+            )
         }
 
         // SpriteBatch stats
-        app.renderer.drawText("Enemies: \(enemyEntities.count)  Bullets: \(bulletEntities.count)  Particles: \(particleEntities.count)",
-                              position: Vector2(x: 10, y: screen.height - 32),
-                              font: font, size: 11, color: Shooter.textDim)
+        app.renderer.drawText(
+            "Enemies: \(enemyEntities.count)  Bullets: \(bulletEntities.count)  Particles: \(particleEntities.count)",
+            position: Vector2(x: 10, y: screen.height - 32),
+            font: font,
+            size: 11,
+            color: Shooter.textDim
+        )
 
         // Controls + FPS
-        app.renderer.drawText("[WASD] Move  [Mouse] Aim  [Click] Fire  [ESC] Menu",
-                              position: Vector2(x: 10, y: screen.height - 18),
-                              font: font, size: 11, color: Shooter.textDim)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: screen.width - 70, y: screen.height - 18),
-                              font: font, size: 12, color: Color(r: 60, g: 60, b: 60))
+        app.renderer.drawText(
+            "[WASD] Move  [Mouse] Aim  [Click] Fire  [ESC] Menu",
+            position: Vector2(x: 10, y: screen.height - 18),
+            font: font,
+            size: 11,
+            color: Shooter.textDim
+        )
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: screen.width - 70, y: screen.height - 18),
+            font: font,
+            size: 12,
+            color: Color(r: 60, g: 60, b: 60)
+        )
     }
 
     func willExit(app: Application) {
@@ -459,17 +502,33 @@ final class GameScene: Scene {
         let t: Float = 15
 
         // Top
-        wallEntities.append(makeWall(app: app, pos: Vector2(x: Shooter.screenWidth / 2, y: ay - t / 2),
-                                     hw: Shooter.arenaWidth / 2 + t, hh: t / 2))
+        wallEntities.append(makeWall(
+            app: app,
+            pos: Vector2(x: Shooter.screenWidth / 2, y: ay - t / 2),
+            hw: Shooter.arenaWidth / 2 + t,
+            hh: t / 2
+        ))
         // Bottom
-        wallEntities.append(makeWall(app: app, pos: Vector2(x: Shooter.screenWidth / 2, y: ay + Shooter.arenaHeight + t / 2),
-                                     hw: Shooter.arenaWidth / 2 + t, hh: t / 2))
+        wallEntities.append(makeWall(
+            app: app,
+            pos: Vector2(x: Shooter.screenWidth / 2, y: ay + Shooter.arenaHeight + t / 2),
+            hw: Shooter.arenaWidth / 2 + t,
+            hh: t / 2
+        ))
         // Left
-        wallEntities.append(makeWall(app: app, pos: Vector2(x: ax - t / 2, y: Shooter.screenHeight / 2),
-                                     hw: t / 2, hh: Shooter.arenaHeight / 2 + t))
+        wallEntities.append(makeWall(
+            app: app,
+            pos: Vector2(x: ax - t / 2, y: Shooter.screenHeight / 2),
+            hw: t / 2,
+            hh: Shooter.arenaHeight / 2 + t
+        ))
         // Right
-        wallEntities.append(makeWall(app: app, pos: Vector2(x: ax + Shooter.arenaWidth + t / 2, y: Shooter.screenHeight / 2),
-                                     hw: t / 2, hh: Shooter.arenaHeight / 2 + t))
+        wallEntities.append(makeWall(
+            app: app,
+            pos: Vector2(x: ax + Shooter.arenaWidth + t / 2, y: Shooter.screenHeight / 2),
+            hw: t / 2,
+            hh: Shooter.arenaHeight / 2 + t
+        ))
     }
 
     private func makeWall(app: Application, pos: Vector2, hw: Float, hh: Float) -> Entity {
@@ -492,7 +551,10 @@ final class GameScene: Scene {
         app.world.addComponent(Transform2D(position: center), to: playerEntity)
         app.world.addComponent(Velocity2D(), to: playerEntity)
         app.world.addComponent(RigidBody2D(
-            mass: 1, gravityScale: 0, bodyType: .dynamic, linearDamping: 10
+            mass: 1,
+            gravityScale: 0,
+            bodyType: .dynamic,
+            linearDamping: 10
         ), to: playerEntity)
         app.world.addComponent(Collider2D(
             shape: .circle(radius: Shooter.playerRadius),
@@ -532,10 +594,14 @@ final class GameScene: Scene {
 
         app.world.addComponent(Transform2D(position: startPos), to: entity)
         app.world.addComponent(Velocity2D(linear: Vector2(
-            x: dir.x * Shooter.bulletSpeed, y: dir.y * Shooter.bulletSpeed
+            x: dir.x * Shooter.bulletSpeed,
+            y: dir.y * Shooter.bulletSpeed
         )), to: entity)
         app.world.addComponent(RigidBody2D(
-            mass: 0.1, gravityScale: 0, bodyType: .dynamic, useCCD: useCCD
+            mass: 0.1,
+            gravityScale: 0,
+            bodyType: .dynamic,
+            useCCD: useCCD
         ), to: entity)
         app.world.addComponent(Collider2D(
             shape: .circle(radius: Shooter.bulletRadius),
@@ -554,8 +620,11 @@ final class GameScene: Scene {
 
         // Raycast all to hit multiple enemies
         let hits = physics.raycastAll(
-            world: app.world, origin: origin, direction: dir,
-            maxDistance: Shooter.laserRange, layerMask: Shooter.layerEnemy | Shooter.layerWall
+            world: app.world,
+            origin: origin,
+            direction: dir,
+            maxDistance: Shooter.laserRange,
+            layerMask: Shooter.layerEnemy | Shooter.layerWall
         )
 
         laserStart = origin
@@ -658,7 +727,10 @@ final class GameScene: Scene {
             app.world.addComponent(Velocity2D(), to: entity)
             let radius: Float = type == .tank ? 14 : Shooter.enemyRadius
             app.world.addComponent(RigidBody2D(
-                mass: type == .tank ? 3 : 1, gravityScale: 0, bodyType: .dynamic, linearDamping: 5
+                mass: type == .tank ? 3 : 1,
+                gravityScale: 0,
+                bodyType: .dynamic,
+                linearDamping: 5
             ), to: entity)
             app.world.addComponent(Collider2D(
                 shape: .circle(radius: radius),

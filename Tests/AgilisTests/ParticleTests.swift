@@ -108,29 +108,57 @@ struct ParticleTests {
 
     @Test("normalizedAge at spawn is 0")
     func ageAtSpawn() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 2.0,
-                         maxLifetime: 2.0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 2.0,
+            maxLifetime: 2.0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 0)
     }
 
     @Test("normalizedAge at half lifetime is 0.5")
     func ageAtHalf() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 1.0,
-                         maxLifetime: 2.0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 1.0,
+            maxLifetime: 2.0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 0.5)
     }
 
     @Test("normalizedAge when lifetime is zero is 1.0")
     func ageAtDeath() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 0,
-                         maxLifetime: 2.0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 0,
+            maxLifetime: 2.0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 1.0)
     }
 
     @Test("normalizedAge with zero maxLifetime returns 1.0")
     func ageZeroMax() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 0,
-                         maxLifetime: 0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 0,
+            maxLifetime: 0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 1.0)
     }
 }

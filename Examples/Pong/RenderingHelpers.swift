@@ -118,7 +118,8 @@ func drawPongTitle(centerX: Float, y: Float, renderer: any RenderBackend) {
     renderer.drawLine(
         from: Vector2(x: x + t / 2, y: y),
         to: Vector2(x: x + lw - t / 2, y: y + lh),
-        color: color, thickness: t
+        color: color,
+        thickness: t
     )
     x += lw + gap
 

@@ -87,7 +87,8 @@ final class MenuScene: Scene {
         )
         app.renderer.drawRectOutline(
             Rect(x: 696, y: groundY - 64, width: 72, height: 32),
-            color: Mario.pipeDarkGreen, thickness: 2
+            color: Mario.pipeDarkGreen,
+            thickness: 2
         )
         app.renderer.drawRect(
             Rect(x: 696, y: groundY - 64, width: 72, height: 32),
@@ -97,9 +98,13 @@ final class MenuScene: Scene {
         ui.render(renderer: app.renderer)
 
         let fpsColor = Color(r: 80, g: 80, b: 80)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: 4, y: screen.height - 18),
-                              font: ui.font, size: 14, color: fpsColor)
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: 4, y: screen.height - 18),
+            font: ui.font,
+            size: 14,
+            color: fpsColor
+        )
     }
 
     func willExit(app: Application) {

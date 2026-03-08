@@ -38,8 +38,14 @@ extension TileMap {
         textures: [String: TextureHandle]
     ) -> TileMap {
         guard let layerInstances = level.layerInstances else {
-            return TileMap(layers: [], tilesets: [], tileWidth: project.defaultGridSize,
-                           tileHeight: project.defaultGridSize, width: 0, height: 0)
+            return TileMap(
+                layers: [],
+                tilesets: [],
+                tileWidth: project.defaultGridSize,
+                tileHeight: project.defaultGridSize,
+                width: 0,
+                height: 0
+            )
         }
 
         // Build tileset lookup: uid → (LDtkTilesetDef, TextureHandle)

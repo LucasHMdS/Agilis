@@ -226,30 +226,54 @@ final class GameScene: Scene {
             let x: Float = 10 + Float(i) * (tabWidth + 5)
             let color = i == currentTab ? Sandbox.activeTab : Sandbox.inactiveTab
             app.renderer.drawRect(Rect(x: x, y: tabY, width: tabWidth, height: tabHeight), color: color)
-            app.renderer.drawText(name,
-                                  position: Vector2(x: x + 5, y: tabY + 7),
-                                  font: font, size: 13, color: Sandbox.textBright)
+            app.renderer.drawText(
+                name,
+                position: Vector2(x: x + 5, y: tabY + 7),
+                font: font,
+                size: 13,
+                color: Sandbox.textBright
+            )
         }
 
         // HUD info
         let infoY = screen.height - 80
-        app.renderer.drawText("[1-6] Switch Demo  [D] Debug  [V] Velocities  [N] Normals",
-                              position: Vector2(x: 10, y: infoY),
-                              font: font, size: 12, color: Sandbox.textDim)
-        app.renderer.drawText("[P] Pause  [F1] Slow  [F2] Normal  [F3] Fast  |  Time: \(String(format: "%.2f", app.timeScale))x",
-                              position: Vector2(x: 10, y: infoY + 16),
-                              font: font, size: 12, color: Sandbox.textDim)
-        app.renderer.drawText("[Left-Click] Drag  [Right-Click] Explosion" + (currentTab == 5 ? "  [Space] Fire" : ""),
-                              position: Vector2(x: 10, y: infoY + 32),
-                              font: font, size: 12, color: Sandbox.textDim)
-        app.renderer.drawText("Joints: \(physics.jointCount)  |  Debug: \(showDebug ? "ON" : "OFF")",
-                              position: Vector2(x: 10, y: infoY + 48),
-                              font: font, size: 12, color: Sandbox.textDim)
+        app.renderer.drawText(
+            "[1-6] Switch Demo  [D] Debug  [V] Velocities  [N] Normals",
+            position: Vector2(x: 10, y: infoY),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
+        app.renderer.drawText(
+            "[P] Pause  [F1] Slow  [F2] Normal  [F3] Fast  |  Time: \(String(format: "%.2f", app.timeScale))x",
+            position: Vector2(x: 10, y: infoY + 16),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
+        app.renderer.drawText(
+            "[Left-Click] Drag  [Right-Click] Explosion" + (currentTab == 5 ? "  [Space] Fire" : ""),
+            position: Vector2(x: 10, y: infoY + 32),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
+        app.renderer.drawText(
+            "Joints: \(physics.jointCount)  |  Debug: \(showDebug ? "ON" : "OFF")",
+            position: Vector2(x: 10, y: infoY + 48),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
 
         // FPS
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: screen.width - 80, y: screen.height - 18),
-                              font: font, size: 14, color: Color(r: 80, g: 80, b: 80))
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: screen.width - 80, y: screen.height - 18),
+            font: font,
+            size: 14,
+            color: Color(r: 80, g: 80, b: 80)
+        )
     }
 
     func willExit(app: Application) {

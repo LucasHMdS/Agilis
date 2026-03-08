@@ -133,24 +133,30 @@ struct PhysicsWorld2DTests {
     func triggerNoResponse() {
         var beganFired = false
 
-        let (world, _) = runPhysics(ticks: 3, setup: { world, physics in
-            physics.onCollisionBegan = { _ in
-                beganFired = true
+        let (world, _) = runPhysics(
+            ticks: 3,
+            setup: { world, physics in
+                physics.onCollisionBegan = { _ in
+                    beganFired = true
+                }
+
+                let ball = world.createEntity()
+                world.setName("ball", for: ball)
+                world.addComponent(Transform2D(position: Vector2(x: 50, y: 50)), to: ball)
+                world.addComponent(PreviousTransform2D(position: Vector2(x: 50, y: 50)), to: ball)
+                world.addComponent(Velocity2D(linear: Vector2(x: 50, y: 0)), to: ball)
+                world.addComponent(RigidBody2D(mass: 1, gravityScale: 0, bodyType: .dynamic), to: ball)
+                world.addComponent(Collider2D(shape: .circle(radius: 10)), to: ball)
+
+                let zone = world.createEntity()
+                world.setName("zone", for: zone)
+                world.addComponent(Transform2D(position: Vector2(x: 60, y: 50)), to: zone)
+                world.addComponent(
+                    Collider2D(shape: .aabb(halfExtents: Vector2(x: 20, y: 20)), isTrigger: true),
+                    to: zone
+                )
             }
-
-            let ball = world.createEntity()
-            world.setName("ball", for: ball)
-            world.addComponent(Transform2D(position: Vector2(x: 50, y: 50)), to: ball)
-            world.addComponent(PreviousTransform2D(position: Vector2(x: 50, y: 50)), to: ball)
-            world.addComponent(Velocity2D(linear: Vector2(x: 50, y: 0)), to: ball)
-            world.addComponent(RigidBody2D(mass: 1, gravityScale: 0, bodyType: .dynamic), to: ball)
-            world.addComponent(Collider2D(shape: .circle(radius: 10)), to: ball)
-
-            let zone = world.createEntity()
-            world.setName("zone", for: zone)
-            world.addComponent(Transform2D(position: Vector2(x: 60, y: 50)), to: zone)
-            world.addComponent(Collider2D(shape: .aabb(halfExtents: Vector2(x: 20, y: 20)), isTrigger: true), to: zone)
-        })
+        )
 
         // Ball should pass through the trigger zone
         // swiftlint:disable:next force_unwrapping
@@ -175,7 +181,8 @@ struct PhysicsWorld2DTests {
             world.addComponent(RigidBody2D(mass: 1, gravityScale: 0, bodyType: .dynamic), to: ball)
             world.addComponent(Collider2D(
                 shape: .circle(radius: 10),
-                layer: 0b01, mask: 0b01 // Only collides with layer 1
+                layer: 0b01,
+                mask: 0b01 // Only collides with layer 1
             ), to: ball)
 
             let wall = world.createEntity()
@@ -183,7 +190,8 @@ struct PhysicsWorld2DTests {
             world.addComponent(RigidBody2D(bodyType: .static), to: wall)
             world.addComponent(Collider2D(
                 shape: .aabb(halfExtents: Vector2(x: 5, y: 50)),
-                layer: 0b10, mask: 0b10 // Only collides with layer 2
+                layer: 0b10,
+                mask: 0b10 // Only collides with layer 2
             ), to: wall)
         }
 
@@ -318,7 +326,10 @@ struct PhysicsWorld2DTests {
 
     @Test("Zero gravity: no acceleration")
     func zeroGravity() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 5) { world, _ in
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 5
+        ) { world, _ in
             let e = world.createEntity()
             world.setName("ball", for: e)
             world.addComponent(Transform2D(position: .zero), to: e)

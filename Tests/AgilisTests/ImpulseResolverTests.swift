@@ -18,9 +18,12 @@ struct ImpulseResolverTests {
 
         ImpulseResolver.resolveVelocity(
             contact: contact,
-            velocityA: &velA, velocityB: &velB,
-            inverseMassA: 1, inverseMassB: 1,
-            restitution: 1.0, friction: 0
+            velocityA: &velA,
+            velocityB: &velB,
+            inverseMassA: 1,
+            inverseMassB: 1,
+            restitution: 1.0,
+            friction: 0
         )
 
         // With restitution=1 and equal mass, velocities should swap
@@ -41,9 +44,12 @@ struct ImpulseResolverTests {
         // B is static (inverseMass = 0)
         ImpulseResolver.resolveVelocity(
             contact: contact,
-            velocityA: &velA, velocityB: &velB,
-            inverseMassA: 1, inverseMassB: 0,
-            restitution: 1.0, friction: 0
+            velocityA: &velA,
+            velocityB: &velB,
+            inverseMassA: 1,
+            inverseMassB: 0,
+            restitution: 1.0,
+            friction: 0
         )
 
         // A should bounce back
@@ -64,9 +70,12 @@ struct ImpulseResolverTests {
 
         ImpulseResolver.resolveVelocity(
             contact: contact,
-            velocityA: &velA, velocityB: &velB,
-            inverseMassA: 1, inverseMassB: 0,
-            restitution: 0, friction: 0
+            velocityA: &velA,
+            velocityB: &velB,
+            inverseMassA: 1,
+            inverseMassB: 0,
+            restitution: 0,
+            friction: 0
         )
 
         // A should stop (no bounce)
@@ -88,9 +97,12 @@ struct ImpulseResolverTests {
 
         ImpulseResolver.resolveVelocity(
             contact: contact,
-            velocityA: &velA, velocityB: &velB,
-            inverseMassA: 1, inverseMassB: 1,
-            restitution: 0.5, friction: 0
+            velocityA: &velA,
+            velocityB: &velB,
+            inverseMassA: 1,
+            inverseMassB: 1,
+            restitution: 0.5,
+            friction: 0
         )
 
         // Velocities should be unchanged
@@ -110,9 +122,12 @@ struct ImpulseResolverTests {
 
         ImpulseResolver.resolveVelocity(
             contact: contact,
-            velocityA: &velA, velocityB: &velB,
-            inverseMassA: 0, inverseMassB: 0,
-            restitution: 1, friction: 0
+            velocityA: &velA,
+            velocityB: &velB,
+            inverseMassA: 0,
+            inverseMassB: 0,
+            restitution: 1,
+            friction: 0
         )
 
         // Nothing should change when both have zero inverse mass
@@ -136,9 +151,12 @@ struct ImpulseResolverTests {
 
         ImpulseResolver.resolveVelocity(
             contact: floorContact,
-            velocityA: &velA, velocityB: &velB,
-            inverseMassA: 1, inverseMassB: 0,
-            restitution: 0, friction: 0.5
+            velocityA: &velA,
+            velocityB: &velB,
+            inverseMassA: 1,
+            inverseMassB: 0,
+            restitution: 0,
+            friction: 0.5
         )
 
         // Normal component (y) should be resolved
@@ -161,9 +179,12 @@ struct ImpulseResolverTests {
 
         ImpulseResolver.correctPenetration(
             contact: contact,
-            positionA: &posA, positionB: &posB,
-            inverseMassA: 1, inverseMassB: 1,
-            slop: 0, percent: 1.0
+            positionA: &posA,
+            positionB: &posB,
+            inverseMassA: 1,
+            inverseMassB: 1,
+            slop: 0,
+            percent: 1.0
         )
 
         // Both should move apart equally (equal mass)
@@ -187,9 +208,12 @@ struct ImpulseResolverTests {
         // B is static
         ImpulseResolver.correctPenetration(
             contact: contact,
-            positionA: &posA, positionB: &posB,
-            inverseMassA: 1, inverseMassB: 0,
-            slop: 0, percent: 1.0
+            positionA: &posA,
+            positionB: &posB,
+            inverseMassA: 1,
+            inverseMassB: 0,
+            slop: 0,
+            percent: 1.0
         )
 
         // B should not move
@@ -210,9 +234,12 @@ struct ImpulseResolverTests {
 
         ImpulseResolver.correctPenetration(
             contact: contact,
-            positionA: &posA, positionB: &posB,
-            inverseMassA: 1, inverseMassB: 1,
-            slop: 0.01, percent: 0.4
+            positionA: &posA,
+            positionB: &posB,
+            inverseMassA: 1,
+            inverseMassB: 1,
+            slop: 0.01,
+            percent: 0.4
         )
 
         // No correction should be applied

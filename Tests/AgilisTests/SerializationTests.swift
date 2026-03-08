@@ -92,8 +92,14 @@ struct CodableConformanceTests {
 
     @Test("RigidBody2D inverseMass recomputed on decode")
     func rigidBody2DInverseMassRecomputed() throws {
-        let body = RigidBody2D(mass: 4.0, restitution: 0.5, friction: 0.8,
-                                gravityScale: 2.0, bodyType: .dynamic, linearDamping: 0.1)
+        let body = RigidBody2D(
+            mass: 4.0,
+            restitution: 0.5,
+            friction: 0.8,
+            gravityScale: 2.0,
+            bodyType: .dynamic,
+            linearDamping: 0.1
+        )
         let data = try JSONEncoder().encode(body)
         let decoded = try JSONDecoder().decode(RigidBody2D.self, from: data)
 
@@ -116,9 +122,12 @@ struct CodableConformanceTests {
     @Test("ParticleEmitter serializes config only, not pool state")
     func particleEmitterConfigOnly() throws {
         var emitter = ParticleEmitter(
-            emissionRate: 50, maxParticles: 200,
-            lifetime: 0.5...1.5, speed: 50...100,
-            startColor: .yellow, endColor: .red,
+            emissionRate: 50,
+            maxParticles: 200,
+            lifetime: 0.5...1.5,
+            speed: 50...100,
+            startColor: .yellow,
+            endColor: .red,
             emissionShape: .circle(radius: 10),
             renderShape: .rect(width: 4, height: 4),
             worldSpace: false

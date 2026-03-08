@@ -119,13 +119,19 @@ enum LevelBuilder {
 
         // Top ground tile (grass)
         let topY = Float(Mario.groundRow) * Mario.tileSize + Mario.tileSize / 2
-        entities.append(createStaticTile(position: Vector2(x: x, y: topY),
-                                         type: .groundTop, in: world))
+        entities.append(createStaticTile(
+            position: Vector2(x: x, y: topY),
+            type: .groundTop,
+            in: world
+        ))
 
         // Fill below with ground
         let bottomY = Float(Mario.groundRow + 1) * Mario.tileSize + Mario.tileSize / 2
-        entities.append(createStaticTile(position: Vector2(x: x, y: bottomY),
-                                         type: .ground, in: world))
+        entities.append(createStaticTile(
+            position: Vector2(x: x, y: bottomY),
+            type: .ground,
+            in: world
+        ))
         return entities
     }
 
@@ -147,8 +153,11 @@ enum LevelBuilder {
         for i in 0..<width {
             let x = Float(startCol + i) * Mario.tileSize + Mario.tileSize / 2
             let y = Float(row) * Mario.tileSize + Mario.tileSize / 2
-            entities.append(createStaticTile(position: Vector2(x: x, y: y),
-                                             type: .brick, in: world))
+            entities.append(createStaticTile(
+                position: Vector2(x: x, y: y),
+                type: .brick,
+                in: world
+            ))
         }
         return entities
     }

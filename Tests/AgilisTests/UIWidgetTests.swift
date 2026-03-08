@@ -188,7 +188,10 @@ struct NinePatchSpriteTests {
         let patch = NinePatchSprite(
             texture: TextureHandle(id: 1),
             sourceRect: Rect(x: 0, y: 0, width: 48, height: 48),
-            borderTop: 8, borderRight: 10, borderBottom: 12, borderLeft: 6,
+            borderTop: 8,
+            borderRight: 10,
+            borderBottom: 12,
+            borderLeft: 6,
             tint: .red
         )
         #expect(patch.borderTop == 8)
@@ -613,12 +616,19 @@ struct UIModalDialogTests {
         modal.addContent(UILabel("Content"))
         modal.addButton("OK") {}
 
-        modal.layoutModal(renderer: renderer, font: font,
-                          screenSize: Size(width: 800, height: 600), theme: theme)
+        modal.layoutModal(
+            renderer: renderer,
+            font: font,
+            screenSize: Size(width: 800, height: 600),
+            theme: theme
+        )
 
         renderer.drawCalls = []
-        modal.renderModal(renderer: renderer, theme: theme,
-                          screenSize: Size(width: 800, height: 600))
+        modal.renderModal(
+            renderer: renderer,
+            theme: theme,
+            screenSize: Size(width: 800, height: 600)
+        )
 
         // Should draw overlay, dialog bg, title bar, title text, content, button, border
         #expect(renderer.drawCalls.contains("rect"))
@@ -670,8 +680,12 @@ struct UIModalDialogTests {
         let modal = UIModalDialog(title: "Center Test")
         modal.dialogWidth = 300
 
-        modal.layoutModal(renderer: renderer, font: font,
-                          screenSize: Size(width: 800, height: 600), theme: theme)
+        modal.layoutModal(
+            renderer: renderer,
+            font: font,
+            screenSize: Size(width: 800, height: 600),
+            theme: theme
+        )
 
         // Should be horizontally centered
         let expectedX = (800 - 300) / Float(2)
@@ -794,7 +808,9 @@ struct UIDemoDropdownReproduction {
 
         let dropdown = UIDropdown(
             options: ["Easy", "Normal", "Hard", "Nightmare"],
-            selectedIndex: 1, fontSize: 20)
+            selectedIndex: 1,
+            fontSize: 20
+        )
         dropdown.onChange = { index in
             let names = ["Easy", "Normal", "Hard", "Nightmare"]
             difficultyLabel.text = "Difficulty: \(names[index])"
@@ -806,7 +822,8 @@ struct UIDemoDropdownReproduction {
 
         let listView = UIListView(
             items: ["Sword", "Bow", "Staff", "Dagger", "Axe", "Spear"],
-            fontSize: 18)
+            fontSize: 18
+        )
         listView.rowHeight = 26
         panel.add(listView)
 

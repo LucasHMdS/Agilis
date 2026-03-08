@@ -29,12 +29,16 @@ final class MenuScene: Scene {
         // Animate title sliding in from top
         tweens.moveTo(titleEntity,
                       target: Vector2(x: Showcase.screenWidth / 2, y: 100),
-                      duration: 0.8, easing: .backOut, in: app.world)
+                      duration: 0.8,
+                      easing: .backOut,
+                      in: app.world)
 
         // Pulsing title scale (yoyo + infinite repeat)
         let pulse = tweens.scaleTo(titleEntity,
                                    target: Vector2(x: 1.08, y: 1.08),
-                                   duration: 1.2, easing: .sineInOut, in: app.world)
+                                   duration: 1.2,
+                                   easing: .sineInOut,
+                                   in: app.world)
         tweens.setYoyo(pulse)
         tweens.setRepeat(pulse, count: -1)
 
@@ -76,8 +80,10 @@ final class MenuScene: Scene {
 
         ui.add(menu)
         let screen = app.renderer.screenSize
-        menu.frame = Rect(x: 0, y: screen.height * 0.35,
-                          width: screen.width, height: screen.height * 0.6)
+        menu.frame = Rect(x: 0,
+                          y: screen.height * 0.35,
+                          width: screen.width,
+                          height: screen.height * 0.6)
     }
 
     func update(app: Application, deltaTime: Double) {
@@ -109,7 +115,9 @@ final class MenuScene: Scene {
             let textWidth = Float(text.count) * fontSize * 0.52
             app.renderer.drawText(text,
                                   position: Vector2(x: pos.position.x - textWidth / 2, y: pos.position.y),
-                                  font: font, size: fontSize, color: Showcase.accentColor)
+                                  font: font,
+                                  size: fontSize,
+                                  color: Showcase.accentColor)
         }
 
         // Decorative lines
@@ -117,7 +125,8 @@ final class MenuScene: Scene {
         app.renderer.drawLine(
             from: Vector2(x: 100, y: lineY),
             to: Vector2(x: screen.width - 100, y: lineY),
-            color: Showcase.trackColor, thickness: 1
+            color: Showcase.trackColor,
+            thickness: 1
         )
 
         ui.render(renderer: app.renderer)
@@ -126,7 +135,9 @@ final class MenuScene: Scene {
         let fpsColor = Color(r: 80, g: 80, b: 80)
         app.renderer.drawText("\(app.fps) FPS",
                               position: Vector2(x: 4, y: screen.height - 18),
-                              font: font, size: 14, color: fpsColor)
+                              font: font,
+                              size: 14,
+                              color: fpsColor)
     }
 
     func willExit(app: Application) {

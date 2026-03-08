@@ -188,9 +188,13 @@ final class GameScene: Scene {
                 let dist = sqrtf(dx * dx + dy * dy)
                 if dist < 200 && dist > 0.1 {
                     let dir = Vector2(x: dx / dist, y: dy / dist)
-                    let hit = physics.raycast(world: app.world, origin: enemyPos.position,
-                                              direction: dir, maxDistance: dist,
-                                              layerMask: Dungeon.layerWall)
+                    let hit = physics.raycast(
+                        world: app.world,
+                        origin: enemyPos.position,
+                        direction: dir,
+                        maxDistance: dist,
+                        layerMask: Dungeon.layerWall
+                    )
                     if hit == nil {
                         // Can see player — increase alert
                         app.world.updateComponent(EnemyComp.self, on: entity) { enemy in
@@ -263,8 +267,11 @@ final class GameScene: Scene {
                 // Direction indicator
                 let dirX = pos.position.x + cosf(enemy.facingAngle) * 14
                 let dirY = pos.position.y + sinf(enemy.facingAngle) * 14
-                app.renderer.drawCircle(center: Vector2(x: dirX, y: dirY), radius: 3,
-                                       color: Color(r: 255, g: 100, b: 100))
+                app.renderer.drawCircle(
+                    center: Vector2(x: dirX, y: dirY),
+                    radius: 3,
+                    color: Color(r: 255, g: 100, b: 100)
+                )
             }
         }
 
@@ -295,12 +302,20 @@ final class GameScene: Scene {
 
         // HUD
         let debugInfo = "Lights: \(lighting.debugLightCount)  Occluders: \(lighting.debugOccluderCount)  \(lighting.debugShadowInfo)"
-        app.renderer.drawText(debugInfo,
-                              position: Vector2(x: 5, y: 5),
-                              font: font, size: 12, color: Dungeon.textBright)
-        app.renderer.drawText("[ESC] Menu  [WASD] Move  [F1] Toggle Debug",
-                              position: Vector2(x: 5, y: screen.height - 18),
-                              font: font, size: 11, color: Dungeon.textDim)
+        app.renderer.drawText(
+            debugInfo,
+            position: Vector2(x: 5, y: 5),
+            font: font,
+            size: 12,
+            color: Dungeon.textBright
+        )
+        app.renderer.drawText(
+            "[ESC] Menu  [WASD] Move  [F1] Toggle Debug",
+            position: Vector2(x: 5, y: screen.height - 18),
+            font: font,
+            size: 11,
+            color: Dungeon.textDim
+        )
 
         // Minimap
         drawMinimap(app: app)
@@ -438,10 +453,15 @@ final class GameScene: Scene {
         let mmScale: Float = 2.5
 
         // Background
-        renderer.drawRect(Rect(x: mmX - 2, y: mmY - 2,
-                                width: Float(Dungeon.mapCols) * mmScale + 4,
-                                height: Float(Dungeon.mapRows) * mmScale + 4),
-                          color: Color(r: 0, g: 0, b: 0, a: 180))
+        renderer.drawRect(
+            Rect(
+                x: mmX - 2,
+                y: mmY - 2,
+                width: Float(Dungeon.mapCols) * mmScale + 4,
+                height: Float(Dungeon.mapRows) * mmScale + 4
+            ),
+            color: Color(r: 0, g: 0, b: 0, a: 180)
+        )
 
         // Tiles (simplified — just floor/wall indicators)
         let layer = dungeonData.tileMap.layers[0]
@@ -449,8 +469,12 @@ final class GameScene: Scene {
             for col in 0..<Dungeon.mapCols {
                 if let tile = layer.tile(atColumn: col, row: row), tile.id == 2 {
                     renderer.drawRect(
-                        Rect(x: mmX + Float(col) * mmScale, y: mmY + Float(row) * mmScale,
-                             width: mmScale, height: mmScale),
+                        Rect(
+                            x: mmX + Float(col) * mmScale,
+                            y: mmY + Float(row) * mmScale,
+                            width: mmScale,
+                            height: mmScale
+                        ),
                         color: Color(r: 60, g: 60, b: 80, a: 160)
                     )
                 }

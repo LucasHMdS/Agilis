@@ -215,8 +215,11 @@ struct PostProcessEffectTests {
     func colorGradingApply() {
         let renderer = EffectMockRenderer()
         let effect = ColorGradingEffect(
-            brightness: 0.1, contrast: 1.5,
-            saturation: 0.8, gamma: 1.2, tint: .red
+            brightness: 0.1,
+            contrast: 1.5,
+            saturation: 0.8,
+            gamma: 1.2,
+            tint: .red
         )
         effect.initialize(renderer: renderer)
 

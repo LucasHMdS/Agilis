@@ -144,9 +144,12 @@ final class GameScene: Scene {
             }
             if let blockPos = world.getComponent(Transform2D.self, from: event.blockEntity) {
                 spawnCoinSparkle(
-                    at: Vector2(x: blockPos.position.x,
-                                y: blockPos.position.y - Mario.tileSize),
-                    in: world)
+                    at: Vector2(
+                        x: blockPos.position.x,
+                        y: blockPos.position.y - Mario.tileSize
+                    ),
+                    in: world
+                )
             }
         }
 
@@ -182,7 +185,9 @@ final class GameScene: Scene {
                 sceneChangePending = true
                 app.sceneManager.replace(
                     with: VictoryScene(score: score, coins: coins),
-                    transition: .fade(), app: app)
+                    transition: .fade(),
+                    app: app
+                )
             }
             return
         }
@@ -210,45 +215,74 @@ final class GameScene: Scene {
         let screen = renderer.screenSize
 
         // Background (screen space, before camera)
-        drawBackground(cameraTargetX: camera.target.x, screenSize: screen,
-                       atlas: spriteAtlas, renderer: renderer)
+        drawBackground(
+            cameraTargetX: camera.target.x,
+            screenSize: screen,
+            atlas: spriteAtlas,
+            renderer: renderer
+        )
         // Begin camera
         renderer.beginCamera(camera)
 
         // Tiles
         world.forEach { (_: Entity, pos: inout Transform2D, tile: inout Tile) in
-            drawTile(pos: pos.position, tile: tile, atlas: self.spriteAtlas,
-                     renderer: renderer)
+            drawTile(
+                pos: pos.position,
+                tile: tile,
+                atlas: self.spriteAtlas,
+                renderer: renderer
+            )
         }
         // Question blocks
         world.forEach { (_: Entity, pos: inout Transform2D, block: inout QuestionBlock) in
-            drawQuestionBlock(pos: pos.position, block: block,
-                              atlas: self.spriteAtlas, renderer: renderer)
+            drawQuestionBlock(
+                pos: pos.position,
+                block: block,
+                atlas: self.spriteAtlas,
+                renderer: renderer
+            )
         }
         // Coins
         world.forEach { (_: Entity, pos: inout Transform2D, _: inout Coin) in
-            drawCoin(pos: pos.position, time: self.gameTime,
-                     atlas: self.spriteAtlas, renderer: renderer)
+            drawCoin(
+                pos: pos.position,
+                time: self.gameTime,
+                atlas: self.spriteAtlas,
+                renderer: renderer
+            )
         }
         // Enemies (with interpolation)
         world.forEach { (_: Entity, pos: inout Transform2D, prev: inout PreviousTransform2D, enemy: inout Enemy) in
             let drawPos = prev.position.lerp(to: pos.position, t: t)
-            drawGoomba(pos: drawPos, enemy: enemy, gameTime: self.gameTime,
-                       atlas: self.spriteAtlas, renderer: renderer)
+            drawGoomba(
+                pos: drawPos,
+                enemy: enemy,
+                gameTime: self.gameTime,
+                atlas: self.spriteAtlas,
+                renderer: renderer
+            )
         }
         // Player (with interpolation)
         if let pos = world.getComponent(Transform2D.self, from: playerEntity),
            let prev = world.getComponent(PreviousTransform2D.self, from: playerEntity),
            let player = world.getComponent(Player.self, from: playerEntity) {
             let drawPos = prev.position.lerp(to: pos.position, t: t)
-            drawPlayer(pos: drawPos, player: player, gameTime: gameTime,
-                       atlas: spriteAtlas, renderer: renderer)
+            drawPlayer(
+                pos: drawPos,
+                player: player,
+                gameTime: gameTime,
+                atlas: spriteAtlas,
+                renderer: renderer
+            )
         }
         // Flagpole
         if let flagEntity = world.entity(named: "flagpole"),
            let flagPos = world.getComponent(Transform2D.self, from: flagEntity) {
-            drawFlagpole(pos: flagPos.position, atlas: spriteAtlas,
-                         renderer: renderer)
+            drawFlagpole(
+                pos: flagPos.position,
+                atlas: spriteAtlas,
+                renderer: renderer
+            )
         }
         // Particles
         world.forEach { (_: Entity, emitter: inout ParticleEmitter, pos: inout Transform2D) in
@@ -260,21 +294,33 @@ final class GameScene: Scene {
             var debugOptions = PhysicsDebugRendererOptions()
             debugOptions.drawVelocities = true
             debugOptions.velocityScale = 0.2
-            renderer.drawPhysicsDebug(world: world, events: physicsWorld.events,
-                                      options: debugOptions)
+            renderer.drawPhysicsDebug(
+                world: world,
+                events: physicsWorld.events,
+                options: debugOptions
+            )
         }
 
         renderer.endCamera()
 
         // HUD (screen space)
-        drawHUD(score: score, lives: lives, coins: coins, font: font,
-                renderer: renderer)
+        drawHUD(
+            score: score,
+            lives: lives,
+            coins: coins,
+            font: font,
+            renderer: renderer
+        )
 
         // FPS
         let fpsColor = Color(r: 80, g: 80, b: 80)
-        renderer.drawText("\(app.fps) FPS",
-                          position: Vector2(x: 4, y: screen.height - 18),
-                          font: font, size: 14, color: fpsColor)
+        renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: 4, y: screen.height - 18),
+            font: font,
+            size: 14,
+            color: fpsColor
+        )
 
         // Level complete overlay
         if levelComplete {
@@ -282,12 +328,20 @@ final class GameScene: Scene {
                 Rect(x: 0, y: 0, width: screen.width, height: screen.height),
                 color: Color(r: 0, g: 0, b: 0, a: 120)
             )
-            renderer.drawText("LEVEL COMPLETE!",
-                              position: Vector2(x: screen.width / 2 - 140, y: 200),
-                              font: font, size: 36, color: .yellow)
-            renderer.drawText("Score: \(score)",
-                              position: Vector2(x: screen.width / 2 - 60, y: 260),
-                              font: font, size: 24, color: .white)
+            renderer.drawText(
+                "LEVEL COMPLETE!",
+                position: Vector2(x: screen.width / 2 - 140, y: 200),
+                font: font,
+                size: 36,
+                color: .yellow
+            )
+            renderer.drawText(
+                "Score: \(score)",
+                position: Vector2(x: screen.width / 2 - 60, y: 260),
+                font: font,
+                size: 24,
+                color: .white
+            )
         }
     }
 
@@ -337,11 +391,15 @@ final class GameScene: Scene {
                 if lives <= 0 {
                     app.sceneManager.replace(
                         with: GameOverScene(score: score),
-                        transition: .fade(), app: app)
+                        transition: .fade(),
+                        app: app
+                    )
                 } else {
                     app.sceneManager.replace(
                         with: GameScene(lives: lives, score: score),
-                        transition: .fade(), app: app)
+                        transition: .fade(),
+                        app: app
+                    )
                 }
             }
             world.updateComponent(Player.self, on: playerEntity) { p in p = player }
@@ -457,10 +515,16 @@ final class GameScene: Scene {
         let halfScreenH = Mario.screenHeight / 2
         let levelWidth = Float(Mario.levelWidthTiles) * Mario.tileSize
         let levelHeight = Float(Mario.levelHeightTiles) * Mario.tileSize
-        camera.target.x = clamp(camera.target.x, min: halfScreenW,
-                                max: levelWidth - halfScreenW)
-        camera.target.y = clamp(camera.target.y, min: halfScreenH,
-                                max: levelHeight - halfScreenH)
+        camera.target.x = clamp(
+            camera.target.x,
+            min: halfScreenW,
+            max: levelWidth - halfScreenW
+        )
+        camera.target.y = clamp(
+            camera.target.y,
+            min: halfScreenH,
+            max: levelHeight - halfScreenH
+        )
     }
 
     // MARK: - Player Death

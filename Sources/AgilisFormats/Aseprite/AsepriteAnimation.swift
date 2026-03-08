@@ -14,9 +14,15 @@ public struct AsepriteData: Codable, Sendable {
             self.frames = array
         } else if let dict = try? container.decode([String: AsepriteFrameData].self, forKey: .frames) {
             self.frames = dict.sorted(by: { $0.key < $1.key }).map { key, value in
-                AsepriteFrame(filename: key, frame: value.frame, duration: value.duration,
-                              rotated: value.rotated, trimmed: value.trimmed,
-                              spriteSourceSize: value.spriteSourceSize, sourceSize: value.sourceSize)
+                AsepriteFrame(
+                    filename: key,
+                    frame: value.frame,
+                    duration: value.duration,
+                    rotated: value.rotated,
+                    trimmed: value.trimmed,
+                    spriteSourceSize: value.spriteSourceSize,
+                    sourceSize: value.sourceSize
+                )
             }
         } else {
             self.frames = []

@@ -204,8 +204,12 @@ struct DebugOverlayTests {
         let app = makeTestAppO()
         // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
-        let options = DebugOverlayOptions(showFPS: false, showEntityStats: false,
-                                          showSystemTimings: false, showLog: false)
+        let options = DebugOverlayOptions(
+            showFPS: false,
+            showEntityStats: false,
+            showSystemTimings: false,
+            showLog: false
+        )
         let overlay = DebugOverlay(font: FontHandle(id: 1), options: options)
 
         // Record several frames
@@ -224,8 +228,12 @@ struct DebugOverlayTests {
         let app = makeTestAppO()
         // swiftlint:disable:next force_cast
         let renderer = app.renderer as! OverlaySpyRenderer
-        let options = DebugOverlayOptions(showFPS: false, showFrameGraph: false,
-                                          showEntityStats: false, showLog: false)
+        let options = DebugOverlayOptions(
+            showFPS: false,
+            showFrameGraph: false,
+            showEntityStats: false,
+            showLog: false
+        )
         let overlay = DebugOverlay(font: FontHandle(id: 1), options: options)
 
         // Add a system and run an update to populate timings

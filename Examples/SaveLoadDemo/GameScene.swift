@@ -128,7 +128,12 @@ final class GameScene: Scene {
                let col = app.world.getComponent(Collider2D.self, from: entity) {
                 if case .aabb(let he) = col.shape {
                     app.renderer.drawRect(
-                        Rect(x: pos.position.x - he.x, y: pos.position.y - he.y, width: he.x * 2, height: he.y * 2),
+                        Rect(
+                            x: pos.position.x - he.x,
+                            y: pos.position.y - he.y,
+                            width: he.x * 2,
+                            height: he.y * 2
+                        ),
                         color: RPG.wallColor
                     )
                 }
@@ -148,7 +153,12 @@ final class GameScene: Scene {
                let chest = app.world.getComponent(Chest.self, from: entity) {
                 let color = chest.isOpen ? RPG.chestOpenColor : RPG.chestColor
                 app.renderer.drawRect(
-                    Rect(x: pos.position.x - 14, y: pos.position.y - 12, width: 28, height: 24),
+                    Rect(
+                        x: pos.position.x - 14,
+                        y: pos.position.y - 12,
+                        width: 28,
+                        height: 24
+                    ),
                     color: color
                 )
             }
@@ -159,9 +169,13 @@ final class GameScene: Scene {
             if let pos = app.world.getComponent(Transform2D.self, from: entity),
                let npc = app.world.getComponent(NPCTag.self, from: entity) {
                 app.renderer.drawCircle(center: pos.position, radius: 14, color: RPG.npcColor)
-                app.renderer.drawText(npc.npcName,
-                                      position: Vector2(x: pos.position.x - 20, y: pos.position.y - 26),
-                                      font: font, size: 10, color: RPG.textBright)
+                app.renderer.drawText(
+                    npc.npcName,
+                    position: Vector2(x: pos.position.x - 20, y: pos.position.y - 26),
+                    font: font,
+                    size: 10,
+                    color: RPG.textBright
+                )
             }
         }
 
@@ -181,12 +195,20 @@ final class GameScene: Scene {
         ui.render(renderer: app.renderer)
 
         // HUD
-        app.renderer.drawText("[ESC] Menu  [WASD] Move",
-                              position: Vector2(x: 5, y: RPG.screenHeight - 18),
-                              font: font, size: 11, color: RPG.textDim)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: screen.width - 65, y: screen.height - 18),
-                              font: font, size: 12, color: Color(r: 80, g: 80, b: 80))
+        app.renderer.drawText(
+            "[ESC] Menu  [WASD] Move",
+            position: Vector2(x: 5, y: RPG.screenHeight - 18),
+            font: font,
+            size: 11,
+            color: RPG.textDim
+        )
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: screen.width - 65, y: screen.height - 18),
+            font: font,
+            size: 12,
+            color: Color(r: 80, g: 80, b: 80)
+        )
     }
 
     func willExit(app: Application) {
@@ -266,11 +288,14 @@ final class GameScene: Scene {
         let entity = app.world.createEntity()
         app.world.addComponent(Transform2D(position: pos), to: entity)
         app.world.addComponent(RigidBody2D(mass: 0, bodyType: .static), to: entity)
-        app.world.addComponent(Collider2D(
-            shape: .aabb(halfExtents: Vector2(x: RPG.tileSize / 2, y: RPG.tileSize / 2)),
-            layer: RPG.layerWall,
-            mask: RPG.layerPlayer | RPG.layerNPC
-        ), to: entity)
+        app.world.addComponent(
+            Collider2D(
+                shape: .aabb(halfExtents: Vector2(x: RPG.tileSize / 2, y: RPG.tileSize / 2)),
+                layer: RPG.layerWall,
+                mask: RPG.layerPlayer | RPG.layerNPC
+            ),
+            to: entity
+        )
         return entity
     }
 
@@ -278,14 +303,23 @@ final class GameScene: Scene {
         playerEntity = app.world.createEntity()
         app.world.addComponent(Transform2D(position: Vector2(x: 80, y: 80)), to: playerEntity)
         app.world.addComponent(Velocity2D(), to: playerEntity)
-        app.world.addComponent(RigidBody2D(
-            mass: 1, gravityScale: 0, bodyType: .dynamic, linearDamping: 10
-        ), to: playerEntity)
-        app.world.addComponent(Collider2D(
-            shape: .circle(radius: 12),
-            layer: RPG.layerPlayer,
-            mask: RPG.layerWall | RPG.layerItem | RPG.layerNPC | RPG.layerChest
-        ), to: playerEntity)
+        app.world.addComponent(
+            RigidBody2D(
+                mass: 1,
+                gravityScale: 0,
+                bodyType: .dynamic,
+                linearDamping: 10
+            ),
+            to: playerEntity
+        )
+        app.world.addComponent(
+            Collider2D(
+                shape: .circle(radius: 12),
+                layer: RPG.layerPlayer,
+                mask: RPG.layerWall | RPG.layerItem | RPG.layerNPC | RPG.layerChest
+            ),
+            to: playerEntity
+        )
         app.world.addComponent(PlayerTag(name: "Hero"), to: playerEntity)
         app.world.addComponent(Inventory(), to: playerEntity)
         app.world.addComponent(Equipment(), to: playerEntity)

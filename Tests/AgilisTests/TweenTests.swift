@@ -1216,14 +1216,18 @@ struct SequenceTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeSpriteEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 0.5,
-                easing: .linear
-            ),
-            .fadeOut(duration: 0.5, easing: .linear)
-        ], in: world)
+        tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                ),
+                .fadeOut(duration: 0.5, easing: .linear)
+            ],
+            in: world
+        )
 
         // After first step (30 ticks), should be at target position
         tick(world, times: 31)
@@ -1241,19 +1245,23 @@ struct SequenceTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 0.5,
-                easing: .linear
-            ),
-            .wait(duration: 0.5),
-            .moveTo(
-                target: Vector2(x: 200, y: 0),
-                duration: 0.5,
-                easing: .linear
-            )
-        ], in: world)
+        tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                ),
+                .wait(duration: 0.5),
+                .moveTo(
+                    target: Vector2(x: 200, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                )
+            ],
+            in: world
+        )
 
         // After first move (30 ticks)
         tick(world, times: 31)
@@ -1283,19 +1291,23 @@ struct SequenceTests {
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         let tracker = CallTracker()
-        tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 0.5,
-                easing: .linear
-            ),
-            .callback { tracker.fire() },
-            .moveTo(
-                target: Vector2(x: 200, y: 0),
-                duration: 0.5,
-                easing: .linear
-            )
-        ], in: world)
+        tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                ),
+                .callback { tracker.fire() },
+                .moveTo(
+                    target: Vector2(x: 200, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                )
+            ],
+            in: world
+        )
 
         // Callback fires after first step completes
         tick(world, times: 29)
@@ -1309,18 +1321,22 @@ struct SequenceTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 0.5,
-                easing: .linear
-            ),
-            .moveTo(
-                target: Vector2(x: 50, y: 0),
-                duration: 0.5,
-                easing: .linear
-            )
-        ], in: world)
+        tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                ),
+                .moveTo(
+                    target: Vector2(x: 50, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                )
+            ],
+            in: world
+        )
 
         // After first step, at x=100
         tick(world, times: 31)
@@ -1347,14 +1363,18 @@ struct SequenceTests {
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         let tracker = CallTracker()
-        tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 0.5,
-                easing: .linear
-            ),
-            .callback { tracker.fire() }
-        ], in: world)
+        tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                ),
+                .callback { tracker.fire() }
+            ],
+            in: world
+        )
 
         tick(world, times: 10)
         world.destroyEntity(e)
@@ -1368,18 +1388,22 @@ struct SequenceTests {
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
         let tracker = CallTracker()
-        let handle = tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 0.5,
-                easing: .linear
-            ),
-            .moveTo(
-                target: Vector2(x: 200, y: 0),
-                duration: 0.5,
-                easing: .linear
-            )
-        ], in: world)
+        let handle = tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                ),
+                .moveTo(
+                    target: Vector2(x: 200, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                )
+            ],
+            in: world
+        )
         tweens.onSequenceComplete(handle) { tracker.fire() }
 
         tick(world, times: 31) // First step done
@@ -1393,18 +1417,22 @@ struct SequenceTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world, position: Vector2(x: 0, y: 0))
 
-        let handle = tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 1.0,
-                easing: .linear
-            ),
-            .moveTo(
-                target: Vector2(x: 200, y: 0),
-                duration: 1.0,
-                easing: .linear
-            )
-        ], in: world)
+        let handle = tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 1.0,
+                    easing: .linear
+                ),
+                .moveTo(
+                    target: Vector2(x: 200, y: 0),
+                    duration: 1.0,
+                    easing: .linear
+                )
+            ],
+            in: world
+        )
 
         tick(world, times: 10)
         tweens.cancel(handle)
@@ -1423,13 +1451,17 @@ struct SequenceTests {
         let (world, tweens) = makeTweenWorld()
         let e = makeEntity(world)
 
-        let handle = tweens.sequence(e, steps: [
-            .moveTo(
-                target: Vector2(x: 100, y: 0),
-                duration: 0.5,
-                easing: .linear
-            )
-        ], in: world)
+        let handle = tweens.sequence(
+            e,
+            steps: [
+                .moveTo(
+                    target: Vector2(x: 100, y: 0),
+                    duration: 0.5,
+                    easing: .linear
+                )
+            ],
+            in: world
+        )
 
         #expect(tweens.isActive(handle))
         tick(world, times: 31)

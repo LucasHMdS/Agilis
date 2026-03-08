@@ -683,10 +683,14 @@ struct ParameterTransitionTests {
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
         sm.addState("sprint", clip: makeClip("sprint"))
-        sm.addTransition(from: "idle", to: "sprint", conditions: [
-            .boolEquals("isMoving", true),
-            .floatGreater("speed", 5.0)
-        ])
+        sm.addTransition(
+            from: "idle",
+            to: "sprint",
+            conditions: [
+                .boolEquals("isMoving", true),
+                .floatGreater("speed", 5.0)
+            ]
+        )
 
         let entity = makeEntity(world, sm: sm)
         tick(world)
@@ -737,10 +741,14 @@ struct ParameterTransitionTests {
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
         sm.addState("special", clip: makeClip("special"))
-        sm.addTransition(from: "idle", to: "special", conditions: [
-            .trigger("activate"),
-            .boolEquals("ready", true)
-        ])
+        sm.addTransition(
+            from: "idle",
+            to: "special",
+            conditions: [
+                .trigger("activate"),
+                .boolEquals("ready", true)
+            ]
+        )
 
         let entity = makeEntity(world, sm: sm)
         tick(world)
@@ -797,10 +805,14 @@ struct AnimationEventTransitionTests {
         // Forward clip: 4 frames * 0.1s = 0.4s per loop
         sm.addState("patrol", clip: makeClip("patrol", frameCount: 4, frameDuration: 0.1))
         sm.addState("idle", clip: makeClip("idle"))
-        sm.addTransition(from: "patrol", to: "idle", conditions: [
-            .animationLooped,
-            .boolEquals("shouldStop", true)
-        ])
+        sm.addTransition(
+            from: "patrol",
+            to: "idle",
+            conditions: [
+                .animationLooped,
+                .boolEquals("shouldStop", true)
+            ]
+        )
 
         let entity = makeEntity(world, sm: sm)
         tick(world)  // init
@@ -847,10 +859,14 @@ struct AnimationEventTransitionTests {
         sm.addState("walk", clip: makeClip("walk"))
         sm.addState("idle", clip: makeClip("idle"))
         // Go to walk if moving when attack finishes, else idle
-        sm.addTransition(from: "attack", to: "walk", conditions: [
-            .animationFinished,
-            .boolEquals("isMoving", true)
-        ])
+        sm.addTransition(
+            from: "attack",
+            to: "walk",
+            conditions: [
+                .animationFinished,
+                .boolEquals("isMoving", true)
+            ]
+        )
         sm.addTransition(from: "attack", to: "idle", conditions: [.animationFinished])
         sm.setBool("isMoving", true)
 
@@ -1130,16 +1146,21 @@ struct SerializationTests {
     func conditionsSerialize() throws {
         var sm = AnimationStateMachine(defaultState: "idle")
         sm.addState("idle", clip: makeClip("idle"))
-        sm.addTransition(from: "idle", to: "idle", conditions: [
-            .boolEquals("a", true),
-            .floatGreater("b", 1.0),
-            .floatLess("c", 2.0),
-            .intEquals("d", 3),
-            .trigger("e"),
-            .animationFinished,
-            .animationLooped,
-            .afterTime(0.5)
-        ], exitTime: 0.8)
+        sm.addTransition(
+            from: "idle",
+            to: "idle",
+            conditions: [
+                .boolEquals("a", true),
+                .floatGreater("b", 1.0),
+                .floatLess("c", 2.0),
+                .intEquals("d", 3),
+                .trigger("e"),
+                .animationFinished,
+                .animationLooped,
+                .afterTime(0.5)
+            ],
+            exitTime: 0.8
+        )
 
         let encoder = JSONEncoder()
         let data = try encoder.encode(sm)

@@ -75,20 +75,32 @@ final class SequenceScene: Scene, @unchecked Sendable {
         let ninePatch = NinePatchSprite(texture: ninePatchTex, sourceRect: ninePatchSourceRect, border: 12)
 
         // Title
-        app.renderer.drawText("Tween Sequences & Transitions",
-                              position: Vector2(x: 10, y: 8),
-                              font: font, size: 24, color: Showcase.textBright)
-        app.renderer.drawText("[ESC] Menu  [TAB] Easings  [1] Fade  [2] Flash  [3] Instant",
-                              position: Vector2(x: 10, y: 34),
-                              font: font, size: 12, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Tween Sequences & Transitions",
+            position: Vector2(x: 10, y: 8),
+            font: font,
+            size: 24,
+            color: Showcase.textBright
+        )
+        app.renderer.drawText(
+            "[ESC] Menu  [TAB] Easings  [1] Fade  [2] Flash  [3] Instant",
+            position: Vector2(x: 10, y: 34),
+            font: font,
+            size: 12,
+            color: Showcase.textDim
+        )
 
         // Demo 1: Patrol Path (square loop)
         let d1x: Float = 40
         let d1y: Float = 70
         app.renderer.drawNinePatch(ninePatch, destination: Rect(x: d1x, y: d1y, width: 280, height: 240))
-        app.renderer.drawText("Patrol Path (sequence)",
-                              position: Vector2(x: d1x + 8, y: d1y + 5),
-                              font: font, size: 13, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Patrol Path (sequence)",
+            position: Vector2(x: d1x + 8, y: d1y + 5),
+            font: font,
+            size: 13,
+            color: Showcase.textDim
+        )
         // Draw path outline
         let pathPoints: [Vector2] = [
             Vector2(x: d1x + 40, y: d1y + 40),
@@ -100,7 +112,8 @@ final class SequenceScene: Scene, @unchecked Sendable {
             app.renderer.drawLine(
                 from: pathPoints[i],
                 to: pathPoints[(i + 1) % 4],
-                color: Showcase.trackColor, thickness: 1
+                color: Showcase.trackColor,
+                thickness: 1
             )
         }
         // Ball at entity 0
@@ -113,9 +126,13 @@ final class SequenceScene: Scene, @unchecked Sendable {
         let d2x: Float = 340
         let d2y: Float = 70
         app.renderer.drawNinePatch(ninePatch, destination: Rect(x: d2x, y: d2y, width: 280, height: 240))
-        app.renderer.drawText("Fade Chain (fadeOut/fadeIn)",
-                              position: Vector2(x: d2x + 8, y: d2y + 5),
-                              font: font, size: 13, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Fade Chain (fadeOut/fadeIn)",
+            position: Vector2(x: d2x + 8, y: d2y + 5),
+            font: font,
+            size: 13,
+            color: Showcase.textDim
+        )
         if entities.count > 1,
            let sprite = app.world.getComponent(Sprite.self, from: entities[1]) {
             let alpha = sprite.tint.a
@@ -124,18 +141,26 @@ final class SequenceScene: Scene, @unchecked Sendable {
                 Rect(x: d2x + 60, y: d2y + 60, width: 160, height: 120),
                 color: c
             )
-            app.renderer.drawText("alpha: \(alpha)",
-                                  position: Vector2(x: d2x + 100, y: d2y + 190),
-                                  font: font, size: 12, color: Showcase.textDim)
+            app.renderer.drawText(
+                "alpha: \(alpha)",
+                position: Vector2(x: d2x + 100, y: d2y + 190),
+                font: font,
+                size: 12,
+                color: Showcase.textDim
+            )
         }
 
         // Demo 3: Scale Pulse
         let d3x: Float = 640
         let d3y: Float = 70
         app.renderer.drawNinePatch(ninePatch, destination: Rect(x: d3x, y: d3y, width: 280, height: 110))
-        app.renderer.drawText("Scale Pulse (yoyo + repeat)",
-                              position: Vector2(x: d3x + 8, y: d3y + 5),
-                              font: font, size: 13, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Scale Pulse (yoyo + repeat)",
+            position: Vector2(x: d3x + 8, y: d3y + 5),
+            font: font,
+            size: 13,
+            color: Showcase.textDim
+        )
         if entities.count > 2,
            let transform = app.world.getComponent(Transform2D.self, from: entities[2]) {
             let s = transform.scale.x
@@ -146,18 +171,26 @@ final class SequenceScene: Scene, @unchecked Sendable {
                 Rect(x: cx - size / 2, y: cy - size / 2, width: size, height: size),
                 color: Showcase.highlightColor
             )
-            app.renderer.drawText(String(format: "%.2fx", s),
-                                  position: Vector2(x: d3x + 200, y: d3y + 58),
-                                  font: font, size: 12, color: Showcase.textDim)
+            app.renderer.drawText(
+                String(format: "%.2fx", s),
+                position: Vector2(x: d3x + 200, y: d3y + 58),
+                font: font,
+                size: 12,
+                color: Showcase.textDim
+            )
         }
 
         // Demo 4: Rotation
         let d4x: Float = 640
         let d4y: Float = 195
         app.renderer.drawNinePatch(ninePatch, destination: Rect(x: d4x, y: d4y, width: 280, height: 115))
-        app.renderer.drawText("Rotation (backOut easing)",
-                              position: Vector2(x: d4x + 8, y: d4y + 5),
-                              font: font, size: 13, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Rotation (backOut easing)",
+            position: Vector2(x: d4x + 8, y: d4y + 5),
+            font: font,
+            size: 13,
+            color: Showcase.textDim
+        )
         if entities.count > 3,
            let transform = app.world.getComponent(Transform2D.self, from: entities[3]) {
             let cx = d4x + 140
@@ -166,30 +199,52 @@ final class SequenceScene: Scene, @unchecked Sendable {
             let len: Float = 30
             let endX = cx + cosf(r) * len
             let endY = cy + sinf(r) * len
-            app.renderer.drawCircle(center: Vector2(x: cx, y: cy), radius: 6,
-                                   color: Showcase.sequenceColor)
-            app.renderer.drawLine(from: Vector2(x: cx, y: cy),
-                                  to: Vector2(x: endX, y: endY),
-                                  color: Showcase.sequenceColor, thickness: 3)
-            app.renderer.drawText(String(format: "%.1f rad", r),
-                                  position: Vector2(x: d4x + 200, y: d4y + 58),
-                                  font: font, size: 12, color: Showcase.textDim)
+            app.renderer.drawCircle(
+                center: Vector2(x: cx, y: cy),
+                radius: 6,
+                color: Showcase.sequenceColor
+            )
+            app.renderer.drawLine(
+                from: Vector2(x: cx, y: cy),
+                to: Vector2(x: endX, y: endY),
+                color: Showcase.sequenceColor,
+                thickness: 3
+            )
+            app.renderer.drawText(
+                String(format: "%.1f rad", r),
+                position: Vector2(x: d4x + 200, y: d4y + 58),
+                font: font,
+                size: 12,
+                color: Showcase.textDim
+            )
         }
 
         // Completion counter
-        app.renderer.drawText("Sequence completions: \(completionCount)",
-                              position: Vector2(x: 10, y: screen.height - 40),
-                              font: font, size: 13, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Sequence completions: \(completionCount)",
+            position: Vector2(x: 10, y: screen.height - 40),
+            font: font,
+            size: 13,
+            color: Showcase.textDim
+        )
 
         // Active tweens
-        app.renderer.drawText("Active tweens: \(tweens.tweenCount)",
-                              position: Vector2(x: 10, y: screen.height - 22),
-                              font: font, size: 13, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Active tweens: \(tweens.tweenCount)",
+            position: Vector2(x: 10, y: screen.height - 22),
+            font: font,
+            size: 13,
+            color: Showcase.textDim
+        )
 
         // FPS
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: screen.width - 80, y: screen.height - 18),
-                              font: font, size: 14, color: Color(r: 80, g: 80, b: 80))
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: screen.width - 80, y: screen.height - 18),
+            font: font,
+            size: 14,
+            color: Color(r: 80, g: 80, b: 80)
+        )
     }
 
     func willExit(app: Application) {
@@ -217,19 +272,24 @@ final class SequenceScene: Scene, @unchecked Sendable {
         world.addComponent(Sprite(texture: .invalid), to: patrol)
         entities.append(patrol)
 
-        let patrolHandle = tweens.sequence(patrol, steps: [
-            .moveTo(target: Vector2(x: 280, y: 110), duration: 0.6, easing: .cubicInOut),
-            .wait(duration: 0.1),
-            .moveTo(target: Vector2(x: 280, y: 270), duration: 0.6, easing: .cubicInOut),
-            .wait(duration: 0.1),
-            .moveTo(target: Vector2(x: 80, y: 270), duration: 0.6, easing: .cubicInOut),
-            .wait(duration: 0.1),
-            .moveTo(target: Vector2(x: 80, y: 110), duration: 0.6, easing: .cubicInOut),
-            .wait(duration: 0.1),
-            .callback { [weak self] in
-                self?.completionCount += 1
-            }
-        ], repeatCount: -1, in: world)
+        let patrolHandle = tweens.sequence(
+            patrol,
+            steps: [
+                .moveTo(target: Vector2(x: 280, y: 110), duration: 0.6, easing: .cubicInOut),
+                .wait(duration: 0.1),
+                .moveTo(target: Vector2(x: 280, y: 270), duration: 0.6, easing: .cubicInOut),
+                .wait(duration: 0.1),
+                .moveTo(target: Vector2(x: 80, y: 270), duration: 0.6, easing: .cubicInOut),
+                .wait(duration: 0.1),
+                .moveTo(target: Vector2(x: 80, y: 110), duration: 0.6, easing: .cubicInOut),
+                .wait(duration: 0.1),
+                .callback { [weak self] in
+                    self?.completionCount += 1
+                }
+            ],
+            repeatCount: -1,
+            in: world
+        )
         _ = patrolHandle
 
         // Demo 2: Fade chain
@@ -238,12 +298,17 @@ final class SequenceScene: Scene, @unchecked Sendable {
         world.addComponent(Sprite(texture: .invalid, tint: Color(r: 100, g: 180, b: 255, a: 255)), to: fade)
         entities.append(fade)
 
-        let fadeHandle = tweens.sequence(fade, steps: [
-            .fadeOut(duration: 0.8, easing: .quadIn),
-            .wait(duration: 0.4),
-            .fadeIn(duration: 0.8, easing: .quadOut),
-            .wait(duration: 0.4)
-        ], repeatCount: -1, in: world)
+        let fadeHandle = tweens.sequence(
+            fade,
+            steps: [
+                .fadeOut(duration: 0.8, easing: .quadIn),
+                .wait(duration: 0.4),
+                .fadeIn(duration: 0.8, easing: .quadOut),
+                .wait(duration: 0.4)
+            ],
+            repeatCount: -1,
+            in: world
+        )
         _ = fadeHandle
 
         // Demo 3: Scale pulse (yoyo)
@@ -252,9 +317,13 @@ final class SequenceScene: Scene, @unchecked Sendable {
         world.addComponent(Sprite(texture: .invalid), to: pulse)
         entities.append(pulse)
 
-        let pulseHandle = tweens.scaleTo(pulse,
-                                         target: Vector2(x: 1.6, y: 1.6),
-                                         duration: 0.6, easing: .elasticOut, in: world)
+        let pulseHandle = tweens.scaleTo(
+            pulse,
+            target: Vector2(x: 1.6, y: 1.6),
+            duration: 0.6,
+            easing: .elasticOut,
+            in: world
+        )
         tweens.setYoyo(pulseHandle)
         tweens.setRepeat(pulseHandle, count: -1)
 
@@ -264,9 +333,13 @@ final class SequenceScene: Scene, @unchecked Sendable {
         world.addComponent(Sprite(texture: .invalid), to: rotator)
         entities.append(rotator)
 
-        let rotHandle = tweens.rotateTo(rotator,
-                                         target: Float.pi * 2,
-                                         duration: 1.5, easing: .backOut, in: world)
+        let rotHandle = tweens.rotateTo(
+            rotator,
+            target: Float.pi * 2,
+            duration: 1.5,
+            easing: .backOut,
+            in: world
+        )
         tweens.setRepeat(rotHandle, count: -1)
     }
 }

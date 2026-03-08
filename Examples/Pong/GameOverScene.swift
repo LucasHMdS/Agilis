@@ -95,8 +95,12 @@ final class GameOverScene: Scene {
 
         // FPS counter
         let fpsColor = Color(r: 80, g: 80, b: 80)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: 4, y: screen.height - 18),
-                              font: ui.font, size: 14, color: fpsColor)
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: 4, y: screen.height - 18),
+            font: ui.font,
+            size: 14,
+            color: fpsColor
+        )
     }
 }

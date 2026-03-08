@@ -98,8 +98,10 @@ final class PostPhysicsSystem: System {
 
     var componentAccess: ComponentAccess {
         ComponentAccess(
-            reads: [Tile.self, Coin.self, QuestionBlock.self, Flagpole.self,
-                    Collider2D.self, Transform2D.self],
+            reads: [
+                Tile.self, Coin.self, QuestionBlock.self, Flagpole.self,
+                Collider2D.self, Transform2D.self
+            ],
             writes: [Player.self, Enemy.self, Velocity2D.self],
             emitsEvents: true
         )
@@ -142,9 +144,13 @@ final class PostPhysicsSystem: System {
                 normalFromPlayer = Vector2(x: -contact.normal.x, y: -contact.normal.y)
             } else {
                 // Neither is player — check enemy-wall collision
-                handleEnemyWallCollision(entityA: entityA, entityB: entityB,
-                                         contact: contact, eventType: event.type,
-                                         world: world)
+                handleEnemyWallCollision(
+                    entityA: entityA,
+                    entityB: entityB,
+                    contact: contact,
+                    eventType: event.type,
+                    world: world
+                )
                 continue
             }
 
@@ -262,10 +268,13 @@ final class PostPhysicsSystem: System {
         }
     }
 
-    private func handleEnemyWallCollision(entityA: Entity, entityB: Entity,
-                                          contact: Contact,
-                                          eventType: CollisionEventType,
-                                          world: World) {
+    private func handleEnemyWallCollision(
+        entityA: Entity,
+        entityB: Entity,
+        contact: Contact,
+        eventType: CollisionEventType,
+        world: World
+    ) {
         guard eventType == .began else { return }
 
         let enemyEntity: Entity

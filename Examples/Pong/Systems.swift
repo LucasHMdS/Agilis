@@ -88,8 +88,11 @@ final class PongPhysicsSystem: System {
 
         // Clamp paddles to screen bounds (after physics integration)
         world.forEach { (_: Entity, pos: inout Transform2D, paddle: inout Paddle) in
-            pos.position.y = clamp(pos.position.y, min: paddle.halfHeight,
-                          max: Pong.screenHeight - paddle.halfHeight)
+            pos.position.y = clamp(
+                pos.position.y,
+                min: paddle.halfHeight,
+                max: Pong.screenHeight - paddle.halfHeight
+            )
         }
 
         // Override ball velocity for paddle collisions with angle-based reflection
