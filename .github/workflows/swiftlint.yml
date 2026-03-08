@@ -20,7 +20,7 @@ jobs:
 
       - name: Install SwiftLint
         run: |
-          SWIFTLINT_VERSION="0.57.0"
+          SWIFTLINT_VERSION="0.64.0-rc.1"
           curl -fsSL "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/swiftlint_linux.zip" -o swiftlint.zip
           unzip -o swiftlint.zip -d swiftlint_bin
           sudo install swiftlint_bin/swiftlint /usr/local/bin/swiftlint
