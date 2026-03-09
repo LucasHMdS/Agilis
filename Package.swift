@@ -102,9 +102,16 @@ var stbCSettings: [CSetting] {
 }
 
 // MARK: - Package
-
 let package = Package(
     name: "Agilis",
+    // Minimum OS versions for Apple platforms (Swift Concurrency requirement)
+    // Windows/Linux: Supported via Swift 6.0 toolchain
+    platforms: [
+        .macOS(.v10_15),
+        .iOS(.v13),
+        .tvOS(.v13),
+        .watchOS(.v6),
+    ],
     products: [
         .library(name: "Agilis", targets: ["Agilis"]),
         .library(name: "AgilisFormats", targets: ["AgilisFormats"]),
