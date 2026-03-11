@@ -58,7 +58,7 @@ angle_enable_gl_desktop_backend = false
 angle_enable_null = false
 angle_build_tests = false
 angle_build_samples = false
-is_component_build = true
+is_component_build = false
 target_cpu = "$TARGET_CPU"
 EOF
 
@@ -74,6 +74,14 @@ mkdir -p "$ANGLE_OUTPUT_DIR"
 
 cp -f out/Release/libEGL.dylib "$ANGLE_OUTPUT_DIR/"
 cp -f out/Release/libGLESv2.dylib "$ANGLE_OUTPUT_DIR/"
+
+# Step 6: Fix install names for portability
+echo "=== Step 6: Fixing install names ==="
+install_name_tool -id @rpath/libEGL.dylib "$ANGLE_OUTPUT_DIR/libEGL.dylib"
+install_name_tool -id @rpath/libGLESv2.dylib "$ANGLE_OUTPUT_DIR/libGLESv2.dylib"
+
+# Make libEGL find libGLESv2 via rpath
+install_name_tool -change @rpath/libGLESv2.dylib @rpath/libGLESv2.dylib "$ANGLE_OUTPUT_DIR/libEGL.dylib" 2>/dev/null || true
 
 echo "=== Done! ==="
 echo "ANGLE binaries copied to: $ANGLE_OUTPUT_DIR"

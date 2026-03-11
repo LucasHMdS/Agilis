@@ -74,7 +74,7 @@ struct PhysicsWorld2DTests {
     @Test("Ball collides with static floor")
     func ballFloorCollision() {
         // Ball starts just above the floor, should collide within a few ticks
-        let (world, physics) = runPhysics(ticks: 5) { world, _ in
+        let (world, _) = runPhysics(ticks: 5) { world, _ in
             let ball = world.createEntity()
             world.setName("ball", for: ball)
             world.addComponent(Transform2D(position: Vector2(x: 100, y: 80)), to: ball)
@@ -157,6 +157,9 @@ struct PhysicsWorld2DTests {
                 )
             }
         )
+
+        // Trigger should have generated an event
+        #expect(beganFired, "Trigger should generate collision event")
 
         // Ball should pass through the trigger zone
         // swiftlint:disable:next force_unwrapping

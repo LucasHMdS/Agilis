@@ -50,4 +50,9 @@ public final class AssetManager: @unchecked Sendable {
     public var count: Int {
         cache.count
     }
+
+    /// A Boolean value that indicates whether the cache is empty.
+    public var isEmpty: Bool {
+        cache.isEmpty
+    }
 }
