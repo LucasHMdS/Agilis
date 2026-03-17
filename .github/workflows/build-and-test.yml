@@ -20,7 +20,7 @@ jobs:
       - name: Install Swift
         uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "6.0"
+          swift-version: "6.2"
 
       - name: Install system dependencies
         run: |
@@ -109,8 +109,8 @@ jobs:
       - name: Install Swift
         uses: compnerd/gha-setup-swift@main
         with:
-          swift-version: "swift-6.0.3-release"
-          swift-build: "6.0.3-RELEASE"
+          swift-version: "swift-6.2.4-RELEASE"
+          swift-build: "6.2.4-RELEASE"
 
       - name: Cache SPM build
         uses: actions/cache@v4
