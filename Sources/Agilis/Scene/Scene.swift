@@ -14,8 +14,8 @@ public protocol Scene: AnyObject {
 }
 
 public extension Scene {
-    func didEnter(app: Application) {}
-    func update(app: Application, deltaTime: Double) {}
-    func render(app: Application, interpolation: Double) {}
-    func willExit(app: Application) {}
+    func didEnter(app _: Application) {}
+    func update(app _: Application, deltaTime _: Double) {}
+    func render(app _: Application, interpolation _: Double) {}
+    func willExit(app _: Application) {}
 }

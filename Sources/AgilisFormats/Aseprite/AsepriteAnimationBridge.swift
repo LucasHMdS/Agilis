@@ -41,7 +41,7 @@ extension AnimationClip {
                             width: Float(aseFrame.frame.w),
                             height: Float(aseFrame.frame.h)
                         ),
-                        duration: Float(aseFrame.duration) / 1000.0
+                        duration: Float(aseFrame.duration) / 1_000.0
                     )
                 }
             } else {
@@ -76,7 +76,7 @@ extension AnimationClip {
                     width: Float(aseFrame.frame.w),
                     height: Float(aseFrame.frame.h)
                 ),
-                duration: Float(aseFrame.duration) / 1000.0
+                duration: Float(aseFrame.duration) / 1_000.0
             )
         }
         return AnimationClip(name: name, frames: frames, mode: mode)
@@ -89,8 +89,10 @@ extension AnimationClip {
         switch direction.lowercased() {
         case "reverse":
             return .reverse
+
         case "pingpong":
             return .pingPong
+
         default:
             return .forward
         }

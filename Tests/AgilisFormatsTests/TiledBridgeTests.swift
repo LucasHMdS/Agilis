@@ -1,7 +1,7 @@
-import Testing
-import Foundation
-@testable import AgilisFormats
 @testable import Agilis
+@testable import AgilisFormats
+import Foundation
+import Testing
 
 // MARK: - Tiled Bridge Tests
 
@@ -58,7 +58,7 @@ struct TiledBridgeTests {
     }
 
     private func objectLayerJSON(name: String = "objects") -> String {
-        return """
+        """
         {
             "name": "\(name)",
             "type": "objectgroup",
@@ -83,7 +83,7 @@ struct TiledBridgeTests {
         imagewidth: Int = 64,
         imageheight: Int = 64
     ) -> String {
-        return """
+        """
         {
             "firstgid": \(firstgid),
             "name": "\(name)",
@@ -143,7 +143,8 @@ struct TiledBridgeTests {
         let flipBothGid = Int(bitPattern: UInt(0xC0000000 | 5))
 
         let data = makeTiledJSON(
-            width: 4, height: 1,
+            width: 4,
+            height: 1,
             layers: [
                 tileLayerJSON(width: 4, height: 1, data: [5, flipXGid, flipYGid, flipBothGid])
             ],
@@ -174,7 +175,8 @@ struct TiledBridgeTests {
     @Test("Empty tiles (GID 0) preserved as Tile.empty")
     func emptyTilesPreserved() throws {
         let data = makeTiledJSON(
-            width: 3, height: 1,
+            width: 3,
+            height: 1,
             layers: [
                 tileLayerJSON(width: 3, height: 1, data: [1, 0, 3])
             ],

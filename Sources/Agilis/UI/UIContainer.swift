@@ -1,7 +1,7 @@
-
-
 /// A node that contains child nodes and manages their layout.
 public class UIContainer: UINode, @unchecked Sendable {
+    deinit {}
+
     public private(set) var children: [UINode] = []
 
     /// The layout strategy for arranging children.
@@ -30,28 +30,28 @@ public class UIContainer: UINode, @unchecked Sendable {
         children.removeAll()
     }
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime: Double) {
         guard isVisible else { return }
         for child in children where child.isVisible {
             child.update(context: context, deltaTime: deltaTime)
         }
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
         for child in children where child.isVisible {
             child.render(renderer: renderer, theme: theme)
         }
     }
 
-    public override func renderOverlay(renderer: any RenderBackend, theme: UITheme, screenSize: Size) {
+    override public func renderOverlay(renderer: any RenderBackend, theme: UITheme, screenSize: Size) {
         guard isVisible else { return }
         for child in children where child.isVisible {
             child.renderOverlay(renderer: renderer, theme: theme, screenSize: screenSize)
         }
     }
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_ available: Size) -> Size {
         let inner = Size(width: available.width - padding * 2,
                          height: available.height - padding * 2)
 

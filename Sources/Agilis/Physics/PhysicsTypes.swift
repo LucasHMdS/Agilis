@@ -1,5 +1,3 @@
-
-
 /// The type of a rigid body, controlling how it participates in physics.
 public enum BodyType: Sendable, Equatable, Codable {
     /// Fully simulated: affected by gravity, forces, and collisions.

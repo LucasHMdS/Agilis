@@ -1,5 +1,3 @@
-
-
 /// Describes how to animate between two scenes.
 ///
 /// Use the static factory methods for common transition effects:

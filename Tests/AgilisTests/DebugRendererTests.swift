@@ -1,9 +1,11 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Spy Renderer
 
 private final class DebugRendererSpy: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     struct RectOutlineCall {
         let rect: Rect
         let color: Color
@@ -40,38 +42,38 @@ private final class DebugRendererSpy: @unchecked Sendable, RenderBackend {
     func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {
         rectOutlineCalls.append(RectOutlineCall(rect: rect, color: color, thickness: thickness))
     }
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {
+    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness _: Float) {
         circleOutlineCalls.append(CircleOutlineCall(center: center, radius: radius, color: color))
     }
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {
+    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness _: Float) {
         lineCalls.append(LineCall(from: start, to: end, color: color))
     }
     func drawCircle(center: Vector2, radius: Float, color: Color) {
         circleCalls.append(CircleCall(center: center, radius: radius, color: color))
     }
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {
+    func drawText(_ text: String, position: Vector2, font _: FontHandle, size: Float, color: Color) {
         textCalls.append(TextCall(text: text, position: position, color: color, size: size))
     }
 
     // Unused stubs
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawSprite(_ sprite: Sprite) {}
-    func initialize(config: WindowConfig) throws {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawSprite(_: Sprite) {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
     func loadDefaultFont() -> FontHandle { FontHandle(id: 1) }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { Size(width: Float(text.count) * 7, height: size) }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func measureText(_ text: String, font _: FontHandle, size: Float) -> Size { Size(width: Float(text.count) * 7, height: size) }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { Size(width: 800, height: 600) }
 }
@@ -629,7 +631,7 @@ struct TileMapDebugRendererTests {
 
         // Grid lines are drawn with the gridColor (semi-transparent white)
         // Should have both vertical and horizontal lines
-        #expect(renderer.lineCalls.count > 0)
+        #expect(!renderer.lineCalls.isEmpty)
     }
 
     @Test("No grid when drawGrid disabled")

@@ -1,5 +1,3 @@
-
-
 // MARK: - AnimationSystem
 
 /// ECS system that advances sprite animations each tick.
@@ -32,6 +30,8 @@
 /// clips and control playback, then AnimationSystem resolves frames,
 /// then physics runs on the updated state.
 public final class AnimationSystem: System, @unchecked Sendable {
+
+    deinit {}
 
     // MARK: - System Conformance
 
@@ -83,7 +83,7 @@ public final class AnimationSystem: System, @unchecked Sendable {
             animator.frameTime += dt * animator.speed
 
             // Consume elapsed time, advancing frames as needed
-            var event: AnimationEvent? = nil
+            var event: AnimationEvent?
             while animator.currentFrameIndex < animator.clip.frames.count &&
                   animator.frameTime >= animator.clip.frames[animator.currentFrameIndex].duration {
                 animator.frameTime -= animator.clip.frames[animator.currentFrameIndex].duration

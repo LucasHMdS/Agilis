@@ -1,5 +1,3 @@
-
-
 /// Debug information for a single active tween.
 public struct TweenDebugInfo: Sendable {
     /// The entity being tweened.
@@ -75,9 +73,13 @@ extension RenderBackend {
             if options.drawProgress {
                 let pct = Int(info.progress * 100)
                 let text = "\(info.targetType) \(pct)%"
-                drawText(text,
-                         position: Vector2(x: pos.x, y: pos.y - 14),
-                         font: font, size: options.fontSize, color: options.pathColor)
+                drawText(
+                    text,
+                    position: Vector2(x: pos.x, y: pos.y - 14),
+                    font: font,
+                    size: options.fontSize,
+                    color: options.pathColor
+                )
             }
         }
     }

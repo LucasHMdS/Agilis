@@ -1,7 +1,7 @@
-
-
 /// A scrollable container that clips its children to its bounds.
 public class UIScrollContainer: UIContainer, @unchecked Sendable {
+    deinit {}
+
     /// Current scroll offset (positive values scroll content upward).
     public var scrollOffset: Vector2 = .zero
 
@@ -18,7 +18,7 @@ public class UIScrollContainer: UIContainer, @unchecked Sendable {
 
     private let scrollBarWidth: Float = 6
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_ available: Size) -> Size {
         let contentSize = super.sizeThatFits(available)
         if let maxH = maxHeight {
             return Size(width: contentSize.width, height: min(contentSize.height, maxH))
@@ -26,7 +26,7 @@ public class UIScrollContainer: UIContainer, @unchecked Sendable {
         return contentSize
     }
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime: Double) {
         guard isVisible, let app = context.app else { return }
         let input = app.input
 
@@ -57,7 +57,7 @@ public class UIScrollContainer: UIContainer, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw background
@@ -97,8 +97,12 @@ public class UIScrollContainer: UIContainer, @unchecked Sendable {
     }
 
     private func offsetFrames(_ node: UINode, dy: Float) {
-        node.frame = Rect(x: node.frame.x, y: node.frame.y + dy,
-                          width: node.frame.width, height: node.frame.height)
+        node.frame = Rect(
+            x: node.frame.x,
+            y: node.frame.y + dy,
+            width: node.frame.width,
+            height: node.frame.height
+        )
         if let container = node as? UIContainer {
             for child in container.children {
                 offsetFrames(child, dy: dy)

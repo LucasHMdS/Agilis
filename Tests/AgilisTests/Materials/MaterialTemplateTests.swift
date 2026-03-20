@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 @Suite("MaterialTemplate")
 struct MaterialTemplateTests {
@@ -41,7 +41,7 @@ struct MaterialTemplateTests {
             shader: ShaderHandle(id: 5),
             defaults: [
                 "amount": .float(0.5),
-                "color": .color(.red),
+                "color": .color(.red)
             ]
         )
 
@@ -60,7 +60,7 @@ struct MaterialTemplateTests {
             shader: ShaderHandle(id: 5),
             defaults: [
                 "amount": .float(0.5),
-                "speed": .float(1.0),
+                "speed": .float(1.0)
             ]
         )
 
@@ -227,10 +227,14 @@ struct MaterialContextTests {
         let userU = renderer.floatUniforms.first(where: { $0.name == "userParam" })
 
         #expect(timeU != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(timeU!.value - 3.0) < 0.001)
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(dtU!.value - 0.016) < 0.001)
         #expect(resU != nil)
+        // swiftlint:disable:next force_unwrapping
         #expect(resU!.value == Vector2(x: 800, y: 600))
+        // swiftlint:disable:next force_unwrapping
         #expect(abs(userU!.value - 42.0) < 0.001)
     }
 
@@ -257,43 +261,47 @@ struct MaterialContextTests {
 // MARK: - Mock Renderers
 
 private final class TemplateMockRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var nextId: UInt32 = 1
 
-    func loadShader(vertexSource: String?, fragmentSource: String) -> ShaderHandle {
+    func loadShader(vertexSource _: String?, fragmentSource _: String) -> ShaderHandle {
         let id = nextId
         nextId += 1
         return ShaderHandle(id: id)
     }
 
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
-    func drawSprite(_ sprite: Sprite) {}
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
+    func drawSprite(_: Sprite) {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
-    func destroyShader(_ handle: ShaderHandle) {}
+    func destroyShader(_: ShaderHandle) {}
     var screenSize: Size { .zero }
 }
 
 private final class ContextSpyRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var floatUniforms: [(shader: UInt32, name: String, value: Float)] = []
     var vec2Uniforms: [(shader: UInt32, name: String, value: Vector2)] = []
 
@@ -305,29 +313,29 @@ private final class ContextSpyRenderer: @unchecked Sendable, RenderBackend {
         vec2Uniforms.append((handle.id, name, value))
     }
 
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
-    func drawSprite(_ sprite: Sprite) {}
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
+    func drawSprite(_: Sprite) {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { .zero }
 }

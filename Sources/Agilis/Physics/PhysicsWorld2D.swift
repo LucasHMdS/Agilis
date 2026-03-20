@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -121,6 +119,8 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
         self.tracker = ContactTracker()
     }
 
+    deinit {}
+
     // MARK: - Joint Management
 
     /// Create a physics joint connecting two entities.
@@ -159,7 +159,7 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
 
     // MARK: - System Lifecycle
 
-    public func setup(world: World) {}
+    public func setup(world _: World) {}
 
     public func update(context: SystemContext) {
         let world = context.world
@@ -194,7 +194,9 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
         world.forEach { (entity: Entity, transform: inout Transform2D, collider: inout Collider2D) in
             let worldPos = transform.position + collider.offset
             let bounds = self.computeWorldBounds(
-                shape: collider.shape, position: worldPos, rotation: transform.rotation
+                shape: collider.shape,
+                position: worldPos,
+                rotation: transform.rotation
             )
             self.grid.insert(entity: entity, bounds: bounds)
         }
@@ -216,16 +218,24 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
             else { continue }
 
             // Layer/mask filter
-            guard shouldCollide(layerA: cA.layer, maskA: cA.mask,
-                                layerB: cB.layer, maskB: cB.mask) else { continue }
+            guard shouldCollide(
+                layerA: cA.layer,
+                maskA: cA.mask,
+                layerB: cB.layer,
+                maskB: cB.mask
+            ) else { continue }
 
             // Narrow phase
             let posA = tA.position + cA.offset
             let posB = tB.position + cB.offset
 
             guard let contact = NarrowPhase.test(
-                shapeA: cA.shape, posA: posA, rotA: tA.rotation,
-                shapeB: cB.shape, posB: posB, rotB: tB.rotation
+                shapeA: cA.shape,
+                posA: posA,
+                rotA: tA.rotation,
+                shapeB: cB.shape,
+                posB: posB,
+                rotB: tB.rotation
             ) else { continue }
 
             // Record for event tracking
@@ -256,9 +266,12 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
 
             ImpulseResolver.resolveVelocity(
                 contact: contact,
-                velocityA: &velA, velocityB: &velB,
-                inverseMassA: invMassA, inverseMassB: invMassB,
-                restitution: restitution, friction: friction
+                velocityA: &velA,
+                velocityB: &velB,
+                inverseMassA: invMassA,
+                inverseMassB: invMassB,
+                restitution: restitution,
+                friction: friction
             )
 
             // Write velocities back
@@ -274,8 +287,10 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
             var posBCorrected = tB.position
             ImpulseResolver.correctPenetration(
                 contact: contact,
-                positionA: &posACorrected, positionB: &posBCorrected,
-                inverseMassA: invMassA, inverseMassB: invMassB
+                positionA: &posACorrected,
+                positionB: &posBCorrected,
+                inverseMassA: invMassA,
+                inverseMassB: invMassB
             )
             if invMassA > 0 {
                 world.updateComponent(Transform2D.self, on: eA) { t in t.position = posACorrected }
@@ -286,6 +301,7 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
         }
 
         // STEP 7: Joint constraint solving
+        // swiftlint:disable:next empty_count
         if jointStore.count > 0 {
             solveJoints(world: world, dt: dt)
         }
@@ -294,24 +310,28 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
         events = tracker.endFrame()
         for event in events {
             switch event.type {
-            case .began: onCollisionBegan?(event)
-            case .ended: onCollisionEnded?(event)
-            case .ongoing: break
+            case .began:
+                onCollisionBegan?(event)
+
+            case .ended:
+                onCollisionEnded?(event)
+
+            case .ongoing:
+                break
             }
         }
 
         // STEP 9: Generate joint events (broken joints)
         jointEvents = jointStore.flushDestroyedJoints()
-        for event in jointEvents {
-            if event.type == .broken {
-                onJointBroken?(event)
-            }
+        for event in jointEvents where event.type == .broken {
+            onJointBroken?(event)
         }
     }
 
     // MARK: - Joint Solving
 
-    /// Run the sequential-impulse constraint solver for all active joints.
+    // Run the sequential-impulse constraint solver for all active joints.
+    // swiftlint:disable:next cyclomatic_complexity
     private func solveJoints(world: World, dt: Float) {
         let defaultBody = RigidBody2D(bodyType: .static)
 
@@ -331,17 +351,27 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
             let bodyA = world.getComponent(RigidBody2D.self, from: joint.entityA) ?? defaultBody
             let bodyB = world.getComponent(RigidBody2D.self, from: joint.entityB) ?? defaultBody
 
-            JointSolver.preSolve(joint: &joint,
-                                 transformA: tA, transformB: tB,
-                                 velocityA: vA, velocityB: vB,
-                                 bodyA: bodyA, bodyB: bodyB, dt: dt)
+            JointSolver.preSolve(
+                joint: &joint,
+                transformA: tA,
+                transformB: tB,
+                velocityA: vA,
+                velocityB: vB,
+                bodyA: bodyA,
+                bodyB: bodyB,
+                dt: dt
+            )
 
             // Apply warm-start impulse
             var modVelA = vA
             var modVelB = vB
-            JointSolver.warmStart(joint: &joint,
-                                  velocityA: &modVelA, velocityB: &modVelB,
-                                  bodyA: bodyA, bodyB: bodyB)
+            JointSolver.warmStart(
+                joint: &joint,
+                velocityA: &modVelA,
+                velocityB: &modVelB,
+                bodyA: bodyA,
+                bodyB: bodyB
+            )
 
             world.updateComponent(Velocity2D.self, on: joint.entityA) { v in v = modVelA }
             world.updateComponent(Velocity2D.self, on: joint.entityB) { v in v = modVelB }
@@ -357,9 +387,13 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
                 let bodyA = world.getComponent(RigidBody2D.self, from: joint.entityA) ?? defaultBody
                 let bodyB = world.getComponent(RigidBody2D.self, from: joint.entityB) ?? defaultBody
 
-                JointSolver.solveVelocity(joint: &joint,
-                                          velocityA: &vA, velocityB: &vB,
-                                          bodyA: bodyA, bodyB: bodyB)
+                JointSolver.solveVelocity(
+                    joint: &joint,
+                    velocityA: &vA,
+                    velocityB: &vB,
+                    bodyA: bodyA,
+                    bodyB: bodyB
+                )
 
                 world.updateComponent(Velocity2D.self, on: joint.entityA) { v in v = vA }
                 world.updateComponent(Velocity2D.self, on: joint.entityB) { v in v = vB }
@@ -377,9 +411,13 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
                 let bodyA = world.getComponent(RigidBody2D.self, from: joint.entityA) ?? defaultBody
                 let bodyB = world.getComponent(RigidBody2D.self, from: joint.entityB) ?? defaultBody
 
-                let error = JointSolver.solvePosition(joint: &joint,
-                                                      transformA: &tA, transformB: &tB,
-                                                      bodyA: bodyA, bodyB: bodyB)
+                let error = JointSolver.solvePosition(
+                    joint: &joint,
+                    transformA: &tA,
+                    transformB: &tB,
+                    bodyA: bodyA,
+                    bodyB: bodyB
+                )
                 maxError = max(maxError, error)
 
                 world.updateComponent(Transform2D.self, on: joint.entityA) { t in t = tA }
@@ -399,10 +437,12 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
                 if def.maxTorque > 0 && joint.constraintTorque > def.maxTorque {
                     joint.isMarkedForDestruction = true
                 }
+
             case .distance(let def):
                 if def.maxForce > 0 && joint.constraintForce > def.maxForce {
                     joint.isMarkedForDestruction = true
                 }
+
             case .weld(let def):
                 if def.maxForce > 0 && joint.constraintForce > def.maxForce {
                     joint.isMarkedForDestruction = true
@@ -410,6 +450,7 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
                 if def.maxTorque > 0 && joint.constraintTorque > def.maxTorque {
                     joint.isMarkedForDestruction = true
                 }
+
             case .prismatic(let def):
                 if def.maxForce > 0 && joint.constraintForce > def.maxForce {
                     joint.isMarkedForDestruction = true
@@ -417,10 +458,12 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
                 if def.maxTorque > 0 && joint.constraintTorque > def.maxTorque {
                     joint.isMarkedForDestruction = true
                 }
+
             case .rope(let def):
                 if def.maxForce > 0 && joint.constraintForce > def.maxForce {
                     joint.isMarkedForDestruction = true
                 }
+
             case .motor:
                 break // Motor joints do not break
             }
@@ -429,17 +472,17 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
 
     // MARK: - Continuous Collision Detection
 
-    /// Sweep CCD-enabled dynamic bodies from their previous position to the integrated position,
-    /// clamping to the earliest time of impact to prevent tunneling through thin geometry.
-    ///
-    /// Supports angular sweep (rotation-aware CCD for non-circle shapes) and bilateral CCD
-    /// (two moving CCD bodies use relative velocity to detect collisions between them).
+    // Sweep CCD-enabled dynamic bodies from their previous position to the integrated position,
+    // clamping to the earliest time of impact to prevent tunneling through thin geometry.
+    //
+    // Supports angular sweep (rotation-aware CCD for non-circle shapes) and bilateral CCD
+    // (two moving CCD bodies use relative velocity to detect collisions between them).
     private func performCCDSweep(world: World) {
         // Reuse instance-level buffers to avoid per-tick allocation
         ccdBodies.removeAll(keepingCapacity: true)
 
-        world.forEach { (entity: Entity, transform: inout Transform2D, prev: inout PreviousTransform2D,
-                          _: inout Velocity2D, body: inout RigidBody2D, collider: inout Collider2D) in
+        // swiftlint:disable:next line_length
+        world.forEach { (entity: Entity, transform: inout Transform2D, prev: inout PreviousTransform2D, _: inout Velocity2D, body: inout RigidBody2D, collider: inout Collider2D) in
             guard body.useCCD && body.bodyType == .dynamic else { return }
 
             let startPos = prev.position + collider.offset
@@ -455,10 +498,13 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
             guard displacement.lengthSquared > extent * extent || angularExtent > extent else { return }
 
             ccdBodies.append(CCDBodyData(
-                entity: entity, prevPos: prev.position,
+                entity: entity,
+                prevPos: prev.position,
                 prevRotation: prev.rotation,
-                shape: collider.shape, offset: collider.offset,
-                layer: collider.layer, mask: collider.mask,
+                shape: collider.shape,
+                offset: collider.offset,
+                layer: collider.layer,
+                mask: collider.mask,
                 rotation: transform.rotation
             ))
         }
@@ -521,8 +567,12 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
                 guard !candidateCollider.isTrigger else { return }
 
                 // Layer/mask filter
-                guard shouldCollide(layerA: ccdBody.layer, maskA: ccdBody.mask,
-                                    layerB: candidateCollider.layer, maskB: candidateCollider.mask) else { return }
+                guard shouldCollide(
+                    layerA: ccdBody.layer,
+                    maskA: ccdBody.mask,
+                    layerB: candidateCollider.layer,
+                    maskB: candidateCollider.mask
+                ) else { return }
 
                 // Determine candidate position — bilateral CCD uses relative velocity
                 let candidatePos: Vector2
@@ -548,7 +598,9 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
 
                 // Swept AABB pre-filter (uses original bounds, conservative for bilateral case)
                 let candidateBounds = self.computeWorldBounds(
-                    shape: candidateCollider.shape, position: candidatePos, rotation: candidateRot
+                    shape: candidateCollider.shape,
+                    position: candidatePos,
+                    rotation: candidateRot
                 )
                 let cMinX = candidateBounds.x
                 let cMinY = candidateBounds.y
@@ -612,22 +664,34 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
         switch shape {
         case .aabb(let half):
             if abs(rotation) < 1e-6 {
-                return Rect(x: position.x - half.x, y: position.y - half.y,
-                            width: half.x * 2, height: half.y * 2)
+                return Rect(
+                    x: position.x - half.x,
+                    y: position.y - half.y,
+                    width: half.x * 2,
+                    height: half.y * 2
+                )
             }
             // Rotated AABB: compute bounding box of rotated corners
             return rotatedRectBounds(half: half, position: position, rotation: rotation)
 
         case .circle(let r):
-            return Rect(x: position.x - r, y: position.y - r,
-                        width: r * 2, height: r * 2)
+            return Rect(
+                x: position.x - r,
+                y: position.y - r,
+                width: r * 2,
+                height: r * 2
+            )
 
         case .polygon(let poly):
             if abs(rotation) < 1e-6 {
                 // Local bounds + position offset
                 let lb = poly.localBounds
-                return Rect(x: lb.x + position.x, y: lb.y + position.y,
-                            width: lb.width, height: lb.height)
+                return Rect(
+                    x: lb.x + position.x,
+                    y: lb.y + position.y,
+                    width: lb.width,
+                    height: lb.height
+                )
             }
             // Rotate vertices and compute enclosing AABB
             return rotatedPolygonBounds(vertices: poly.vertices, position: position, rotation: rotation)
@@ -640,8 +704,12 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
         let s = abs(sinf(rotation))
         let newHalfX = half.x * c + half.y * s
         let newHalfY = half.x * s + half.y * c
-        return Rect(x: position.x - newHalfX, y: position.y - newHalfY,
-                    width: newHalfX * 2, height: newHalfY * 2)
+        return Rect(
+            x: position.x - newHalfX,
+            y: position.y - newHalfY,
+            width: newHalfX * 2,
+            height: newHalfY * 2
+        )
     }
 
     /// Compute the AABB of rotated polygon vertices.

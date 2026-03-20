@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Helper Tests
 
@@ -37,7 +37,7 @@ struct SweptCollisionHelperTests {
 
     @Test("boundingRadius of AABB returns diagonal half-length")
     func boundingRadiusAABB() {
-        // half-extents (3, 4) → radius = sqrt(9+16) = 5
+        // half-extents (3, 4) -> radius = sqrt(9+16) = 5
         let r = SweptCollision.boundingRadius(of: .aabb(halfExtents: Vector2(x: 3, y: 4)))
         #expect(abs(r - 5) < 0.001)
     }
@@ -59,18 +59,17 @@ struct SweptCollisionHelperTests {
 struct SweptCircleVsCircleTests {
 
     @Test("Head-on collision returns correct TOI")
-    func headOnCollision() {
+    func headOnCollision() throws {
         // Circle radius 5 at (0, 50) sweeps to (100, 50) toward static circle radius 5 at (80, 50)
-        // Contact when centers are 10 apart (5+5), so at x=70 → TOI = 70/100 = 0.7
-        let toi = SweptCollision.sweptCircleVsCircle(
+        // Contact when centers are 10 apart (5+5), so at x=70 -> TOI = 70/100 = 0.7
+        let toi = try #require(SweptCollision.sweptCircleVsCircle(
             startPos: Vector2(x: 0, y: 50),
             endPos: Vector2(x: 100, y: 50),
             radiusA: 5,
             circlePos: Vector2(x: 80, y: 50),
             radiusB: 5
-        )
-        #expect(toi != nil)
-        #expect(abs(toi! - 0.7) < 0.01)
+        ))
+        #expect(abs(toi - 0.7) < 0.01)
     }
 
     @Test("Miss returns nil")
@@ -100,19 +99,18 @@ struct SweptCircleVsCircleTests {
     }
 
     @Test("Tangent/graze contact")
-    func tangentGraze() {
+    func tangentGraze() throws {
         // Circle radius 5 at y=0 sweeps right, static circle radius 5 at y=10
-        // Combined radius = 10, gap = 10 → should just barely touch (tangent)
-        let toi = SweptCollision.sweptCircleVsCircle(
+        // Combined radius = 10, gap = 10 -> should just barely touch (tangent)
+        let toi = try #require(SweptCollision.sweptCircleVsCircle(
             startPos: Vector2(x: 0, y: 0),
             endPos: Vector2(x: 200, y: 0),
             radiusA: 5,
             circlePos: Vector2(x: 100, y: 10),
             radiusB: 5
-        )
+        ))
         // Should hit (tangent or very close to it)
-        #expect(toi != nil)
-        #expect(toi! > 0 && toi! < 1)
+        #expect(toi > 0 && toi < 1)
     }
 
     @Test("Zero displacement returns nil")
@@ -134,18 +132,17 @@ struct SweptCircleVsCircleTests {
 struct SweptCircleVsAABBTests {
 
     @Test("Circle hits AABB face")
-    func circleHitsAABBFace() {
+    func circleHitsAABBFace() throws {
         // Circle radius 5 sweeps from (0, 50) to (100, 50), AABB at (80, 50) half-extents (10, 20)
-        // Expanded AABB left face = 80 - 10 - 5 = 65 → TOI ≈ 65/100
-        let toi = SweptCollision.sweptCircleVsAABB(
+        // Expanded AABB left face = 80 - 10 - 5 = 65 -> TOI ~ 65/100
+        let toi = try #require(SweptCollision.sweptCircleVsAABB(
             startPos: Vector2(x: 0, y: 50),
             endPos: Vector2(x: 100, y: 50),
             radius: 5,
             aabbPos: Vector2(x: 80, y: 50),
             halfExtents: Vector2(x: 10, y: 20)
-        )
-        #expect(toi != nil)
-        #expect(abs(toi! - 0.65) < 0.02)
+        ))
+        #expect(abs(toi - 0.65) < 0.02)
     }
 
     @Test("Circle misses AABB")
@@ -162,17 +159,16 @@ struct SweptCircleVsAABBTests {
     }
 
     @Test("Circle hits AABB corner region")
-    func circleHitsAABBCorner() {
+    func circleHitsAABBCorner() throws {
         // Circle radius 5 sweeps diagonally toward a corner
-        let toi = SweptCollision.sweptCircleVsAABB(
+        let toi = try #require(SweptCollision.sweptCircleVsAABB(
             startPos: Vector2(x: 0, y: 0),
             endPos: Vector2(x: 100, y: 100),
             radius: 5,
             aabbPos: Vector2(x: 70, y: 70),
             halfExtents: Vector2(x: 5, y: 5)
-        )
-        #expect(toi != nil)
-        #expect(toi! > 0 && toi! < 1)
+        ))
+        #expect(toi > 0 && toi < 1)
     }
 
     @Test("Already overlapping returns nil")
@@ -194,7 +190,7 @@ struct SweptCircleVsAABBTests {
 struct SweptCircleVsPolygonTests {
 
     @Test("Circle hits polygon edge")
-    func circleHitsPolygonEdge() {
+    func circleHitsPolygonEdge() throws {
         // Rectangle wall at x=80. Circle radius 5 sweeps from left to right.
         // Use a rectangle polygon (CW in screen coords = CCW in math coords)
         // so outward normals are correctly computed.
@@ -202,33 +198,31 @@ struct SweptCircleVsPolygonTests {
             Vector2(x: 75, y: -50), Vector2(x: 85, y: -50),
             Vector2(x: 85, y: 50), Vector2(x: 75, y: 50)
         ]
-        let toi = SweptCollision.sweptCircleVsPolygon(
+        let toi = try #require(SweptCollision.sweptCircleVsPolygon(
             startPos: Vector2(x: 0, y: 0),
             endPos: Vector2(x: 100, y: 0),
             radius: 5,
             vertices: vertices
-        )
-        #expect(toi != nil)
-        #expect(toi! > 0 && toi! < 1)
-        // Circle should hit the left face or vertex circles at roughly x=70 (75-5) → TOI ≈ 0.70
-        #expect(abs(toi! - 0.70) < 0.1)
+        ))
+        #expect(toi > 0 && toi < 1)
+        // Circle should hit the left face or vertex circles at roughly x=70 (75-5) -> TOI ~ 0.70
+        #expect(abs(toi - 0.70) < 0.1)
     }
 
     @Test("Circle hits polygon vertex")
-    func circleHitsPolygonVertex() {
+    func circleHitsPolygonVertex() throws {
         // Circle sweeps toward a vertex
         let vertices = [
             Vector2(x: 50, y: 45), Vector2(x: 60, y: 50),
             Vector2(x: 50, y: 55)
         ]
-        let toi = SweptCollision.sweptCircleVsPolygon(
+        let toi = try #require(SweptCollision.sweptCircleVsPolygon(
             startPos: Vector2(x: 0, y: 50),
             endPos: Vector2(x: 100, y: 50),
             radius: 3,
             vertices: vertices
-        )
-        #expect(toi != nil)
-        #expect(toi! > 0 && toi! < 1)
+        ))
+        #expect(toi > 0 && toi < 1)
     }
 
     @Test("Circle misses polygon")
@@ -253,20 +247,19 @@ struct SweptCircleVsPolygonTests {
 struct SweptAABBvsAABBTests {
 
     @Test("AABB hits static AABB")
-    func aabbHitsStaticAABB() {
+    func aabbHitsStaticAABB() throws {
         // Moving AABB half (5,5) sweeps from (0,50) to (100,50)
         // Static AABB half (10,20) at (80,50)
         // Minkowski expanded half = (15, 25)
-        // Left face of expanded = 80 - 15 = 65 → TOI = 65/100
-        let toi = SweptCollision.sweptAABBvsAABB(
+        // Left face of expanded = 80 - 15 = 65 -> TOI = 65/100
+        let toi = try #require(SweptCollision.sweptAABBvsAABB(
             startPos: Vector2(x: 0, y: 50),
             endPos: Vector2(x: 100, y: 50),
             halfA: Vector2(x: 5, y: 5),
             aabbPos: Vector2(x: 80, y: 50),
             halfB: Vector2(x: 10, y: 20)
-        )
-        #expect(toi != nil)
-        #expect(abs(toi! - 0.65) < 0.02)
+        ))
+        #expect(abs(toi - 0.65) < 0.02)
     }
 
     @Test("AABB misses static AABB")
@@ -294,18 +287,17 @@ struct SweptAABBvsAABBTests {
     }
 
     @Test("TOI accuracy for known geometry")
-    func toiAccuracy() {
+    func toiAccuracy() throws {
         // Moving half (2,2) from x=0 to x=50, static half (3,3) at x=30
-        // Expanded half-x = 2+3 = 5, left edge = 30-5 = 25 → TOI = 25/50 = 0.5
-        let toi = SweptCollision.sweptAABBvsAABB(
+        // Expanded half-x = 2+3 = 5, left edge = 30-5 = 25 -> TOI = 25/50 = 0.5
+        let toi = try #require(SweptCollision.sweptAABBvsAABB(
             startPos: Vector2(x: 0, y: 0),
             endPos: Vector2(x: 50, y: 0),
             halfA: Vector2(x: 2, y: 2),
             aabbPos: Vector2(x: 30, y: 0),
             halfB: Vector2(x: 3, y: 3)
-        )
-        #expect(toi != nil)
-        #expect(abs(toi! - 0.5) < 0.01)
+        ))
+        #expect(abs(toi - 0.5) < 0.01)
     }
 }
 
@@ -315,19 +307,18 @@ struct SweptAABBvsAABBTests {
 struct SweptAABBvsCircleTests {
 
     @Test("AABB hits static circle")
-    func aabbHitsCircle() {
+    func aabbHitsCircle() throws {
         // AABB half (5,5) sweeps from (0,50) to (100,50), circle radius 10 at (80,50)
         // Expanded AABB half = (5+10, 5+10) = (15, 15) at circlePos
-        // Left face = 80 - 15 = 65 → TOI ≈ 65/100
-        let toi = SweptCollision.sweptAABBvsCircle(
+        // Left face = 80 - 15 = 65 -> TOI ~ 65/100
+        let toi = try #require(SweptCollision.sweptAABBvsCircle(
             startPos: Vector2(x: 0, y: 50),
             endPos: Vector2(x: 100, y: 50),
             halfExtents: Vector2(x: 5, y: 5),
             circlePos: Vector2(x: 80, y: 50),
             radius: 10
-        )
-        #expect(toi != nil)
-        #expect(abs(toi! - 0.65) < 0.02)
+        ))
+        #expect(abs(toi - 0.65) < 0.02)
     }
 
     @Test("AABB misses static circle")
@@ -349,8 +340,8 @@ struct SweptAABBvsCircleTests {
 struct SweptCollisionDispatcherTests {
 
     @Test("Dispatcher handles circle vs circle")
-    func dispatcherCircleVsCircle() {
-        let toi = SweptCollision.timeOfImpact(
+    func dispatcherCircleVsCircle() throws {
+        let toi = try #require(SweptCollision.timeOfImpact(
             movingShape: .circle(radius: 5),
             startPos: Vector2(x: 0, y: 50),
             endPos: Vector2(x: 100, y: 50),
@@ -358,9 +349,8 @@ struct SweptCollisionDispatcherTests {
             staticShape: .circle(radius: 5),
             staticPos: Vector2(x: 80, y: 50),
             staticRot: 0
-        )
-        #expect(toi != nil)
-        #expect(abs(toi! - 0.7) < 0.01)
+        ))
+        #expect(abs(toi - 0.7) < 0.01)
     }
 
     @Test("Dispatcher handles circle vs AABB")
@@ -481,7 +471,9 @@ struct SweptCollisionAngularSweepTests {
     @Test("angularSweepExtent of circle is always zero")
     func angularExtentCircle() {
         let extent = SweptCollision.angularSweepExtent(
-            of: .circle(radius: 10), angularDisplacement: 3.14)
+            of: .circle(radius: 10),
+            angularDisplacement: 3.14
+        )
         #expect(extent == 0)
     }
 
@@ -489,7 +481,9 @@ struct SweptCollisionAngularSweepTests {
     func angularExtentAABB() {
         // halfExtents (3,4) -> boundingRadius = 5
         let extent = SweptCollision.angularSweepExtent(
-            of: .aabb(halfExtents: Vector2(x: 3, y: 4)), angularDisplacement: 1.0)
+            of: .aabb(halfExtents: Vector2(x: 3, y: 4)),
+            angularDisplacement: 1.0
+        )
         #expect(abs(extent - 5.0) < 0.001)
     }
 
@@ -498,25 +492,33 @@ struct SweptCollisionAngularSweepTests {
         let poly = ConvexPolygon(vertices: [
             Vector2(x: -5, y: 0), Vector2(x: 5, y: 0), Vector2(x: 0, y: 12)
         ])
-        // boundingRadius = 12 → extent = 12 * 0.5 = 6
+        // boundingRadius = 12 -> extent = 12 * 0.5 = 6
         let extent = SweptCollision.angularSweepExtent(
-            of: .polygon(poly), angularDisplacement: 0.5)
+            of: .polygon(poly),
+            angularDisplacement: 0.5
+        )
         #expect(abs(extent - 6.0) < 0.001)
     }
 
     @Test("angularSweepExtent with zero angle returns zero")
     func angularExtentZeroAngle() {
         let extent = SweptCollision.angularSweepExtent(
-            of: .aabb(halfExtents: Vector2(x: 50, y: 2)), angularDisplacement: 0)
+            of: .aabb(halfExtents: Vector2(x: 50, y: 2)),
+            angularDisplacement: 0
+        )
         #expect(extent == 0)
     }
 
     @Test("angularSweepExtent with negative angle uses absolute value")
     func angularExtentNegativeAngle() {
         let positive = SweptCollision.angularSweepExtent(
-            of: .aabb(halfExtents: Vector2(x: 3, y: 4)), angularDisplacement: 1.0)
+            of: .aabb(halfExtents: Vector2(x: 3, y: 4)),
+            angularDisplacement: 1.0
+        )
         let negative = SweptCollision.angularSweepExtent(
-            of: .aabb(halfExtents: Vector2(x: 3, y: 4)), angularDisplacement: -1.0)
+            of: .aabb(halfExtents: Vector2(x: 3, y: 4)),
+            angularDisplacement: -1.0
+        )
         #expect(positive == negative)
     }
 
@@ -526,16 +528,23 @@ struct SweptCollisionAngularSweepTests {
     func zeroAngularDelegates() {
         let toiOld = SweptCollision.timeOfImpact(
             movingShape: .circle(radius: 5),
-            startPos: Vector2(x: 0, y: 50), endPos: Vector2(x: 100, y: 50),
+            startPos: Vector2(x: 0, y: 50),
+            endPos: Vector2(x: 100, y: 50),
             movingRot: 0,
             staticShape: .circle(radius: 5),
-            staticPos: Vector2(x: 80, y: 50), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 50),
+            staticRot: 0
+        )
         let toiNew = SweptCollision.timeOfImpact(
             movingShape: .circle(radius: 5),
-            startPos: Vector2(x: 0, y: 50), endPos: Vector2(x: 100, y: 50),
-            startRot: 0, endRot: 0,
+            startPos: Vector2(x: 0, y: 50),
+            endPos: Vector2(x: 100, y: 50),
+            startRot: 0,
+            endRot: 0,
             staticShape: .circle(radius: 5),
-            staticPos: Vector2(x: 80, y: 50), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 50),
+            staticRot: 0
+        )
         #expect(toiOld == toiNew)
     }
 
@@ -544,16 +553,24 @@ struct SweptCollisionAngularSweepTests {
         // Circle rotation should have no effect — same TOI with or without rotation
         let toiNoRot = SweptCollision.timeOfImpact(
             movingShape: .circle(radius: 5),
-            startPos: Vector2(x: 0, y: 50), endPos: Vector2(x: 100, y: 50),
-            startRot: 0, endRot: 0,
+            startPos: Vector2(x: 0, y: 50),
+            endPos: Vector2(x: 100, y: 50),
+            startRot: 0,
+            endRot: 0,
             staticShape: .circle(radius: 5),
-            staticPos: Vector2(x: 80, y: 50), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 50),
+            staticRot: 0
+        )
         let toiWithRot = SweptCollision.timeOfImpact(
             movingShape: .circle(radius: 5),
-            startPos: Vector2(x: 0, y: 50), endPos: Vector2(x: 100, y: 50),
-            startRot: 0, endRot: 6.28,
+            startPos: Vector2(x: 0, y: 50),
+            endPos: Vector2(x: 100, y: 50),
+            startRot: 0,
+            endRot: 6.28,
             staticShape: .circle(radius: 5),
-            staticPos: Vector2(x: 80, y: 50), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 50),
+            staticRot: 0
+        )
         #expect(toiNoRot == toiWithRot)
     }
 
@@ -564,10 +581,14 @@ struct SweptCollisionAngularSweepTests {
         // Circle at y=40 is within bounding radius (50) but outside AABB height (2)
         let toi = SweptCollision.timeOfImpact(
             movingShape: .aabb(halfExtents: Vector2(x: 50, y: 2)),
-            startPos: Vector2(x: 0, y: 0), endPos: Vector2(x: 100, y: 0),
-            startRot: 0, endRot: 1.0,
+            startPos: Vector2(x: 0, y: 0),
+            endPos: Vector2(x: 100, y: 0),
+            startRot: 0,
+            endRot: 1.0,
             staticShape: .circle(radius: 5),
-            staticPos: Vector2(x: 80, y: 40), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 40),
+            staticRot: 0
+        )
         // With bounding circle ~50, should hit the circle at y=40
         #expect(toi != nil, "Rotating AABB should detect collision via bounding circle")
     }
@@ -577,10 +598,14 @@ struct SweptCollisionAngularSweepTests {
         // Same geometry but no rotation — should miss (AABB is only 4 units tall)
         let toi = SweptCollision.timeOfImpact(
             movingShape: .aabb(halfExtents: Vector2(x: 50, y: 2)),
-            startPos: Vector2(x: 0, y: 0), endPos: Vector2(x: 100, y: 0),
-            startRot: 0, endRot: 0,
+            startPos: Vector2(x: 0, y: 0),
+            endPos: Vector2(x: 100, y: 0),
+            startRot: 0,
+            endRot: 0,
             staticShape: .circle(radius: 5),
-            staticPos: Vector2(x: 80, y: 40), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 40),
+            staticRot: 0
+        )
         // Without rotation, AABB is only 4px tall at y=0, circle at y=40 is too far
         #expect(toi == nil, "Non-rotating AABB should miss distant circle")
     }
@@ -590,16 +615,23 @@ struct SweptCollisionAngularSweepTests {
         // Ensure the new overload with zero rotation produces the same result
         let toiOld = SweptCollision.timeOfImpact(
             movingShape: .aabb(halfExtents: Vector2(x: 5, y: 5)),
-            startPos: Vector2(x: 0, y: 0), endPos: Vector2(x: 100, y: 0),
+            startPos: Vector2(x: 0, y: 0),
+            endPos: Vector2(x: 100, y: 0),
             movingRot: 0,
             staticShape: .aabb(halfExtents: Vector2(x: 10, y: 10)),
-            staticPos: Vector2(x: 80, y: 0), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 0),
+            staticRot: 0
+        )
         let toiNew = SweptCollision.timeOfImpact(
             movingShape: .aabb(halfExtents: Vector2(x: 5, y: 5)),
-            startPos: Vector2(x: 0, y: 0), endPos: Vector2(x: 100, y: 0),
-            startRot: 0, endRot: 0,
+            startPos: Vector2(x: 0, y: 0),
+            endPos: Vector2(x: 100, y: 0),
+            startRot: 0,
+            endRot: 0,
             staticShape: .aabb(halfExtents: Vector2(x: 10, y: 10)),
-            staticPos: Vector2(x: 80, y: 0), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 0),
+            staticRot: 0
+        )
         #expect(toiOld == toiNew)
     }
 
@@ -612,10 +644,14 @@ struct SweptCollisionAngularSweepTests {
         // Bounding radius ~30, so should hit a circle at y=20
         let toi = SweptCollision.timeOfImpact(
             movingShape: .polygon(poly),
-            startPos: Vector2(x: 0, y: 0), endPos: Vector2(x: 100, y: 0),
-            startRot: 0, endRot: 0.5,
+            startPos: Vector2(x: 0, y: 0),
+            endPos: Vector2(x: 100, y: 0),
+            startRot: 0,
+            endRot: 0.5,
             staticShape: .circle(radius: 5),
-            staticPos: Vector2(x: 80, y: 20), staticRot: 0)
+            staticPos: Vector2(x: 80, y: 20),
+            staticRot: 0
+        )
         #expect(toi != nil, "Rotating polygon should detect collision via bounding circle")
     }
 }

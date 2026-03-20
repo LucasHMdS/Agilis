@@ -53,7 +53,7 @@ public enum ShaderBuilder {
         includes: Set<ShaderInclude> = [],
         body: String
     ) -> String {
-        return buildShader(
+        buildShader(
             uniforms: uniforms,
             includes: includes,
             body: body,
@@ -76,7 +76,7 @@ public enum ShaderBuilder {
         includes: Set<ShaderInclude> = [],
         body: String
     ) -> String {
-        return buildShader(
+        buildShader(
             uniforms: uniforms,
             includes: includes,
             body: body,

@@ -1,5 +1,3 @@
-
-
 /// Configuration for tilemap debug rendering.
 public struct TileMapDebugRendererOptions: Sendable {
     /// Draw tile grid lines within the camera viewport.
@@ -80,7 +78,8 @@ extension RenderBackend {
                 drawLine(
                     from: Vector2(x: x, y: position.y + Float(firstRow) * th),
                     to: Vector2(x: x, y: position.y + Float(lastRow) * th),
-                    color: options.gridColor, thickness: 1
+                    color: options.gridColor,
+                    thickness: 1
                 )
             }
 
@@ -90,7 +89,8 @@ extension RenderBackend {
                 drawLine(
                     from: Vector2(x: position.x + Float(firstCol) * tw, y: y),
                     to: Vector2(x: position.x + Float(lastCol) * tw, y: y),
-                    color: options.gridColor, thickness: 1
+                    color: options.gridColor,
+                    thickness: 1
                 )
             }
         }

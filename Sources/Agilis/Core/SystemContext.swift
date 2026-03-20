@@ -13,10 +13,4 @@ public struct SystemContext {
     /// A command buffer for deferred mutations. Commands are flushed automatically
     /// after the system's `update(context:)` returns.
     public let commands: CommandBuffer
-
-    internal init(world: World, deltaTime: Double, commands: CommandBuffer) {
-        self.world = world
-        self.deltaTime = deltaTime
-        self.commands = commands
-    }
 }

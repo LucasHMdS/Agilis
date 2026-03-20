@@ -1,5 +1,3 @@
-
-
 // MARK: - Retroactive SerializableComponent Conformance
 
 // Sprite is defined in the Graphics module and has retroactive Component conformance

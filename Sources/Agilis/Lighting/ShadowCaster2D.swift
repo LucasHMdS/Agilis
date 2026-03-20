@@ -1,5 +1,3 @@
-
-
 /// Marks an entity as a shadow caster for the 2D lighting system.
 ///
 /// The entity must also have a `Transform2D` and a `Collider2D` whose shape

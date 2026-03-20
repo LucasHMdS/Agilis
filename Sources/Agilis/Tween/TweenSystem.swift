@@ -1,5 +1,3 @@
-
-
 /// ECS system that updates all active tweens each tick.
 ///
 /// Advances tween timers, applies eased interpolation to component properties,
@@ -58,6 +56,8 @@ public final class TweenSystem: System, @unchecked Sendable {
     public init(priority: Int = 25) {
         self._priority = priority
     }
+
+    deinit {}
 
     // MARK: - System Update
 
@@ -156,27 +156,36 @@ public final class TweenSystem: System, @unchecked Sendable {
             world.updateComponent(Transform2D.self, on: tween.entity) { t in
                 t.position = value
             }
+
         case .rotation(let from, let to):
             let value = from.interpolated(to: to, t: easedT)
             world.updateComponent(Transform2D.self, on: tween.entity) { t in
                 t.rotation = value
             }
+
         case .scale(let from, let to):
             let value = from.interpolated(to: to, t: easedT)
             world.updateComponent(Transform2D.self, on: tween.entity) { t in
                 t.scale = value
             }
+
         case .spriteColor(let from, let to):
             let value = from.interpolated(to: to, t: easedT)
             world.updateComponent(Sprite.self, on: tween.entity) { s in
                 s.tint = value
             }
+
         case .spriteAlpha(let from, let to):
             let value = from.interpolated(to: to, t: easedT)
             world.updateComponent(Sprite.self, on: tween.entity) { s in
-                s.tint = Color(r: s.tint.r, g: s.tint.g, b: s.tint.b,
-                               a: UInt8(clamp(value, min: 0, max: 255)))
+                s.tint = Color(
+                    r: s.tint.r,
+                    g: s.tint.g,
+                    b: s.tint.b,
+                    a: UInt8(clamp(value, min: 0, max: 255))
+                )
             }
+
         case .custom(let apply):
             apply(world, tween.entity, easedT)
         }
@@ -203,6 +212,7 @@ public final class TweenSystem: System, @unchecked Sendable {
                 fn()
                 seq.currentIndex += 1
                 continue
+
             default:
                 break
             }
@@ -241,60 +251,100 @@ public final class TweenSystem: System, @unchecked Sendable {
         switch step {
         case .moveTo(let target, let duration, let easing):
             let current = world.getComponent(Transform2D.self, from: seq.entity)?.position ?? .zero
-            handle = store.create(entity: seq.entity,
-                                  target: .position(from: current, to: target),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .position(from: current, to: target),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .rotateTo(let target, let duration, let easing):
             let current = world.getComponent(Transform2D.self, from: seq.entity)?.rotation ?? 0
-            handle = store.create(entity: seq.entity,
-                                  target: .rotation(from: current, to: target),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .rotation(from: current, to: target),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .scaleTo(let target, let duration, let easing):
             let current = world.getComponent(Transform2D.self, from: seq.entity)?.scale ?? .one
-            handle = store.create(entity: seq.entity,
-                                  target: .scale(from: current, to: target),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .scale(from: current, to: target),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .tintTo(let target, let duration, let easing):
             let current = world.getComponent(Sprite.self, from: seq.entity)?.tint ?? .white
-            handle = store.create(entity: seq.entity,
-                                  target: .spriteColor(from: current, to: target),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .spriteColor(from: current, to: target),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .fadeTo(let alpha, let duration, let easing):
             let current = Float(world.getComponent(Sprite.self, from: seq.entity)?.tint.a ?? 255)
-            handle = store.create(entity: seq.entity,
-                                  target: .spriteAlpha(from: current, to: alpha),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .spriteAlpha(from: current, to: alpha),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .fadeOut(let duration, let easing):
             let current = Float(world.getComponent(Sprite.self, from: seq.entity)?.tint.a ?? 255)
-            handle = store.create(entity: seq.entity,
-                                  target: .spriteAlpha(from: current, to: 0),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .spriteAlpha(from: current, to: 0),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .fadeIn(let duration, let easing):
             let current = Float(world.getComponent(Sprite.self, from: seq.entity)?.tint.a ?? 0)
-            handle = store.create(entity: seq.entity,
-                                  target: .spriteAlpha(from: current, to: 255),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .spriteAlpha(from: current, to: 255),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .wait(let duration):
             // Create a dummy position tween that doesn't move — just waits
             let pos = world.getComponent(Transform2D.self, from: seq.entity)?.position ?? .zero
-            handle = store.create(entity: seq.entity,
-                                  target: .position(from: pos, to: pos),
-                                  duration: duration, easing: .linear, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .position(from: pos, to: pos),
+                duration: duration,
+                easing: .linear,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
 
         case .callback(let fn):
             fn()
@@ -309,10 +359,15 @@ public final class TweenSystem: System, @unchecked Sendable {
             return
 
         case .custom(let duration, let easing, let apply):
-            handle = store.create(entity: seq.entity,
-                                  target: .custom(apply: apply),
-                                  duration: duration, easing: easing, delay: 0,
-                                  repeatCount: 0, yoyo: false)
+            handle = store.create(
+                entity: seq.entity,
+                target: .custom(apply: apply),
+                duration: duration,
+                easing: easing,
+                delay: 0,
+                repeatCount: 0,
+                yoyo: false
+            )
         }
 
         // Tag the tween with its sequence ID
@@ -351,10 +406,15 @@ extension TweenSystem {
         guard let transform = world.getComponent(Transform2D.self, from: entity) else {
             return .invalid
         }
-        return store.create(entity: entity,
-                            target: .position(from: transform.position, to: target),
-                            duration: duration, easing: easing, delay: delay,
-                            repeatCount: 0, yoyo: false)
+        return store.create(
+            entity: entity,
+            target: .position(from: transform.position, to: target),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            repeatCount: 0,
+            yoyo: false
+        )
     }
 
     /// Animate an entity's position from a specific start to end value.
@@ -370,10 +430,15 @@ extension TweenSystem {
         easing: EasingFunction = .linear,
         delay: Float = 0
     ) -> TweenHandle {
-        store.create(entity: entity,
-                     target: .position(from: from, to: to),
-                     duration: duration, easing: easing, delay: delay,
-                     repeatCount: 0, yoyo: false)
+        store.create(
+            entity: entity,
+            target: .position(from: from, to: to),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            repeatCount: 0,
+            yoyo: false
+        )
     }
 
     /// Animate an entity's rotation from its current value to a target (radians).
@@ -389,10 +454,15 @@ extension TweenSystem {
         guard let transform = world.getComponent(Transform2D.self, from: entity) else {
             return .invalid
         }
-        return store.create(entity: entity,
-                            target: .rotation(from: transform.rotation, to: target),
-                            duration: duration, easing: easing, delay: delay,
-                            repeatCount: 0, yoyo: false)
+        return store.create(
+            entity: entity,
+            target: .rotation(from: transform.rotation, to: target),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            repeatCount: 0,
+            yoyo: false
+        )
     }
 
     /// Animate an entity's scale from its current value to a target.
@@ -408,10 +478,15 @@ extension TweenSystem {
         guard let transform = world.getComponent(Transform2D.self, from: entity) else {
             return .invalid
         }
-        return store.create(entity: entity,
-                            target: .scale(from: transform.scale, to: target),
-                            duration: duration, easing: easing, delay: delay,
-                            repeatCount: 0, yoyo: false)
+        return store.create(
+            entity: entity,
+            target: .scale(from: transform.scale, to: target),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            repeatCount: 0,
+            yoyo: false
+        )
     }
 
     /// Animate an entity's scale uniformly from its current value.
@@ -426,8 +501,14 @@ extension TweenSystem {
         delay: Float = 0,
         in world: World
     ) -> TweenHandle {
-        scaleTo(entity, target: Vector2(x: target, y: target),
-                duration: duration, easing: easing, delay: delay, in: world)
+        scaleTo(
+            entity,
+            target: Vector2(x: target, y: target),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            in: world
+        )
     }
 
     /// Animate an entity's sprite tint color from its current value to a target.
@@ -443,10 +524,15 @@ extension TweenSystem {
         guard let sprite = world.getComponent(Sprite.self, from: entity) else {
             return .invalid
         }
-        return store.create(entity: entity,
-                            target: .spriteColor(from: sprite.tint, to: target),
-                            duration: duration, easing: easing, delay: delay,
-                            repeatCount: 0, yoyo: false)
+        return store.create(
+            entity: entity,
+            target: .spriteColor(from: sprite.tint, to: target),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            repeatCount: 0,
+            yoyo: false
+        )
     }
 
     /// Animate an entity's sprite alpha from its current value to a target (0–255).
@@ -462,10 +548,15 @@ extension TweenSystem {
         guard let sprite = world.getComponent(Sprite.self, from: entity) else {
             return .invalid
         }
-        return store.create(entity: entity,
-                            target: .spriteAlpha(from: Float(sprite.tint.a), to: alpha),
-                            duration: duration, easing: easing, delay: delay,
-                            repeatCount: 0, yoyo: false)
+        return store.create(
+            entity: entity,
+            target: .spriteAlpha(from: Float(sprite.tint.a), to: alpha),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            repeatCount: 0,
+            yoyo: false
+        )
     }
 
     /// Fade an entity's sprite to fully transparent (alpha 0).
@@ -477,7 +568,14 @@ extension TweenSystem {
         delay: Float = 0,
         in world: World
     ) -> TweenHandle {
-        fadeTo(entity, alpha: 0, duration: duration, easing: easing, delay: delay, in: world)
+        fadeTo(
+            entity,
+            alpha: 0,
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            in: world
+        )
     }
 
     /// Fade an entity's sprite to fully opaque (alpha 255).
@@ -489,7 +587,14 @@ extension TweenSystem {
         delay: Float = 0,
         in world: World
     ) -> TweenHandle {
-        fadeTo(entity, alpha: 255, duration: duration, easing: easing, delay: delay, in: world)
+        fadeTo(
+            entity,
+            alpha: 255,
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            in: world
+        )
     }
 
     /// Create a custom tween with a user-provided apply closure.
@@ -511,10 +616,15 @@ extension TweenSystem {
         delay: Float = 0,
         apply: @escaping @Sendable (World, Entity, Float) -> Void
     ) -> TweenHandle {
-        store.create(entity: entity,
-                     target: .custom(apply: apply),
-                     duration: duration, easing: easing, delay: delay,
-                     repeatCount: 0, yoyo: false)
+        store.create(
+            entity: entity,
+            target: .custom(apply: apply),
+            duration: duration,
+            easing: easing,
+            delay: delay,
+            repeatCount: 0,
+            yoyo: false
+        )
     }
 }
 
@@ -700,26 +810,31 @@ extension TweenSystem {
     ///
     /// Returns a snapshot of each tween's entity, target type, progress, and target
     /// position (for position tweens). Use with `renderer.drawTweenDebug(infos:...)`.
-    public func debugTweenInfo(world: World) -> [TweenDebugInfo] {
+    public func debugTweenInfo(world _: World) -> [TweenDebugInfo] {
         var result: [TweenDebugInfo] = []
         store.forEachTween { tween in
             guard tween.state == .running || tween.state == .waiting else { return }
 
             let targetType: String
-            var targetPos: Vector2? = nil
+            var targetPos: Vector2?
 
             switch tween.target {
             case .position(_, let to):
                 targetType = "pos"
                 targetPos = to
+
             case .rotation:
                 targetType = "rot"
+
             case .scale:
                 targetType = "scale"
+
             case .spriteColor:
                 targetType = "color"
+
             case .spriteAlpha:
                 targetType = "alpha"
+
             case .custom:
                 targetType = "custom"
             }

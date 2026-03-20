@@ -12,6 +12,7 @@ import CRT
 
 /// Updates AI paddle targeting based on ball trajectory prediction.
 final class PongAISystem: System {
+    deinit {}
     var priority: Int { -10 }
 
     var componentAccess: ComponentAccess {
@@ -30,8 +31,7 @@ final class PongAISystem: System {
               let ballVel = world.getComponent(Velocity2D.self, from: ballEntity) else { return }
 
         // Update AI-controlled paddles
-        world.forEach { (entity: Entity, pos: inout Transform2D, paddle: inout Paddle,
-                         vel: inout Velocity2D, ai: inout AIControlled) in
+        world.forEach { (_: Entity, pos: inout Transform2D, paddle: inout Paddle, vel: inout Velocity2D, ai: inout AIControlled) in
             if ballVel.linear.x > 0 {
                 // Ball heading toward AI — predict landing Y
                 let paddleX = Pong.screenWidth - Pong.paddleMargin
@@ -66,6 +66,7 @@ final class PongAISystem: System {
 /// collision response with Pong's angle-based paddle reflection and speed increase.
 /// Wall bounces are handled entirely by the physics system (restitution = 1).
 final class PongPhysicsSystem: System {
+    deinit {}
     var priority: Int { 110 }
 
     var componentAccess: ComponentAccess {
@@ -86,9 +87,12 @@ final class PongPhysicsSystem: System {
         let world = context.world
 
         // Clamp paddles to screen bounds (after physics integration)
-        world.forEach { (entity: Entity, pos: inout Transform2D, paddle: inout Paddle) in
-            pos.position.y = clamp(pos.position.y, min: paddle.halfHeight,
-                          max: Pong.screenHeight - paddle.halfHeight)
+        world.forEach { (_: Entity, pos: inout Transform2D, paddle: inout Paddle) in
+            pos.position.y = clamp(
+                pos.position.y,
+                min: paddle.halfHeight,
+                max: Pong.screenHeight - paddle.halfHeight
+            )
         }
 
         // Override ball velocity for paddle collisions with angle-based reflection

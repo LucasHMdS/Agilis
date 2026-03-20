@@ -1,13 +1,13 @@
-
-
 /// Base class for all UI elements. Provides bounds, visibility, and the
 /// update/render contract.
 public class UINode: @unchecked Sendable {
+    deinit {}
+
     /// Unique identifier for this node.
     public var id: String
 
     /// The computed frame in screen coordinates, set by the layout system.
-    public var frame: Rect = Rect(x: 0, y: 0, width: 0, height: 0)
+    public var frame = Rect(x: 0, y: 0, width: 0, height: 0)
 
     /// Whether this node is visible and receives input.
     public var isVisible: Bool = true
@@ -33,17 +33,17 @@ public class UINode: @unchecked Sendable {
     }
 
     /// Called each fixed-timestep tick. Override to handle input and state.
-    public func update(context: UIContext, deltaTime: Double) {}
+    public func update(context _: UIContext, deltaTime _: Double) {}
 
     /// Called each frame. Override to draw.
-    public func render(renderer: any RenderBackend, theme: UITheme) {}
+    public func render(renderer _: any RenderBackend, theme _: UITheme) {}
 
     /// Called after the main render pass. Override to draw overlays (e.g. dropdown popups)
     /// that need to appear above sibling nodes.
-    public func renderOverlay(renderer: any RenderBackend, theme: UITheme, screenSize: Size) {}
+    public func renderOverlay(renderer _: any RenderBackend, theme _: UITheme, screenSize _: Size) {}
 
     /// Returns the size this node would like to occupy, given available space.
     public func sizeThatFits(_ available: Size) -> Size {
-        return available
+        available
     }
 }

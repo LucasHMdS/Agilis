@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - LogLevel Tests
 
@@ -51,6 +51,8 @@ struct LogEntryTests {
 // MARK: - Spy Log Output
 
 private final class SpyLogOutput: LogOutput, @unchecked Sendable {
+    deinit {}
+
     var minimumLevel: LogLevel
     var entries: [LogEntry] = []
 

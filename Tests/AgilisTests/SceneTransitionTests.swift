@@ -1,82 +1,88 @@
+@testable import Agilis
 import Testing
-@testable import Agilis
-@testable import Agilis
-
-// MARK: - Test Helpers
-
-/// Thread-safe call tracker for @Sendable closures.
 private final class CallTracker: @unchecked Sendable {
+    deinit {}
+
     var wasCalled = false
     func fire() { wasCalled = true }
 }
 
 /// A scene that records lifecycle calls for testing.
 private final class RecordingScene: Scene {
+    deinit {}
+
     var didEnterCount = 0
     var willExitCount = 0
     var updateCount = 0
     var renderCount = 0
 
-    func didEnter(app: Application) { didEnterCount += 1 }
-    func willExit(app: Application) { willExitCount += 1 }
-    func update(app: Application, deltaTime: Double) { updateCount += 1 }
-    func render(app: Application, interpolation: Double) { renderCount += 1 }
+    func didEnter(app _: Application) { didEnterCount += 1 }
+    func willExit(app _: Application) { willExitCount += 1 }
+    func update(app _: Application, deltaTime _: Double) { updateCount += 1 }
+    func render(app _: Application, interpolation _: Double) { renderCount += 1 }
 }
 
 /// A minimal render backend that tracks drawRect calls for overlay verification.
 private final class OverlaySpyRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var _screenSize = Size(width: 800, height: 600)
     var drawnRects: [(rect: Rect, color: Color)] = []
 
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
-    func drawSprite(_ sprite: Sprite) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
+    func drawSprite(_: Sprite) {}
     func drawRect(_ rect: Rect, color: Color) { drawnRects.append((rect, color)) }
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { _screenSize }
 }
 
 /// A stub audio backend (all no-ops).
 private final class StubAudioEngine: @unchecked Sendable, AudioBackend {
-    func initialize() throws {}
+    deinit {}
+
+    func initialize() {}
     func shutdown() {}
-    func loadSound(from path: String) -> SoundHandle { .invalid }
-    func playSound(_ handle: SoundHandle, volume: Float, pitch: Float, looping: Bool) {}
-    func stopSound(_ handle: SoundHandle) {}
-    func unloadSound(_ handle: SoundHandle) {}
-    func loadMusic(from path: String) -> MusicHandle { .invalid }
-    func playMusic(_ handle: MusicHandle, volume: Float, looping: Bool) {}
-    func pauseMusic(_ handle: MusicHandle) {}
-    func resumeMusic(_ handle: MusicHandle) {}
-    func stopMusic(_ handle: MusicHandle) {}
-    func updateMusicStream(_ handle: MusicHandle) {}
-    func unloadMusic(_ handle: MusicHandle) {}
-    func setMasterVolume(_ volume: Float) {}
+    func loadSound(from _: String) -> SoundHandle { .invalid }
+    func playSound(_: SoundHandle, volume _: Float, pitch _: Float, looping _: Bool) {}
+    func stopSound(_: SoundHandle) {}
+    func unloadSound(_: SoundHandle) {}
+    func loadMusic(from _: String) -> MusicHandle { .invalid }
+    func playMusic(_: MusicHandle, volume _: Float, looping _: Bool) {}
+    func pauseMusic(_: MusicHandle) {}
+    func resumeMusic(_: MusicHandle) {}
+    func stopMusic(_: MusicHandle) {}
+    func updateMusicStream(_: MusicHandle) {}
+    func unloadMusic(_: MusicHandle) {}
+    // swiftlint:disable:next inclusive_language
+    func setMasterVolume(_: Float) {}
 }
 
 /// A stub input backend (all no-ops).
 private final class StubNativeInput: @unchecked Sendable, InputBackend {
-    func isKeyDown(_ key: Key) -> Bool { false }
-    func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
+    deinit {}
+
+    func isKeyDown(_: Key) -> Bool { false }
+    func isMouseButtonDown(_: MouseButton) -> Bool { false }
     func mousePosition() -> Vector2 { .zero }
     func mouseDelta() -> Vector2 { .zero }
     func mouseScrollDelta() -> Float { 0 }
@@ -341,7 +347,7 @@ struct TransitionOverlayTests {
     @Test("Overlay covers full screen")
     func overlayCoversFullScreen() {
         let (app, renderer) = makeSceneTestApp()
-        renderer._screenSize = Size(width: 1920, height: 1080)
+        renderer._screenSize = Size(width: 1_920, height: 1_080)
         let scene1 = RecordingScene()
 
         app.sceneManager.push(scene1, app: app)
@@ -357,8 +363,8 @@ struct TransitionOverlayTests {
         let rect = renderer.drawnRects[0].rect
         #expect(rect.x == 0)
         #expect(rect.y == 0)
-        #expect(rect.width == 1920)
-        #expect(rect.height == 1080)
+        #expect(rect.width == 1_920)
+        #expect(rect.height == 1_080)
     }
 
     @Test("Overlay uses transition color")
@@ -422,6 +428,7 @@ struct TransitionOverlayTests {
         app.sceneManager.renderTransitionOverlay(renderer: renderer)
 
         // At 50% fadeIn with linear easing, alpha should be ~128
+        // swiftlint:disable:next force_unwrapping
         let alpha = renderer.drawnRects.last!.color.a
         #expect(alpha > 100 && alpha < 156)
     }

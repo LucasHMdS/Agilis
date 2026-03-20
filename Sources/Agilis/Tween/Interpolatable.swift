@@ -1,5 +1,3 @@
-
-
 /// A type that supports linear interpolation between two values.
 ///
 /// Conforming types can be used as tween start/end values.

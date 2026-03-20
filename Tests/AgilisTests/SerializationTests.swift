@@ -1,10 +1,6 @@
-import Testing
+@testable import Agilis
 import Foundation
-@testable import Agilis
-@testable import Agilis
-
-// MARK: - Codable Conformance Tests
-
+import Testing
 @Suite("Codable Conformance Tests")
 struct CodableConformanceTests {
 
@@ -83,7 +79,7 @@ struct CodableConformanceTests {
             Vector2(x: 0, y: 20)
         ])
         let data = try JSONEncoder().encode(original)
-        let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+        let json = try #require(try JSONSerialization.jsonObject(with: data) as? [String: Any])
         // Only "vertices" key should be present
         #expect(json.keys.count == 1)
         #expect(json["vertices"] != nil)
@@ -96,8 +92,14 @@ struct CodableConformanceTests {
 
     @Test("RigidBody2D inverseMass recomputed on decode")
     func rigidBody2DInverseMassRecomputed() throws {
-        let body = RigidBody2D(mass: 4.0, restitution: 0.5, friction: 0.8,
-                                gravityScale: 2.0, bodyType: .dynamic, linearDamping: 0.1)
+        let body = RigidBody2D(
+            mass: 4.0,
+            restitution: 0.5,
+            friction: 0.8,
+            gravityScale: 2.0,
+            bodyType: .dynamic,
+            linearDamping: 0.1
+        )
         let data = try JSONEncoder().encode(body)
         let decoded = try JSONDecoder().decode(RigidBody2D.self, from: data)
 
@@ -120,9 +122,12 @@ struct CodableConformanceTests {
     @Test("ParticleEmitter serializes config only, not pool state")
     func particleEmitterConfigOnly() throws {
         var emitter = ParticleEmitter(
-            emissionRate: 50, maxParticles: 200,
-            lifetime: 0.5...1.5, speed: 50...100,
-            startColor: .yellow, endColor: .red,
+            emissionRate: 50,
+            maxParticles: 200,
+            lifetime: 0.5...1.5,
+            speed: 50...100,
+            startColor: .yellow,
+            endColor: .red,
             emissionShape: .circle(radius: 10),
             renderShape: .rect(width: 4, height: 4),
             worldSpace: false
@@ -150,7 +155,7 @@ struct CodableConformanceTests {
             name: "walk",
             frames: [
                 AnimationFrame(sourceRect: Rect(x: 0, y: 0, width: 32, height: 32), duration: 0.1),
-                AnimationFrame(sourceRect: Rect(x: 32, y: 0, width: 32, height: 32), duration: 0.1),
+                AnimationFrame(sourceRect: Rect(x: 32, y: 0, width: 32, height: 32), duration: 0.1)
             ],
             mode: .forward
         )
@@ -218,7 +223,7 @@ struct SerializableComponentTests {
             Collider2D.componentName,
             Sprite.componentName,
             SpriteAnimator.componentName,
-            ParticleEmitter.componentName,
+            ParticleEmitter.componentName
         ]
         let unique = Set(names)
         #expect(unique.count == names.count)
@@ -285,8 +290,8 @@ struct WorldSerializerTests {
         #expect(remap.count == 1)
         #expect(newWorld.entityCount == 1)
 
-        let newEntity = remap[entity.index]!
-        let transform = newWorld.getComponent(Transform2D.self, from: newEntity)!
+        let newEntity = try #require(remap[entity.index])
+        let transform = try #require(newWorld.getComponent(Transform2D.self, from: newEntity))
         #expect(transform.position.x == 100)
         #expect(transform.position.y == 200)
     }
@@ -311,13 +316,13 @@ struct WorldSerializerTests {
         #expect(newWorld.entityCount == 2)
 
         // Entity 1: Transform2D + Velocity2D
-        let n1 = remap[e1.index]!
-        #expect(newWorld.getComponent(Transform2D.self, from: n1)!.position.x == 10)
-        #expect(newWorld.getComponent(Velocity2D.self, from: n1)!.linear.x == 5)
+        let n1 = try #require(remap[e1.index])
+        #expect(try #require(newWorld.getComponent(Transform2D.self, from: n1)).position.x == 10)
+        #expect(try #require(newWorld.getComponent(Velocity2D.self, from: n1)).linear.x == 5)
 
         // Entity 2: Transform2D only
-        let n2 = remap[e2.index]!
-        #expect(newWorld.getComponent(Transform2D.self, from: n2)!.position.x == 50)
+        let n2 = try #require(remap[e2.index])
+        #expect(try #require(newWorld.getComponent(Transform2D.self, from: n2)).position.x == 50)
         #expect(newWorld.getComponent(Velocity2D.self, from: n2) == nil)
     }
 
@@ -342,7 +347,7 @@ struct WorldSerializerTests {
         let remap = try serializer.decode(from: data, into: newWorld)
 
         // The remapped entity should be a different slot than the original
-        let newEntity = remap[entity.index]!
+        let newEntity = try #require(remap[entity.index])
         #expect(newWorld.isAlive(newEntity))
         #expect(newWorld.getComponent(Transform2D.self, from: newEntity) != nil)
     }
@@ -363,8 +368,8 @@ struct WorldSerializerTests {
         let newWorld = World()
         let remap = try serializer.decode(from: data, into: newWorld)
 
-        let newParent = remap[parent.index]!
-        let newChild = remap[child.index]!
+        let newParent = try #require(remap[parent.index])
+        let newChild = try #require(remap[child.index])
 
         // Verify hierarchy restored
         let resolvedParent = newWorld.parent(of: newChild)
@@ -391,7 +396,7 @@ struct WorldSerializerTests {
         let newWorld = World()
         let remap = try serializer.decode(from: data, into: newWorld)
 
-        let newEntity = remap[entity.index]!
+        let newEntity = try #require(remap[entity.index])
         #expect(newWorld.name(of: newEntity) == "player")
         #expect(newWorld.hasTag("hero", on: newEntity))
         #expect(newWorld.hasTag("controllable", on: newEntity))
@@ -418,7 +423,7 @@ struct WorldSerializerTests {
         serializer.register(Velocity2D.self)
         let remap = try serializer.decode(from: data, into: newWorld)
 
-        let newEntity = remap[entity.index]!
+        let newEntity = try #require(remap[entity.index])
         #expect(newWorld.getComponent(Transform2D.self, from: newEntity) != nil)
         #expect(newWorld.getComponent(Velocity2D.self, from: newEntity) == nil)
     }
@@ -438,17 +443,17 @@ struct WorldSerializerTests {
                 }
             ]
         }
-        """.data(using: .utf8)!
+        """
 
         let serializer = WorldSerializer()
         serializer.register(Transform2D.self)
 
         let world = World()
-        let remap = try serializer.decode(from: json, into: world)
+        let remap = try serializer.decode(from: Data(json.utf8), into: world)
 
         #expect(world.entityCount == 1)
-        let entity = remap[0]!
-        #expect(world.getComponent(Transform2D.self, from: entity)!.position.x == 1)
+        let entity = try #require(remap[0])
+        #expect(try #require(world.getComponent(Transform2D.self, from: entity)).position.x == 1)
     }
 
     @Test("Full round-trip with complex world state")
@@ -487,35 +492,35 @@ struct WorldSerializerTests {
         #expect(newWorld.entityCount == 3)
 
         // Verify player
-        let newPlayer = remap[player.index]!
-        let t = newWorld.getComponent(Transform2D.self, from: newPlayer)!
+        let newPlayer = try #require(remap[player.index])
+        let t = try #require(newWorld.getComponent(Transform2D.self, from: newPlayer))
         #expect(t.position.x == 100)
         #expect(t.position.y == 200)
         #expect(t.rotation == 0.5)
 
-        let v = newWorld.getComponent(Velocity2D.self, from: newPlayer)!
+        let v = try #require(newWorld.getComponent(Velocity2D.self, from: newPlayer))
         #expect(v.linear.x == 10)
 
-        let rb = newWorld.getComponent(RigidBody2D.self, from: newPlayer)!
+        let rb = try #require(newWorld.getComponent(RigidBody2D.self, from: newPlayer))
         #expect(rb.mass == 2.0)
         #expect(rb.inverseMass == 0.5) // Recomputed
         #expect(rb.bodyType == .dynamic)
 
-        let c = newWorld.getComponent(Collider2D.self, from: newPlayer)!
+        let c = try #require(newWorld.getComponent(Collider2D.self, from: newPlayer))
         #expect(c.shape == .circle(radius: 16))
 
         #expect(newWorld.name(of: newPlayer) == "player")
         #expect(newWorld.hasTag("controllable", on: newPlayer))
 
         // Verify wall
-        let newWall = remap[wall.index]!
-        let wallRB = newWorld.getComponent(RigidBody2D.self, from: newWall)!
+        let newWall = try #require(remap[wall.index])
+        let wallRB = try #require(newWorld.getComponent(RigidBody2D.self, from: newWall))
         #expect(wallRB.bodyType == .static)
         #expect(wallRB.inverseMass == 0)
         #expect(newWorld.name(of: newWall) == "floor")
 
         // Verify hierarchy
-        let newChild = remap[child.index]!
+        let newChild = try #require(remap[child.index])
         #expect(newWorld.parent(of: newChild) == newPlayer)
         let children = newWorld.children(of: newPlayer)
         #expect(children.count == 1)
@@ -527,7 +532,7 @@ struct WorldSerializerTests {
         let serializer = WorldSerializer()
         serializer.registerDefaults()
 
-        let badData = "not json".data(using: .utf8)!
+        let badData = Data("not json".utf8)
         #expect(throws: (any Error).self) {
             try serializer.decode(from: badData, into: World())
         }
@@ -547,7 +552,7 @@ struct WorldSerializerTests {
         let remap = try serializer.decode(from: data, into: newWorld)
 
         #expect(newWorld.entityCount == 1)
-        let newEntity = remap[entity.index]!
+        let newEntity = try #require(remap[entity.index])
         #expect(newWorld.name(of: newEntity) == "empty")
     }
 }

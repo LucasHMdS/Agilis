@@ -30,28 +30,28 @@ enum Showcase {
 
     // All 19 easing functions in grid order
     static let allEasings: [(name: String, easing: EasingFunction)] = [
-        ("linear",       .linear),
-        ("quadIn",       .quadIn),
-        ("quadOut",      .quadOut),
-        ("quadInOut",    .quadInOut),
+        ("linear", .linear),
+        ("quadIn", .quadIn),
+        ("quadOut", .quadOut),
+        ("quadInOut", .quadInOut),
 
-        ("cubicIn",      .cubicIn),
-        ("cubicOut",     .cubicOut),
-        ("cubicInOut",   .cubicInOut),
-        ("sineIn",       .sineIn),
+        ("cubicIn", .cubicIn),
+        ("cubicOut", .cubicOut),
+        ("cubicInOut", .cubicInOut),
+        ("sineIn", .sineIn),
 
-        ("sineOut",      .sineOut),
-        ("sineInOut",    .sineInOut),
-        ("elasticIn",    .elasticIn),
-        ("elasticOut",   .elasticOut),
+        ("sineOut", .sineOut),
+        ("sineInOut", .sineInOut),
+        ("elasticIn", .elasticIn),
+        ("elasticOut", .elasticOut),
 
         ("elasticInOut", .elasticInOut),
-        ("bounceIn",     .bounceIn),
-        ("bounceOut",    .bounceOut),
-        ("bounceInOut",  .bounceInOut),
+        ("bounceIn", .bounceIn),
+        ("bounceOut", .bounceOut),
+        ("bounceInOut", .bounceInOut),
 
-        ("backIn",       .backIn),
-        ("backOut",      .backOut),
-        ("backInOut",    .backInOut),
+        ("backIn", .backIn),
+        ("backOut", .backOut),
+        ("backInOut", .backInOut)
     ]
 }

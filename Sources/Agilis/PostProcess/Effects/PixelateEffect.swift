@@ -1,5 +1,3 @@
-
-
 /// Reduces effective resolution for a retro pixelation look.
 ///
 /// ```swift
@@ -7,6 +5,8 @@
 /// postProcess.add(pixelate)
 /// ```
 public final class PixelateEffect: PostProcessEffect, @unchecked Sendable {
+    deinit {}
+
     public let name = "pixelate"
     public var isEnabled = true
     public var order: Int { 600 }
@@ -34,7 +34,7 @@ public final class PixelateEffect: PostProcessEffect, @unchecked Sendable {
         shader = .invalid
     }
 
-    public func resize(width: Int, height: Int, renderer: any RenderBackend) {
+    public func resize(width: Int, height: Int, renderer _: any RenderBackend) {
         currentWidth = width
         currentHeight = height
     }
@@ -43,13 +43,16 @@ public final class PixelateEffect: PostProcessEffect, @unchecked Sendable {
         input: RenderTargetHandle,
         output: RenderTargetHandle,
         renderer: any RenderBackend,
-        deltaTime: Float
+        deltaTime _: Float
     ) {
         guard shader != .invalid else { return }
 
         renderer.setShaderFloat(shader, name: "pixelSize", value: pixelSize)
-        renderer.setShaderVec2(shader, name: "resolution",
-            value: Vector2(x: Float(currentWidth), y: Float(currentHeight)))
+        renderer.setShaderVec2(
+            shader,
+            name: "resolution",
+            value: Vector2(x: Float(currentWidth), y: Float(currentHeight))
+        )
 
         let texture = renderer.renderTargetTexture(input)
         let size = renderer.renderTargetSize(input)

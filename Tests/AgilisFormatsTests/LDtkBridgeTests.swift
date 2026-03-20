@@ -1,7 +1,7 @@
-import Testing
-import Foundation
-@testable import AgilisFormats
 @testable import Agilis
+@testable import AgilisFormats
+import Foundation
+import Testing
 
 // MARK: - LDtk Bridge Tests
 
@@ -29,7 +29,8 @@ struct LDtkBridgeTests {
                 "tileGridSize": \(ts.tileGridSize)
             }
             """
-        }.joined(separator: ",\n")
+        }
+        .joined(separator: ",\n")
 
         let json = """
         {
@@ -56,7 +57,7 @@ struct LDtkBridgeTests {
         pxHei: Int = 32,
         layers: [String]
     ) -> String {
-        return """
+        """
         {
             "identifier": "\(identifier)",
             "uid": \(uid),
@@ -83,13 +84,15 @@ struct LDtkBridgeTests {
             """
             {"px": [\(tile.px0), \(tile.px1)], "src": [\(tile.src0), \(tile.src1)], "f": \(tile.f), "t": \(tile.t)}
             """
-        }.joined(separator: ",\n")
+        }
+        .joined(separator: ",\n")
 
         let autoTilesJSON = autoLayerTiles.map { tile in
             """
             {"px": [\(tile.px0), \(tile.px1)], "src": [\(tile.src0), \(tile.src1)], "f": \(tile.f), "t": \(tile.t)}
             """
-        }.joined(separator: ",\n")
+        }
+        .joined(separator: ",\n")
 
         return """
         {
@@ -118,7 +121,7 @@ struct LDtkBridgeTests {
                         (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0),
                         (px0: 16, px1: 0, src0: 16, src1: 0, f: 0, t: 1),
                         (px0: 32, px1: 0, src0: 32, src1: 0, f: 0, t: 2),
-                        (px0: 0, px1: 16, src0: 0, src1: 16, f: 0, t: 4),
+                        (px0: 0, px1: 16, src0: 0, src1: 16, f: 0, t: 4)
                     ])
                 ])
             ]
@@ -162,7 +165,7 @@ struct LDtkBridgeTests {
                 levelJSON(pxWid: 128, pxHei: 64, layers: [
                     tileLayerJSON(cWid: 4, cHei: 2, gridSize: 32, gridTiles: [
                         (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0),
-                        (px0: 96, px1: 32, src0: 96, src1: 32, f: 0, t: 7),
+                        (px0: 96, px1: 32, src0: 96, src1: 32, f: 0, t: 7)
                     ])
                 ])
             ]
@@ -186,7 +189,7 @@ struct LDtkBridgeTests {
                         (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0),  // no flip
                         (px0: 16, px1: 0, src0: 0, src1: 0, f: 1, t: 0), // flipX
                         (px0: 32, px1: 0, src0: 0, src1: 0, f: 2, t: 0), // flipY
-                        (px0: 48, px1: 0, src0: 0, src1: 0, f: 3, t: 0), // both
+                        (px0: 48, px1: 0, src0: 0, src1: 0, f: 3, t: 0) // both
                     ])
                 ])
             ]
@@ -216,7 +219,7 @@ struct LDtkBridgeTests {
                 levelJSON(layers: [
                     tileLayerJSON(autoLayerTiles: [
                         (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0),
-                        (px0: 16, px1: 0, src0: 16, src1: 0, f: 0, t: 1),
+                        (px0: 16, px1: 0, src0: 16, src1: 0, f: 0, t: 1)
                     ])
                 ])
             ]
@@ -235,10 +238,10 @@ struct LDtkBridgeTests {
             levels: [
                 levelJSON(layers: [
                     tileLayerJSON(identifier: "TopLayer", gridTiles: [
-                        (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0),
+                        (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0)
                     ]),
                     tileLayerJSON(identifier: "BottomLayer", gridTiles: [
-                        (px0: 0, px1: 0, src0: 16, src1: 0, f: 0, t: 1),
+                        (px0: 0, px1: 0, src0: 16, src1: 0, f: 0, t: 1)
                     ])
                 ])
             ]
@@ -259,7 +262,7 @@ struct LDtkBridgeTests {
             levels: [
                 levelJSON(layers: [
                     tileLayerJSON(gridTiles: [
-                        (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0),
+                        (px0: 0, px1: 0, src0: 0, src1: 0, f: 0, t: 0)
                     ])
                 ])
             ]

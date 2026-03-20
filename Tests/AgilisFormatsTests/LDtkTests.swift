@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import AgilisFormats
+import Foundation
+import Testing
 
 @Suite("LDtk Parser Tests")
 struct LDtkTests {
@@ -137,6 +137,7 @@ struct LDtkTests {
         }
         """
         let project = try LDtkLoader().load(from: Data(json.utf8))
+        // swiftlint:disable:next force_unwrapping
         let layer = project.levels[0].layerInstances![0]
 
         #expect(layer.identifier == "Ground")

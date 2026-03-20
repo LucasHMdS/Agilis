@@ -1,5 +1,3 @@
-
-
 /// A nine-patch (nine-slice) sprite definition for scalable UI backgrounds.
 ///
 /// Divides a texture region into 9 zones: 4 corners (unscaled), 4 edges (stretched
@@ -57,10 +55,15 @@ public struct NinePatchSprite: Sendable {
         border: Float,
         tint: Color = .white
     ) {
-        self.init(texture: texture, sourceRect: sourceRect,
-                  borderTop: border, borderRight: border,
-                  borderBottom: border, borderLeft: border,
-                  tint: tint)
+        self.init(
+            texture: texture,
+            sourceRect: sourceRect,
+            borderTop: border,
+            borderRight: border,
+            borderBottom: border,
+            borderLeft: border,
+            tint: tint
+        )
     }
 }
 
@@ -93,7 +96,8 @@ extension RenderBackend {
         // If destination is too small for borders, just draw the whole thing scaled
         if dstCenterW <= 0 || dstCenterH <= 0 {
             drawSprite(Sprite(
-                texture: tex, sourceRect: src,
+                texture: tex,
+                sourceRect: src,
                 position: Vector2(x: dst.x, y: dst.y),
                 scale: Vector2(x: dst.width / src.width, y: dst.height / src.height),
                 tint: tint
@@ -102,8 +106,16 @@ extension RenderBackend {
         }
 
         // Helper to draw one patch
-        func patch(srcX: Float, srcY: Float, srcW: Float, srcH: Float,
-                   dstX: Float, dstY: Float, dstW: Float, dstH: Float) {
+        func patch(
+            srcX: Float,
+            srcY: Float,
+            srcW: Float,
+            srcH: Float,
+            dstX: Float,
+            dstY: Float,
+            dstW: Float,
+            dstH: Float
+        ) {
             guard srcW > 0 && srcH > 0 && dstW > 0 && dstH > 0 else { return }
             drawSprite(Sprite(
                 texture: tex,
@@ -115,39 +127,111 @@ extension RenderBackend {
         }
 
         // Top-left corner
-        patch(srcX: src.x, srcY: src.y, srcW: bL, srcH: bT,
-              dstX: dst.x, dstY: dst.y, dstW: bL, dstH: bT)
+        patch(
+            srcX: src.x,
+            srcY: src.y,
+            srcW: bL,
+            srcH: bT,
+            dstX: dst.x,
+            dstY: dst.y,
+            dstW: bL,
+            dstH: bT
+        )
 
         // Top edge
-        patch(srcX: src.x + bL, srcY: src.y, srcW: srcCenterW, srcH: bT,
-              dstX: dst.x + bL, dstY: dst.y, dstW: dstCenterW, dstH: bT)
+        patch(
+            srcX: src.x + bL,
+            srcY: src.y,
+            srcW: srcCenterW,
+            srcH: bT,
+            dstX: dst.x + bL,
+            dstY: dst.y,
+            dstW: dstCenterW,
+            dstH: bT
+        )
 
         // Top-right corner
-        patch(srcX: src.x + bL + srcCenterW, srcY: src.y, srcW: bR, srcH: bT,
-              dstX: dst.x + bL + dstCenterW, dstY: dst.y, dstW: bR, dstH: bT)
+        patch(
+            srcX: src.x + bL + srcCenterW,
+            srcY: src.y,
+            srcW: bR,
+            srcH: bT,
+            dstX: dst.x + bL + dstCenterW,
+            dstY: dst.y,
+            dstW: bR,
+            dstH: bT
+        )
 
         // Left edge
-        patch(srcX: src.x, srcY: src.y + bT, srcW: bL, srcH: srcCenterH,
-              dstX: dst.x, dstY: dst.y + bT, dstW: bL, dstH: dstCenterH)
+        patch(
+            srcX: src.x,
+            srcY: src.y + bT,
+            srcW: bL,
+            srcH: srcCenterH,
+            dstX: dst.x,
+            dstY: dst.y + bT,
+            dstW: bL,
+            dstH: dstCenterH
+        )
 
         // Center
-        patch(srcX: src.x + bL, srcY: src.y + bT, srcW: srcCenterW, srcH: srcCenterH,
-              dstX: dst.x + bL, dstY: dst.y + bT, dstW: dstCenterW, dstH: dstCenterH)
+        patch(
+            srcX: src.x + bL,
+            srcY: src.y + bT,
+            srcW: srcCenterW,
+            srcH: srcCenterH,
+            dstX: dst.x + bL,
+            dstY: dst.y + bT,
+            dstW: dstCenterW,
+            dstH: dstCenterH
+        )
 
         // Right edge
-        patch(srcX: src.x + bL + srcCenterW, srcY: src.y + bT, srcW: bR, srcH: srcCenterH,
-              dstX: dst.x + bL + dstCenterW, dstY: dst.y + bT, dstW: bR, dstH: dstCenterH)
+        patch(
+            srcX: src.x + bL + srcCenterW,
+            srcY: src.y + bT,
+            srcW: bR,
+            srcH: srcCenterH,
+            dstX: dst.x + bL + dstCenterW,
+            dstY: dst.y + bT,
+            dstW: bR,
+            dstH: dstCenterH
+        )
 
         // Bottom-left corner
-        patch(srcX: src.x, srcY: src.y + bT + srcCenterH, srcW: bL, srcH: bB,
-              dstX: dst.x, dstY: dst.y + bT + dstCenterH, dstW: bL, dstH: bB)
+        patch(
+            srcX: src.x,
+            srcY: src.y + bT + srcCenterH,
+            srcW: bL,
+            srcH: bB,
+            dstX: dst.x,
+            dstY: dst.y + bT + dstCenterH,
+            dstW: bL,
+            dstH: bB
+        )
 
         // Bottom edge
-        patch(srcX: src.x + bL, srcY: src.y + bT + srcCenterH, srcW: srcCenterW, srcH: bB,
-              dstX: dst.x + bL, dstY: dst.y + bT + dstCenterH, dstW: dstCenterW, dstH: bB)
+        patch(
+            srcX: src.x + bL,
+            srcY: src.y + bT + srcCenterH,
+            srcW: srcCenterW,
+            srcH: bB,
+            dstX: dst.x + bL,
+            dstY: dst.y + bT + dstCenterH,
+            dstW: dstCenterW,
+            dstH: bB
+        )
 
         // Bottom-right corner
-        patch(srcX: src.x + bL + srcCenterW, srcY: src.y + bT + srcCenterH, srcW: bR, srcH: bB,
-              dstX: dst.x + bL + dstCenterW, dstY: dst.y + bT + dstCenterH, dstW: bR, dstH: bB)
+        patch(
+            srcX: src.x + bL + srcCenterW,
+            srcY: src.y + bT + srcCenterH,
+            srcW: bR,
+            srcH: bB,
+            dstX: dst.x + bL + dstCenterW,
+            dstY: dst.y + bT + dstCenterH,
+            dstW: bR,
+            dstH: bB
+        )
     }
 }

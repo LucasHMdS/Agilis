@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import AgilisFormats
+import Foundation
+import Testing
 
 @Suite("TextureAtlas Parser Tests")
 struct TextureAtlasTests {
@@ -29,6 +29,7 @@ struct TextureAtlasTests {
         #expect(atlas.meta.size.w == 256)
         #expect(atlas.meta.size.h == 256)
 
+        // swiftlint:disable:next force_unwrapping
         let frame = atlas.frames["player_idle_0.png"]!
         #expect(frame.frame.x == 0)
         #expect(frame.frame.y == 0)
@@ -69,6 +70,7 @@ struct TextureAtlasTests {
         #expect(atlas.frames.count == 2)
         #expect(atlas.meta.scale == "1")
 
+        // swiftlint:disable:next force_unwrapping
         let f1 = atlas.frames["frame_1.png"]!
         #expect(f1.trimmed)
         #expect(f1.spriteSourceSize.x == 2)
@@ -95,6 +97,7 @@ struct TextureAtlasTests {
         }
         """
         let atlas = try TextureAtlasLoader().load(from: Data(json.utf8))
+        // swiftlint:disable:next force_unwrapping
         let frame = atlas.frames["tall.png"]!
         #expect(frame.rotated)
         #expect(frame.sourceSize.w == 32)

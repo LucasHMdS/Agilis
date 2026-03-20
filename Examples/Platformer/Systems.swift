@@ -11,6 +11,7 @@ import CRT
 // MARK: - Enemy AI System (priority 0)
 
 final class EnemyAISystem: System {
+    deinit {}
     var priority: Int { 0 }
 
     var componentAccess: ComponentAccess {
@@ -20,7 +21,7 @@ final class EnemyAISystem: System {
     func update(context: SystemContext) {
         let world = context.world
 
-        world.forEach { (entity: Entity, vel: inout Velocity2D, enemy: inout Enemy) in
+        world.forEach { (_: Entity, vel: inout Velocity2D, enemy: inout Enemy) in
             if enemy.isDead {
                 vel.linear = .zero
                 return
@@ -33,6 +34,7 @@ final class EnemyAISystem: System {
 // MARK: - Gameplay System (priority 10)
 
 final class GameplaySystem: System {
+    deinit {}
     var priority: Int { 10 }
 
     var componentAccess: ComponentAccess {
@@ -48,7 +50,7 @@ final class GameplaySystem: System {
         let dt = Float(context.deltaTime)
 
         // Question block bounce animation
-        world.forEach { (entity: Entity, pos: inout Transform2D, block: inout QuestionBlock) in
+        world.forEach { (_: Entity, pos: inout Transform2D, block: inout QuestionBlock) in
             if block.state == .bouncing {
                 block.bounceTimer -= dt
                 if block.bounceTimer <= 0 {
@@ -77,7 +79,7 @@ final class GameplaySystem: System {
         }
 
         // Player invincibility countdown
-        world.forEach { (entity: Entity, player: inout Player) in
+        world.forEach { (_: Entity, player: inout Player) in
             if player.isInvincible {
                 player.invincibleTimer -= dt
                 if player.invincibleTimer <= 0 {
@@ -91,12 +93,15 @@ final class GameplaySystem: System {
 // MARK: - Post-Physics System (priority 110)
 
 final class PostPhysicsSystem: System {
+    deinit {}
     var priority: Int { 110 }
 
     var componentAccess: ComponentAccess {
         ComponentAccess(
-            reads: [Tile.self, Coin.self, QuestionBlock.self, Flagpole.self,
-                    Collider2D.self, Transform2D.self],
+            reads: [
+                Tile.self, Coin.self, QuestionBlock.self, Flagpole.self,
+                Collider2D.self, Transform2D.self
+            ],
             writes: [Player.self, Enemy.self, Velocity2D.self],
             emitsEvents: true
         )
@@ -108,11 +113,12 @@ final class PostPhysicsSystem: System {
         self.physics = physics
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func update(context: SystemContext) {
         let world = context.world
 
         // Reset grounded state before collision checks
-        world.forEach { (entity: Entity, player: inout Player) in
+        world.forEach { (_: Entity, player: inout Player) in
             player.isGrounded = false
         }
 
@@ -138,9 +144,13 @@ final class PostPhysicsSystem: System {
                 normalFromPlayer = Vector2(x: -contact.normal.x, y: -contact.normal.y)
             } else {
                 // Neither is player — check enemy-wall collision
-                handleEnemyWallCollision(entityA: entityA, entityB: entityB,
-                                         contact: contact, eventType: event.type,
-                                         world: world)
+                handleEnemyWallCollision(
+                    entityA: entityA,
+                    entityB: entityB,
+                    contact: contact,
+                    eventType: event.type,
+                    world: world
+                )
                 continue
             }
 
@@ -258,10 +268,13 @@ final class PostPhysicsSystem: System {
         }
     }
 
-    private func handleEnemyWallCollision(entityA: Entity, entityB: Entity,
-                                          contact: Contact,
-                                          eventType: CollisionEventType,
-                                          world: World) {
+    private func handleEnemyWallCollision(
+        entityA: Entity,
+        entityB: Entity,
+        contact: Contact,
+        eventType: CollisionEventType,
+        world: World
+    ) {
         guard eventType == .began else { return }
 
         let enemyEntity: Entity

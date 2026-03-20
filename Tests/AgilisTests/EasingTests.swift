@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 private let epsilon: Float = 0.0001
 
@@ -16,7 +16,7 @@ struct EasingBoundaryTests {
         .sineIn, .sineOut, .sineInOut,
         .elasticIn, .elasticOut, .elasticInOut,
         .bounceIn, .bounceOut, .bounceInOut,
-        .backIn, .backOut, .backInOut,
+        .backIn, .backOut, .backInOut
     ]
 
     @Test("All easing functions return 0 at t=0", arguments: allFunctions)

@@ -94,45 +94,56 @@ extension RenderBackend {
     public func drawSprites(_ sprites: [Sprite]) {
         for sprite in sprites { drawSprite(sprite) }
     }
-    public func loadTextureFromImage(_ image: ImageData) -> TextureHandle { .invalid }
-    public func beginBlendMode(_ mode: BlendMode) {}
+    public func loadTextureFromImage(_: ImageData) -> TextureHandle { .invalid }
+    public func beginBlendMode(_: BlendMode) {}
     public func endBlendMode() {}
-    public func loadShader(vertexSource: String?, fragmentSource: String) -> ShaderHandle { .invalid }
-    public func beginShader(_ handle: ShaderHandle) {}
+    public func loadShader(vertexSource _: String?, fragmentSource _: String) -> ShaderHandle { .invalid }
+    public func beginShader(_: ShaderHandle) {}
     public func endShader() {}
-    public func destroyShader(_ handle: ShaderHandle) {}
-    public func setShaderFloat(_ handle: ShaderHandle, name: String, value: Float) {}
-    public func setShaderVec2(_ handle: ShaderHandle, name: String, value: Vector2) {}
-    public func setShaderVec3(_ handle: ShaderHandle, name: String, x: Float, y: Float, z: Float) {}
-    public func setShaderVec4(_ handle: ShaderHandle, name: String, x: Float, y: Float, z: Float, w: Float) {}
-    public func setShaderInt(_ handle: ShaderHandle, name: String, value: Int32) {}
-    public func setShaderTexture(_ handle: ShaderHandle, name: String, texture: TextureHandle) {}
-    public func createRenderTarget(width: Int, height: Int) -> RenderTargetHandle { .invalid }
-    public func beginRenderTarget(_ handle: RenderTargetHandle) {}
+    public func destroyShader(_: ShaderHandle) {}
+    public func setShaderFloat(_: ShaderHandle, name _: String, value _: Float) {}
+    public func setShaderVec2(_: ShaderHandle, name _: String, value _: Vector2) {}
+    public func setShaderVec3(_: ShaderHandle, name _: String, x _: Float, y _: Float, z _: Float) {}
+    public func setShaderVec4(_: ShaderHandle, name _: String, x _: Float, y _: Float, z _: Float, w _: Float) {}
+    public func setShaderInt(_: ShaderHandle, name _: String, value _: Int32) {}
+    public func setShaderTexture(_: ShaderHandle, name _: String, texture _: TextureHandle) {}
+    public func createRenderTarget(width _: Int, height _: Int) -> RenderTargetHandle { .invalid }
+    public func beginRenderTarget(_: RenderTargetHandle) {}
     public func endRenderTarget() {}
-    public func renderTargetTexture(_ handle: RenderTargetHandle) -> TextureHandle { .invalid }
-    public func renderTargetSize(_ handle: RenderTargetHandle) -> Size { .zero }
-    public func destroyRenderTarget(_ handle: RenderTargetHandle) {}
-    public func drawTriangle(_ v1: Vector2, _ v2: Vector2, _ v3: Vector2, color: Color) {}
-    public func takeScreenshot(path: String) {}
+    public func renderTargetTexture(_: RenderTargetHandle) -> TextureHandle { .invalid }
+    public func renderTargetSize(_: RenderTargetHandle) -> Size { .zero }
+    public func destroyRenderTarget(_: RenderTargetHandle) {}
+    public func drawTriangle(_: Vector2, _: Vector2, _: Vector2, color _: Color) {}
+    public func takeScreenshot(path _: String) {}
     public func captureScreen() -> ImageData? { nil }
     public func applyMaterial(_ material: Material2D) {
         for (name, value) in material.uniforms {
             switch value {
             case .float(let v):
                 setShaderFloat(material.shader, name: name, value: v)
+
             case .vec2(let v):
                 setShaderVec2(material.shader, name: name, value: v)
+
             case .vec3(let x, let y, let z):
                 setShaderVec3(material.shader, name: name, x: x, y: y, z: z)
+
             case .vec4(let x, let y, let z, let w):
                 setShaderVec4(material.shader, name: name, x: x, y: y, z: z, w: w)
+
             case .int(let v):
                 setShaderInt(material.shader, name: name, value: v)
+
             case .color(let c):
-                setShaderVec4(material.shader, name: name,
-                    x: Float(c.r) / 255.0, y: Float(c.g) / 255.0,
-                    z: Float(c.b) / 255.0, w: Float(c.a) / 255.0)
+                setShaderVec4(
+                    material.shader,
+                    name: name,
+                    x: Float(c.r) / 255.0,
+                    y: Float(c.g) / 255.0,
+                    z: Float(c.b) / 255.0,
+                    w: Float(c.a) / 255.0
+                )
+
             case .texture(let t):
                 setShaderTexture(material.shader, name: name, texture: t)
             }

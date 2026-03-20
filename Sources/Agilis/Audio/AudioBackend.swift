@@ -23,6 +23,7 @@ public protocol AudioBackend: AnyObject, Sendable {
     func unloadMusic(_ handle: MusicHandle)
 
     // Volume
+    // swiftlint:disable:next inclusive_language
     func setMasterVolume(_ volume: Float)
 
     // Queries
@@ -35,11 +36,11 @@ public protocol AudioBackend: AnyObject, Sendable {
 // MARK: - Default Implementations
 
 extension AudioBackend {
-    public func loadSoundFromData(_ data: AudioData) -> SoundHandle { .invalid }
-    public func isSoundPlaying(_ handle: SoundHandle) -> Bool { false }
-    public func isMusicPlaying(_ handle: MusicHandle) -> Bool { false }
-    public func setSoundVolume(_ handle: SoundHandle, volume: Float) {}
-    public func setMusicVolume(_ handle: MusicHandle, volume: Float) {}
+    public func loadSoundFromData(_: AudioData) -> SoundHandle { .invalid }
+    public func isSoundPlaying(_: SoundHandle) -> Bool { false }
+    public func isMusicPlaying(_: MusicHandle) -> Bool { false }
+    public func setSoundVolume(_: SoundHandle, volume _: Float) {}
+    public func setMusicVolume(_: MusicHandle, volume _: Float) {}
 }
 
 // MARK: - AudioEngine Conformance

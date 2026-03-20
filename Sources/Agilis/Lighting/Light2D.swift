@@ -1,5 +1,3 @@
-
-
 /// The type of a 2D light source.
 public enum LightType: Sendable, Codable, Equatable {
     /// Radial light emitting equally in all directions.

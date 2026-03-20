@@ -1,5 +1,3 @@
-
-
 /// A reusable material definition that creates `Material2D` instances.
 ///
 /// Templates define a shader and default uniform values. Create instances with
@@ -23,6 +21,8 @@
 /// ])
 /// ```
 public final class MaterialTemplate: @unchecked Sendable {
+    deinit {}
+
     /// Human-readable name for debugging and identification.
     public let name: String
 

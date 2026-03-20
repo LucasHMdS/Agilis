@@ -5,6 +5,8 @@ import PlatformC
 /// Provides the same interface that InputManager expects for polling
 /// keyboard, mouse, and gamepad state each frame.
 final class NativeInput: @unchecked Sendable {
+    deinit {}
+
     private let window: OpaquePointer  // PlatformWindow*
 
     init(window: OpaquePointer) {

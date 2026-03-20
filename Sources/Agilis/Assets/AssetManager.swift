@@ -2,6 +2,8 @@ import Foundation
 
 /// Manages loading, caching, and unloading of game assets.
 public final class AssetManager: @unchecked Sendable {
+    deinit {}
+
     private var cache: [String: (typeId: ObjectIdentifier, asset: Any)] = [:]
 
     public init() {}
@@ -28,7 +30,7 @@ public final class AssetManager: @unchecked Sendable {
     }
 
     /// Retrieve a cached asset, or nil if not loaded or if the type doesn't match.
-    public func get<T>(_ type: T.Type, for path: String) -> T? {
+    public func get<T>(_: T.Type, for path: String) -> T? {
         guard let entry = cache[path],
               entry.typeId == ObjectIdentifier(T.self) else { return nil }
         return entry.asset as? T
@@ -47,5 +49,10 @@ public final class AssetManager: @unchecked Sendable {
     /// Number of cached assets.
     public var count: Int {
         cache.count
+    }
+
+    /// A Boolean value that indicates whether the cache is empty.
+    public var isEmpty: Bool {
+        cache.isEmpty
     }
 }

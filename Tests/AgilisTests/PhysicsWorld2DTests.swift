@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("PhysicsWorld2D Integration Tests")
 struct PhysicsWorld2DTests {
@@ -38,8 +38,11 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 5)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let pos = world.getComponent(Transform2D.self, from: ball)!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         // After 1 tick, gravity should have been applied
@@ -58,7 +61,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .aabb(halfExtents: Vector2(x: 400, y: 20))), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let floor = world.entity(named: "floor")!
+        // swiftlint:disable:next force_unwrapping
         let pos = world.getComponent(Transform2D.self, from: floor)!
 
         #expect(abs(pos.position.y - 500) < 0.01, "Static body should not move")
@@ -69,7 +74,7 @@ struct PhysicsWorld2DTests {
     @Test("Ball collides with static floor")
     func ballFloorCollision() {
         // Ball starts just above the floor, should collide within a few ticks
-        let (world, physics) = runPhysics(ticks: 5) { world, _ in
+        let (world, _) = runPhysics(ticks: 5) { world, _ in
             let ball = world.createEntity()
             world.setName("ball", for: ball)
             world.addComponent(Transform2D(position: Vector2(x: 100, y: 80)), to: ball)
@@ -86,7 +91,9 @@ struct PhysicsWorld2DTests {
         }
 
         // The ball should have been stopped or bounced
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let pos = world.getComponent(Transform2D.self, from: ball)!
 
         // Ball should not have fallen far through the floor
@@ -111,7 +118,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .aabb(halfExtents: Vector2(x: 5, y: 50))), to: wall)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         // After bouncing off the wall, x velocity should be negative
@@ -124,27 +133,38 @@ struct PhysicsWorld2DTests {
     func triggerNoResponse() {
         var beganFired = false
 
-        let (world, _) = runPhysics(ticks: 3, setup: { world, physics in
-            physics.onCollisionBegan = { _ in
-                beganFired = true
+        let (world, _) = runPhysics(
+            ticks: 3,
+            setup: { world, physics in
+                physics.onCollisionBegan = { _ in
+                    beganFired = true
+                }
+
+                let ball = world.createEntity()
+                world.setName("ball", for: ball)
+                world.addComponent(Transform2D(position: Vector2(x: 50, y: 50)), to: ball)
+                world.addComponent(PreviousTransform2D(position: Vector2(x: 50, y: 50)), to: ball)
+                world.addComponent(Velocity2D(linear: Vector2(x: 50, y: 0)), to: ball)
+                world.addComponent(RigidBody2D(mass: 1, gravityScale: 0, bodyType: .dynamic), to: ball)
+                world.addComponent(Collider2D(shape: .circle(radius: 10)), to: ball)
+
+                let zone = world.createEntity()
+                world.setName("zone", for: zone)
+                world.addComponent(Transform2D(position: Vector2(x: 60, y: 50)), to: zone)
+                world.addComponent(
+                    Collider2D(shape: .aabb(halfExtents: Vector2(x: 20, y: 20)), isTrigger: true),
+                    to: zone
+                )
             }
+        )
 
-            let ball = world.createEntity()
-            world.setName("ball", for: ball)
-            world.addComponent(Transform2D(position: Vector2(x: 50, y: 50)), to: ball)
-            world.addComponent(PreviousTransform2D(position: Vector2(x: 50, y: 50)), to: ball)
-            world.addComponent(Velocity2D(linear: Vector2(x: 50, y: 0)), to: ball)
-            world.addComponent(RigidBody2D(mass: 1, gravityScale: 0, bodyType: .dynamic), to: ball)
-            world.addComponent(Collider2D(shape: .circle(radius: 10)), to: ball)
-
-            let zone = world.createEntity()
-            world.setName("zone", for: zone)
-            world.addComponent(Transform2D(position: Vector2(x: 60, y: 50)), to: zone)
-            world.addComponent(Collider2D(shape: .aabb(halfExtents: Vector2(x: 20, y: 20)), isTrigger: true), to: zone)
-        })
+        // Trigger should have generated an event
+        #expect(beganFired, "Trigger should generate collision event")
 
         // Ball should pass through the trigger zone
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         // Velocity should be unchanged (no physics response from trigger)
@@ -164,7 +184,8 @@ struct PhysicsWorld2DTests {
             world.addComponent(RigidBody2D(mass: 1, gravityScale: 0, bodyType: .dynamic), to: ball)
             world.addComponent(Collider2D(
                 shape: .circle(radius: 10),
-                layer: 0b01, mask: 0b01 // Only collides with layer 1
+                layer: 0b01,
+                mask: 0b01 // Only collides with layer 1
             ), to: ball)
 
             let wall = world.createEntity()
@@ -172,7 +193,8 @@ struct PhysicsWorld2DTests {
             world.addComponent(RigidBody2D(bodyType: .static), to: wall)
             world.addComponent(Collider2D(
                 shape: .aabb(halfExtents: Vector2(x: 5, y: 50)),
-                layer: 0b10, mask: 0b10 // Only collides with layer 2
+                layer: 0b10,
+                mask: 0b10 // Only collides with layer 2
             ), to: wall)
         }
 
@@ -180,7 +202,9 @@ struct PhysicsWorld2DTests {
         #expect(physics.events.isEmpty, "Different layers should not produce collision events")
 
         // Ball should pass through
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
         #expect(abs(vel.linear.x - 50) < 5, "Ball should pass through wall on different layer")
     }
@@ -198,7 +222,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 5)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let e = world.entity(named: "entity")!
+        // swiftlint:disable:next force_unwrapping
         let prev = world.getComponent(PreviousTransform2D.self, from: e)!
 
         // PreviousTransform should have been set to the pre-integration position
@@ -212,7 +238,7 @@ struct PhysicsWorld2DTests {
     func collisionEventLifecycle() {
         var tickEvents: [[CollisionEvent]] = []
 
-        let _ = runPhysics(
+        _ = runPhysics(
             gravity: .zero,
             ticks: 3,
             afterTick: { _, physics, _ in
@@ -247,7 +273,7 @@ struct PhysicsWorld2DTests {
     func collisionEndedEvent() {
         var tickEvents: [[CollisionEvent]] = []
 
-        let _ = runPhysics(
+        _ = runPhysics(
             gravity: .zero,
             ticks: 10,
             afterTick: { _, physics, _ in
@@ -290,7 +316,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 10)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let e = world.entity(named: "kinematic")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: e)!
 
         // Kinematic body should not have gravity applied
@@ -301,7 +329,10 @@ struct PhysicsWorld2DTests {
 
     @Test("Zero gravity: no acceleration")
     func zeroGravity() {
-        let (world, _) = runPhysics(gravity: .zero, ticks: 5) { world, _ in
+        let (world, _) = runPhysics(
+            gravity: .zero,
+            ticks: 5
+        ) { world, _ in
             let e = world.createEntity()
             world.setName("ball", for: e)
             world.addComponent(Transform2D(position: .zero), to: e)
@@ -310,7 +341,9 @@ struct PhysicsWorld2DTests {
             world.addComponent(Collider2D(shape: .circle(radius: 5)), to: e)
         }
 
+        // swiftlint:disable:next force_unwrapping
         let ball = world.entity(named: "ball")!
+        // swiftlint:disable:next force_unwrapping
         let vel = world.getComponent(Velocity2D.self, from: ball)!
 
         #expect(abs(vel.linear.x) < 0.001)

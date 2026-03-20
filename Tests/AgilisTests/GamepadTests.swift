@@ -1,9 +1,11 @@
-import Testing
 @testable import Agilis
+import Testing
 
 /// A mock input backend with gamepad support for testing.
 /// Extends the pattern from InputTests.swift's MockNativeInput.
 final class MockGamepadBackend: @unchecked Sendable, InputBackend {
+    deinit {}
+
     // Keyboard / mouse (minimal, for mixed action tests)
     var keysDown: Set<Key> = []
     var mouseButtonsDown: Set<MouseButton> = []
@@ -297,7 +299,7 @@ struct GamepadAxisTests {
         backend.gamepadAxes[0] = [
             .leftX: 0.05,   // Below dead zone (0.1)
             .leftY: -0.8,   // Above dead zone
-            .rightX: 0.15,  // Above dead zone
+            .rightX: 0.15  // Above dead zone
         ]
 
         #expect(input.gamepadAxis(0, .leftX) == 0)       // Filtered by dead zone
@@ -358,7 +360,7 @@ struct GamepadAxisTests {
         backend.gamepadsAvailable = [0]
         backend.gamepadAxes[0] = [
             .leftX: -0.05,  // Below dead zone (abs)
-            .leftY: -0.5,   // Above dead zone
+            .leftY: -0.5   // Above dead zone
         ]
 
         #expect(input.gamepadAxis(0, .leftX) == 0)
@@ -793,8 +795,8 @@ struct GamepadHotPlugTests {
         let input = InputManager()
         input.bind(backend)
 
-        var connectedIndex: Int? = nil
-        var connectedName: String? = nil
+        var connectedIndex: Int?
+        var connectedName: String?
         input.onGamepadConnected = { index, name in
             connectedIndex = index
             connectedName = name
@@ -818,7 +820,7 @@ struct GamepadHotPlugTests {
         let input = InputManager()
         input.bind(backend)
 
-        var disconnectedIndex: Int? = nil
+        var disconnectedIndex: Int?
         input.onGamepadDisconnected = { index in
             disconnectedIndex = index
         }
@@ -890,8 +892,10 @@ struct NativeInputDefaultTests {
     /// A minimal backend that only implements the original methods (no gamepad overrides).
     /// Tests that the default implementations return "no gamepad" state.
     final class MinimalBackend: @unchecked Sendable, InputBackend {
-        func isKeyDown(_ key: Key) -> Bool { false }
-        func isMouseButtonDown(_ button: MouseButton) -> Bool { false }
+        deinit {}
+
+        func isKeyDown(_: Key) -> Bool { false }
+        func isMouseButtonDown(_: MouseButton) -> Bool { false }
         func mousePosition() -> Vector2 { .zero }
         func mouseDelta() -> Vector2 { .zero }
         func mouseScrollDelta() -> Float { 0 }

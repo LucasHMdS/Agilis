@@ -5,7 +5,7 @@ REM Output: libEGL.dll, libGLESv2.dll, libEGL.dll.lib, libGLESv2.dll.lib
 
 setlocal enabledelayedexpansion
 
-set "ANGLE_BUILD_DIR=%~dp0..\build\angle"
+set "ANGLE_BUILD_DIR=%~dp0..\.build\angle"
 set "ANGLE_OUTPUT_DIR=%~dp0..\Sources\AngleC\lib\windows"
 
 REM Step 1: Get depot_tools
@@ -17,7 +17,8 @@ if not exist "%ANGLE_BUILD_DIR%\depot_tools" (
 ) else (
     echo depot_tools already exists, updating...
     cd /d "%ANGLE_BUILD_DIR%\depot_tools"
-    git pull
+    git fetch origin
+    git checkout -f origin/main
 )
 
 REM Add depot_tools to PATH (must be before other Python)

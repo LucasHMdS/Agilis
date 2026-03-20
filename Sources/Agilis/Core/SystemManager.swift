@@ -4,6 +4,8 @@
 /// component management. World delegates system operations to this type.
 internal final class SystemManager: @unchecked Sendable {
 
+    deinit {}
+
     var systems: [SystemEntry] = []
 
     /// Per-system timing info from the most recent `update()` call.
@@ -92,8 +94,14 @@ internal final class SystemManager: @unchecked Sendable {
                     for j in (i + 1)..<stage.count {
                         let bWrites = ComponentRegistry.shared.bitset(for: stage[j].system.componentAccess.writes)
                         let bReads = ComponentRegistry.shared.bitset(for: stage[j].system.componentAccess.reads)
-                        assert(!aWrites.intersects(bWrites), "Parallel stage has write-write conflict between \(type(of: stage[i].system)) and \(type(of: stage[j].system))")
-                        assert(!aWrites.intersects(bReads), "Parallel stage has write-read conflict between \(type(of: stage[i].system)) and \(type(of: stage[j].system))")
+                        assert(
+                            !aWrites.intersects(bWrites),
+                            "Parallel stage has write-write conflict between \(type(of: stage[i].system)) and \(type(of: stage[j].system))"
+                        )
+                        assert(
+                            !aWrites.intersects(bReads),
+                            "Parallel stage has write-read conflict between \(type(of: stage[i].system)) and \(type(of: stage[j].system))"
+                        )
                     }
                 }
                 #endif

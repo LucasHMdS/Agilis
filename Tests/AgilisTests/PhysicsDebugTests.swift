@@ -1,10 +1,12 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Spy Renderer
 
 /// Records drawRectOutline, drawCircleOutline, drawLine, and drawCircle calls.
 private final class DebugSpyRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     struct RectOutlineCall: Equatable {
         let rect: Rect
         let color: Color
@@ -47,25 +49,25 @@ private final class DebugSpyRenderer: @unchecked Sendable, RenderBackend {
     }
 
     // Unused Renderer stubs
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawSprite(_ sprite: Sprite) {}
-    func initialize(config: WindowConfig) throws {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawSprite(_: Sprite) {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { Size(width: 800, height: 600) }
 }
@@ -191,7 +193,7 @@ struct PhysicsDebugDrawingTests {
         let triangle = ConvexPolygon(vertices: [
             Vector2(x: 0, y: -10),
             Vector2(x: 10, y: 10),
-            Vector2(x: -10, y: 10),
+            Vector2(x: -10, y: 10)
         ])
         let e = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 100, y: 100)), to: e)
@@ -228,7 +230,7 @@ struct PhysicsDebugDrawingTests {
         renderer.drawPhysicsDebug(world: world)
 
         // Should use 4 lines (not a rect outline) since it's rotated
-        #expect(renderer.rectOutlineCalls.count == 0)
+        #expect(renderer.rectOutlineCalls.isEmpty)
         #expect(renderer.lineCalls.count == 4)
     }
 
@@ -306,8 +308,8 @@ struct PhysicsDebugDrawingTests {
 
         renderer.drawPhysicsDebug(world: world, events: events)
 
-        #expect(renderer.circleCalls.count == 0)
-        #expect(renderer.lineCalls.count == 0)
+        #expect(renderer.circleCalls.isEmpty)
+        #expect(renderer.lineCalls.isEmpty)
     }
 
     @Test("Velocity vectors draw lines from position")
@@ -350,7 +352,7 @@ struct PhysicsDebugDrawingTests {
 
         renderer.drawPhysicsDebug(world: world, options: options)
 
-        #expect(renderer.lineCalls.count == 0)
+        #expect(renderer.lineCalls.isEmpty)
     }
 
     @Test("Collider offset is applied to position")
@@ -650,7 +652,7 @@ struct PhysicsDebugEdgeCaseTests {
             Vector2(x: 10, y: -3),
             Vector2(x: 6, y: 10),
             Vector2(x: -6, y: 10),
-            Vector2(x: -10, y: -3),
+            Vector2(x: -10, y: -3)
         ])
         let e = world.createEntity()
         world.addComponent(Transform2D(position: .zero), to: e)

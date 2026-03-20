@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 // MARK: - Shadow Geometry
 
@@ -114,7 +114,7 @@ struct ShadowGeometryTests {
         let triangle = [
             Vector2(x: -10, y: 0),
             Vector2(x: 10, y: 0),
-            Vector2(x: 0, y: 10),
+            Vector2(x: 0, y: 10)
         ]
 
         let shadow = ShadowGeometry.shadowForPolygon(
@@ -205,7 +205,7 @@ struct ShadowGeometryTests {
     func outOfRange() {
         let occluder = ShadowOccluder(
             shape: .aabb(halfExtents: Vector2(x: 10, y: 10)),
-            position: Vector2(x: 1000, y: 0),
+            position: Vector2(x: 1_000, y: 0),
             rotation: 0
         )
 
@@ -258,7 +258,7 @@ struct ShadowGeometryTests {
             Vector2(x: -10, y: -10),
             Vector2(x: 10, y: -10),
             Vector2(x: 10, y: 10),
-            Vector2(x: -10, y: 10),
+            Vector2(x: -10, y: 10)
         ])
         let occluder = ShadowOccluder(
             shape: .polygon(poly),
@@ -323,7 +323,7 @@ struct ShadowGeometryTests {
             ShadowOccluder(shape: .circle(radius: 10),
                           position: Vector2(x: 0, y: 50)),
             ShadowOccluder(shape: .aabb(halfExtents: Vector2(x: 5, y: 5)),
-                          position: Vector2(x: -50, y: 0)),
+                          position: Vector2(x: -50, y: 0))
         ]
 
         let results = ShadowGeometry.computeShadows(

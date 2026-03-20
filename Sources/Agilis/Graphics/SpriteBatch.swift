@@ -1,5 +1,3 @@
-
-
 /// Controls how sprites are ordered when a SpriteBatch is flushed.
 public enum SpriteSortMode: Sendable {
     /// Preserve insertion order. No sorting performed.
@@ -33,6 +31,8 @@ public enum SpriteSortMode: Sendable {
 /// batch.flush(to: app.renderer)
 /// ```
 public final class SpriteBatch: @unchecked Sendable {
+
+    deinit {}
 
     /// How sprites are sorted before drawing.
     public var sortMode: SpriteSortMode

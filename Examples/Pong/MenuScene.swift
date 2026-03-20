@@ -3,7 +3,9 @@ import Agilis
 // MARK: - Menu Scene
 
 final class MenuScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
 
     func didEnter(app: Application) {
@@ -55,7 +57,7 @@ final class MenuScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
         let cx = screen.width / 2
         let cy = screen.height / 2
@@ -66,15 +68,21 @@ final class MenuScene: Scene {
         // Paddle silhouettes
         let dim = Color(r: 60, g: 60, b: 60)
         app.renderer.drawRect(
-            Rect(x: Pong.paddleMargin - Pong.paddleWidth / 2,
-                 y: cy - Pong.paddleHeight / 2,
-                 width: Pong.paddleWidth, height: Pong.paddleHeight),
+            Rect(
+                x: Pong.paddleMargin - Pong.paddleWidth / 2,
+                y: cy - Pong.paddleHeight / 2,
+                width: Pong.paddleWidth,
+                height: Pong.paddleHeight
+            ),
             color: dim
         )
         app.renderer.drawRect(
-            Rect(x: screen.width - Pong.paddleMargin - Pong.paddleWidth / 2,
-                 y: cy - Pong.paddleHeight / 2,
-                 width: Pong.paddleWidth, height: Pong.paddleHeight),
+            Rect(
+                x: screen.width - Pong.paddleMargin - Pong.paddleWidth / 2,
+                y: cy - Pong.paddleHeight / 2,
+                width: Pong.paddleWidth,
+                height: Pong.paddleHeight
+            ),
             color: dim
         )
 
@@ -82,9 +90,13 @@ final class MenuScene: Scene {
 
         // FPS counter
         let fpsColor = Color(r: 80, g: 80, b: 80)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: 4, y: screen.height - 18),
-                              font: ui.font, size: 14, color: fpsColor)
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: 4, y: screen.height - 18),
+            font: ui.font,
+            size: 14,
+            color: fpsColor
+        )
     }
 
     func willExit(app: Application) {

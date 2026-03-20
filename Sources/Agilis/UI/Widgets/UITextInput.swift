@@ -1,7 +1,7 @@
-
-
 /// A single-line text input field.
 public class UITextInput: UINode, @unchecked Sendable {
+    deinit {}
+
     public var text: String
     public var placeholder: String
     public var fontSize: Float
@@ -31,12 +31,12 @@ public class UITextInput: UINode, @unchecked Sendable {
         self.isFocusable = true
     }
 
-    public override func sizeThatFits(_ available: Size) -> Size {
-        return Size(width: min(available.width, 250),
+    override public func sizeThatFits(_ available: Size) -> Size {
+        Size(width: min(available.width, 250),
                     height: fontSize + verticalPadding * 2 + 4)
     }
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime: Double) {
         guard isVisible, let app = context.app else { return }
         let input = app.input
 
@@ -102,7 +102,7 @@ public class UITextInput: UINode, @unchecked Sendable {
         }
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Background
@@ -136,8 +136,12 @@ public class UITextInput: UINode, @unchecked Sendable {
             let cursorX = textX + cursorXSize.width
             let cursorTop = Vector2(x: cursorX, y: frame.y + 4)
             let cursorBottom = Vector2(x: cursorX, y: frame.y + frame.height - 4)
-            renderer.drawLine(from: cursorTop, to: cursorBottom,
-                              color: theme.textColor, thickness: 1)
+            renderer.drawLine(
+                from: cursorTop,
+                to: cursorBottom,
+                color: theme.textColor,
+                thickness: 1
+            )
         }
     }
 }

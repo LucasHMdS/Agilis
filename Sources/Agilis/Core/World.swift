@@ -8,6 +8,8 @@
 /// entity lifecycle, system orchestration, and event dispatch respectively.
 public final class World: @unchecked Sendable {
 
+    deinit {}
+
     // MARK: - Internal Managers
 
     private let entities = EntityAllocator()
@@ -79,15 +81,13 @@ public final class World: @unchecked Sendable {
         }
 
         // Fire remove handlers and remove components
-        for (typeId, store) in storage {
-            if store.has(entity: entity.index) {
-                if let handlers = removeHandlers[typeId] {
-                    for handler in handlers {
-                        handler(entity, self)
-                    }
+        for (typeId, store) in storage where store.has(entity: entity.index) {
+            if let handlers = removeHandlers[typeId] {
+                for handler in handlers {
+                    handler(entity, self)
                 }
-                store.removeIfPresent(entity: entity.index)
             }
+            store.removeIfPresent(entity: entity.index)
         }
 
         // Clean up hierarchy and metadata
@@ -112,7 +112,7 @@ public final class World: @unchecked Sendable {
     // MARK: - Components
 
     /// Get or create the typed storage for a component type.
-    internal func getStore<T: Component>(for type: T.Type) -> ComponentStore<T> {
+    internal func getStore<T: Component>(for _: T.Type) -> ComponentStore<T> {
         let key = ObjectIdentifier(T.self)
         if let existing = storage[key] as? ComponentStore<T> {
             return existing
@@ -138,7 +138,7 @@ public final class World: @unchecked Sendable {
     }
 
     /// Get a component from an entity, or `nil` if not present or entity is dead.
-    public func getComponent<T: Component>(_ type: T.Type, from entity: Entity) -> T? {
+    public func getComponent<T: Component>(_: T.Type, from entity: Entity) -> T? {
         guard isAlive(entity) else { return nil }
         let store = getStore(for: T.self)
         return store.get(entity: entity.index)
@@ -146,14 +146,14 @@ public final class World: @unchecked Sendable {
 
     /// Mutate a component on an entity in-place. Returns `true` if the component existed.
     @discardableResult
-    public func updateComponent<T: Component>(_ type: T.Type, on entity: Entity, _ body: (inout T) -> Void) -> Bool {
+    public func updateComponent<T: Component>(_: T.Type, on entity: Entity, _ body: (inout T) -> Void) -> Bool {
         guard isAlive(entity) else { return false }
         let store = getStore(for: T.self)
         return store.withValue(for: entity.index, body)
     }
 
     /// Remove a component from an entity.
-    public func removeComponent<T: Component>(_ type: T.Type, from entity: Entity) {
+    public func removeComponent<T: Component>(_: T.Type, from entity: Entity) {
         guard isAlive(entity) else { return }
         let key = ObjectIdentifier(T.self)
         if let store = storage[key] {
@@ -169,7 +169,7 @@ public final class World: @unchecked Sendable {
     }
 
     /// Check if an entity has a specific component type.
-    public func hasComponent<T: Component>(_ type: T.Type, on entity: Entity) -> Bool {
+    public func hasComponent<T: Component>(_: T.Type, on entity: Entity) -> Bool {
         guard isAlive(entity) else { return false }
         let key = ObjectIdentifier(T.self)
         guard let store = storage[key] else { return false }
@@ -321,13 +321,13 @@ public final class World: @unchecked Sendable {
     // MARK: - Component Lifecycle Events
 
     /// Register a handler called whenever a component of the given type is added to an entity.
-    public func onComponentAdded<T: Component>(_ type: T.Type, handler: @escaping (Entity, World) -> Void) {
+    public func onComponentAdded<T: Component>(_: T.Type, handler: @escaping (Entity, World) -> Void) {
         let key = ObjectIdentifier(T.self)
         addHandlers[key, default: []].append(handler)
     }
 
     /// Register a handler called whenever a component of the given type is removed from an entity.
-    public func onComponentRemoved<T: Component>(_ type: T.Type, handler: @escaping (Entity, World) -> Void) {
+    public func onComponentRemoved<T: Component>(_: T.Type, handler: @escaping (Entity, World) -> Void) {
         let key = ObjectIdentifier(T.self)
         removeHandlers[key, default: []].append(handler)
     }

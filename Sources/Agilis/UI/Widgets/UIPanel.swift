@@ -1,7 +1,7 @@
-
-
 /// A visible container with a background and optional border.
 public class UIPanel: UIContainer, @unchecked Sendable {
+    deinit {}
+
     public var backgroundColor: Color?
     public var borderColor: Color?
     public var borderThickness: Float = 0
@@ -12,7 +12,7 @@ public class UIPanel: UIContainer, @unchecked Sendable {
         self.padding = padding
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw background

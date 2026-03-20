@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("AssetManager Tests")
 struct AssetManagerTests {
@@ -61,7 +61,7 @@ struct AssetManagerTests {
         #expect(manager.count == 1)
 
         manager.unload("file")
-        #expect(manager.count == 0)
+        #expect(manager.isEmpty)
         #expect(manager.get(String.self, for: "file") == nil)
     }
 
@@ -73,7 +73,7 @@ struct AssetManagerTests {
         #expect(manager.count == 3)
 
         manager.unloadAll()
-        #expect(manager.count == 0)
+        #expect(manager.isEmpty)
     }
 
     @Test func loaderThrows() {
@@ -84,7 +84,7 @@ struct AssetManagerTests {
                 throw AssetError.fileNotFound("bad")
             }
         }
-        #expect(manager.count == 0) // nothing cached on failure
+        #expect(manager.isEmpty) // nothing cached on failure
     }
 
     @Test func reloadAfterUnload() throws {

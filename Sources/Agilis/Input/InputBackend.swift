@@ -34,18 +34,18 @@ protocol InputBackend: AnyObject, Sendable {
 // MARK: - Default Implementations
 
 extension InputBackend {
-    func keyPressed(_ key: Key) -> Bool { false }
-    func mouseButtonPressed(_ button: MouseButton) -> Bool { false }
-    func setCursorVisible(_ visible: Bool) {}
+    func keyPressed(_: Key) -> Bool { false }
+    func mouseButtonPressed(_: MouseButton) -> Bool { false }
+    func setCursorVisible(_: Bool) {}
     func isCursorVisible() -> Bool { true }
-    func setMouseCaptured(_ captured: Bool) {}
+    func setMouseCaptured(_: Bool) {}
     func isMouseCaptured() -> Bool { false }
-    func isGamepadAvailable(_ gamepad: Int) -> Bool { false }
-    func isGamepadButtonDown(_ gamepad: Int, _ button: GamepadButton) -> Bool { false }
-    func gamepadButtonPressed(_ gamepad: Int, _ button: GamepadButton) -> Bool { false }
-    func gamepadAxisValue(_ gamepad: Int, _ axis: GamepadAxis) -> Float { 0 }
-    func gamepadName(_ gamepad: Int) -> String? { nil }
-    func setGamepadVibration(_ gamepad: Int, leftMotor: Float, rightMotor: Float) {}
+    func isGamepadAvailable(_: Int) -> Bool { false }
+    func isGamepadButtonDown(_: Int, _: GamepadButton) -> Bool { false }
+    func gamepadButtonPressed(_: Int, _: GamepadButton) -> Bool { false }
+    func gamepadAxisValue(_: Int, _: GamepadAxis) -> Float { 0 }
+    func gamepadName(_: Int) -> String? { nil }
+    func setGamepadVibration(_: Int, leftMotor _: Float, rightMotor _: Float) {}
 }
 
 // MARK: - NativeInput Conformance

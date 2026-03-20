@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -221,8 +219,7 @@ extension RenderBackend {
 
         // Draw CCD sweep paths (previous → current position for CCD bodies)
         if options.drawCCDPaths {
-            world.forEach { (_: Entity, transform: inout Transform2D, prev: inout PreviousTransform2D,
-                              body: inout RigidBody2D) in
+            world.forEach { (_: Entity, transform: inout Transform2D, prev: inout PreviousTransform2D, body: inout RigidBody2D) in
                 guard body.useCCD && body.bodyType == .dynamic else { return }
                 let dx = transform.position.x - prev.position.x
                 let dy = transform.position.y - prev.position.y
@@ -327,7 +324,7 @@ extension RenderBackend {
                     Vector2(x: position.x - halfExtents.x, y: position.y - halfExtents.y), // top-left
                     Vector2(x: position.x + halfExtents.x, y: position.y - halfExtents.y), // top-right
                     Vector2(x: position.x + halfExtents.x, y: position.y + halfExtents.y), // bottom-right
-                    Vector2(x: position.x - halfExtents.x, y: position.y + halfExtents.y), // bottom-left
+                    Vector2(x: position.x - halfExtents.x, y: position.y + halfExtents.y) // bottom-left
                 ]
             } else {
                 corners = aabbCorners(halfExtents: halfExtents, position: position, rotation: rotation)
@@ -370,9 +367,9 @@ extension RenderBackend {
     private func aabbCorners(halfExtents: Vector2, position: Vector2, rotation: Float) -> [Vector2] {
         let localCorners = [
             Vector2(x: -halfExtents.x, y: -halfExtents.y),
-            Vector2(x:  halfExtents.x, y: -halfExtents.y),
-            Vector2(x:  halfExtents.x, y:  halfExtents.y),
-            Vector2(x: -halfExtents.x, y:  halfExtents.y),
+            Vector2(x: halfExtents.x, y: -halfExtents.y),
+            Vector2(x: halfExtents.x, y: halfExtents.y),
+            Vector2(x: -halfExtents.x, y: halfExtents.y)
         ]
         return transformVertices(localCorners, position: position, rotation: rotation)
     }
@@ -413,89 +410,198 @@ extension RenderBackend {
             case "revolute":
                 // Lines from body centers to shared anchor + anchor circle
                 let anchor = info.worldAnchorA  // Both anchors converge to same point
-                drawLine(from: posA, to: anchor, color: options.jointColor, thickness: options.colliderThickness)
-                drawLine(from: posB, to: anchor, color: options.jointColor, thickness: options.colliderThickness)
-                drawCircle(center: anchor, radius: options.jointAnchorRadius, color: options.jointAnchorColor)
+                drawLine(
+                    from: posA,
+                    to: anchor,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: posB,
+                    to: anchor,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
+                drawCircle(
+                    center: anchor,
+                    radius: options.jointAnchorRadius,
+                    color: options.jointAnchorColor
+                )
 
             case "distance":
                 // Line between two world anchors
-                drawLine(from: info.worldAnchorA, to: info.worldAnchorB,
-                         color: options.jointColor, thickness: options.colliderThickness)
-                drawCircle(center: info.worldAnchorA, radius: options.jointAnchorRadius, color: options.jointAnchorColor)
-                drawCircle(center: info.worldAnchorB, radius: options.jointAnchorRadius, color: options.jointAnchorColor)
+                drawLine(
+                    from: info.worldAnchorA,
+                    to: info.worldAnchorB,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
+                drawCircle(
+                    center: info.worldAnchorA,
+                    radius: options.jointAnchorRadius,
+                    color: options.jointAnchorColor
+                )
+                drawCircle(
+                    center: info.worldAnchorB,
+                    radius: options.jointAnchorRadius,
+                    color: options.jointAnchorColor
+                )
 
             case "weld":
                 // X mark at anchor + lines to body centers
                 let anchor = info.worldAnchorA
-                drawLine(from: posA, to: anchor, color: options.jointColor, thickness: options.colliderThickness)
-                drawLine(from: posB, to: anchor, color: options.jointColor, thickness: options.colliderThickness)
+                drawLine(
+                    from: posA,
+                    to: anchor,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: posB,
+                    to: anchor,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
                 // Draw an X at the anchor
                 let sz = options.jointAnchorRadius
-                drawLine(from: Vector2(x: anchor.x - sz, y: anchor.y - sz),
-                         to: Vector2(x: anchor.x + sz, y: anchor.y + sz),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
-                drawLine(from: Vector2(x: anchor.x + sz, y: anchor.y - sz),
-                         to: Vector2(x: anchor.x - sz, y: anchor.y + sz),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
+                drawLine(
+                    from: Vector2(x: anchor.x - sz, y: anchor.y - sz),
+                    to: Vector2(x: anchor.x + sz, y: anchor.y + sz),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: Vector2(x: anchor.x + sz, y: anchor.y - sz),
+                    to: Vector2(x: anchor.x - sz, y: anchor.y + sz),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
 
             case "prismatic":
                 // Lines from body centers to anchor + axis line through anchor
                 let anchor = info.worldAnchorA
-                drawLine(from: posA, to: anchor, color: options.jointColor, thickness: options.colliderThickness)
-                drawLine(from: posB, to: anchor, color: options.jointColor, thickness: options.colliderThickness)
-                drawCircle(center: anchor, radius: options.jointAnchorRadius, color: options.jointAnchorColor)
+                drawLine(
+                    from: posA,
+                    to: anchor,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: posB,
+                    to: anchor,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
+                drawCircle(
+                    center: anchor,
+                    radius: options.jointAnchorRadius,
+                    color: options.jointAnchorColor
+                )
                 // Draw axis line through anchor (40px each direction)
                 if let axis = info.axis {
                     let axisLen: Float = 40.0
-                    let axisStart = Vector2(x: anchor.x - axis.x * axisLen, y: anchor.y - axis.y * axisLen)
-                    let axisEnd = Vector2(x: anchor.x + axis.x * axisLen, y: anchor.y + axis.y * axisLen)
-                    drawLine(from: axisStart, to: axisEnd,
-                             color: options.jointAnchorColor, thickness: options.colliderThickness)
+                    let axisStart = Vector2(
+                        x: anchor.x - axis.x * axisLen,
+                        y: anchor.y - axis.y * axisLen
+                    )
+                    let axisEnd = Vector2(
+                        x: anchor.x + axis.x * axisLen,
+                        y: anchor.y + axis.y * axisLen
+                    )
+                    drawLine(
+                        from: axisStart,
+                        to: axisEnd,
+                        color: options.jointAnchorColor,
+                        thickness: options.colliderThickness
+                    )
                 }
 
             case "rope":
                 // Line between anchors + anchor circles + diamond at midpoint
-                drawLine(from: info.worldAnchorA, to: info.worldAnchorB,
-                         color: options.jointColor, thickness: options.colliderThickness)
-                drawCircle(center: info.worldAnchorA, radius: options.jointAnchorRadius, color: options.jointAnchorColor)
-                drawCircle(center: info.worldAnchorB, radius: options.jointAnchorRadius, color: options.jointAnchorColor)
+                drawLine(
+                    from: info.worldAnchorA,
+                    to: info.worldAnchorB,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
+                drawCircle(
+                    center: info.worldAnchorA,
+                    radius: options.jointAnchorRadius,
+                    color: options.jointAnchorColor
+                )
+                drawCircle(
+                    center: info.worldAnchorB,
+                    radius: options.jointAnchorRadius,
+                    color: options.jointAnchorColor
+                )
                 // Diamond at midpoint to distinguish from distance joint
                 let mid = Vector2(
                     x: (info.worldAnchorA.x + info.worldAnchorB.x) * 0.5,
                     y: (info.worldAnchorA.y + info.worldAnchorB.y) * 0.5
                 )
                 let sz = options.jointAnchorRadius
-                drawLine(from: Vector2(x: mid.x, y: mid.y - sz),
-                         to: Vector2(x: mid.x + sz, y: mid.y),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
-                drawLine(from: Vector2(x: mid.x + sz, y: mid.y),
-                         to: Vector2(x: mid.x, y: mid.y + sz),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
-                drawLine(from: Vector2(x: mid.x, y: mid.y + sz),
-                         to: Vector2(x: mid.x - sz, y: mid.y),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
-                drawLine(from: Vector2(x: mid.x - sz, y: mid.y),
-                         to: Vector2(x: mid.x, y: mid.y - sz),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
+                drawLine(
+                    from: Vector2(x: mid.x, y: mid.y - sz),
+                    to: Vector2(x: mid.x + sz, y: mid.y),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: Vector2(x: mid.x + sz, y: mid.y),
+                    to: Vector2(x: mid.x, y: mid.y + sz),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: Vector2(x: mid.x, y: mid.y + sz),
+                    to: Vector2(x: mid.x - sz, y: mid.y),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: Vector2(x: mid.x - sz, y: mid.y),
+                    to: Vector2(x: mid.x, y: mid.y - sz),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
 
             case "motor":
                 // Line from posA to posB + cross at posA + circle at posB
-                drawLine(from: posA, to: posB, color: options.jointColor, thickness: options.colliderThickness)
+                drawLine(
+                    from: posA,
+                    to: posB,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
                 let sz = options.jointAnchorRadius
                 // Cross mark at reference body (A)
-                drawLine(from: Vector2(x: posA.x - sz, y: posA.y - sz),
-                         to: Vector2(x: posA.x + sz, y: posA.y + sz),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
-                drawLine(from: Vector2(x: posA.x + sz, y: posA.y - sz),
-                         to: Vector2(x: posA.x - sz, y: posA.y + sz),
-                         color: options.jointAnchorColor, thickness: options.colliderThickness)
+                drawLine(
+                    from: Vector2(x: posA.x - sz, y: posA.y - sz),
+                    to: Vector2(x: posA.x + sz, y: posA.y + sz),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
+                drawLine(
+                    from: Vector2(x: posA.x + sz, y: posA.y - sz),
+                    to: Vector2(x: posA.x - sz, y: posA.y + sz),
+                    color: options.jointAnchorColor,
+                    thickness: options.colliderThickness
+                )
                 // Circle at driven body (B)
-                drawCircle(center: posB, radius: options.jointAnchorRadius, color: options.jointAnchorColor)
+                drawCircle(
+                    center: posB,
+                    radius: options.jointAnchorRadius,
+                    color: options.jointAnchorColor
+                )
 
             default:
                 // Generic fallback: line between anchors
-                drawLine(from: info.worldAnchorA, to: info.worldAnchorB,
-                         color: options.jointColor, thickness: options.colliderThickness)
+                drawLine(
+                    from: info.worldAnchorA,
+                    to: info.worldAnchorB,
+                    color: options.jointColor,
+                    thickness: options.colliderThickness
+                )
             }
         }
     }

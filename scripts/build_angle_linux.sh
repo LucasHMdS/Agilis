@@ -6,7 +6,7 @@ set -euo pipefail
 # Output: libEGL.so, libGLESv2.so
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ANGLE_BUILD_DIR="$SCRIPT_DIR/../build/angle"
+ANGLE_BUILD_DIR="$SCRIPT_DIR/../.build/angle"
 ANGLE_OUTPUT_DIR="$SCRIPT_DIR/../Sources/AngleC/lib/linux"
 
 # Step 1: Get depot_tools
@@ -18,7 +18,8 @@ if [ ! -d "$ANGLE_BUILD_DIR/depot_tools" ]; then
 else
     echo "depot_tools already exists, updating..."
     cd "$ANGLE_BUILD_DIR/depot_tools"
-    git pull
+    git fetch origin
+    git checkout -f origin/main
 fi
 
 export PATH="$ANGLE_BUILD_DIR/depot_tools:$PATH"

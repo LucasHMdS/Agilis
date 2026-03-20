@@ -1,5 +1,3 @@
-
-
 /// Configurable input bindings for UI navigation.
 ///
 /// Supports optional keyboard and/or gamepad configurations. Mouse input

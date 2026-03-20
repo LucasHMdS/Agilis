@@ -1,10 +1,12 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Mock Renderer for Particles
 
 /// Records drawCircle, drawRect, and drawSprite calls for verification.
 final class ParticleSpyRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var drawnCircles: [(center: Vector2, radius: Float, color: Color)] = []
     var drawnRects: [(rect: Rect, color: Color)] = []
     var drawnSprites: [Sprite] = []
@@ -20,26 +22,26 @@ final class ParticleSpyRenderer: @unchecked Sendable, RenderBackend {
     }
 
     // Renderer stubs
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { Size(width: 800, height: 600) }
 }
@@ -106,29 +108,57 @@ struct ParticleTests {
 
     @Test("normalizedAge at spawn is 0")
     func ageAtSpawn() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 2.0,
-                         maxLifetime: 2.0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 2.0,
+            maxLifetime: 2.0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 0)
     }
 
     @Test("normalizedAge at half lifetime is 0.5")
     func ageAtHalf() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 1.0,
-                         maxLifetime: 2.0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 1.0,
+            maxLifetime: 2.0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 0.5)
     }
 
     @Test("normalizedAge when lifetime is zero is 1.0")
     func ageAtDeath() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 0,
-                         maxLifetime: 2.0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 0,
+            maxLifetime: 2.0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 1.0)
     }
 
     @Test("normalizedAge with zero maxLifetime returns 1.0")
     func ageZeroMax() {
-        let p = Particle(position: .zero, velocity: .zero, lifetime: 0,
-                         maxLifetime: 0, scale: 1.0, rotation: 0, angularVelocity: 0)
+        let p = Particle(
+            position: .zero,
+            velocity: .zero,
+            lifetime: 0,
+            maxLifetime: 0,
+            scale: 1.0,
+            rotation: 0,
+            angularVelocity: 0
+        )
         #expect(p.normalizedAge == 1.0)
     }
 }
@@ -294,7 +324,7 @@ struct ParticleSystemTests {
     }
 
     @Test("Emission rate spawns particles over time")
-    func emissionRate() {
+    func emissionRate() throws {
         let (world, e) = runParticles(ticks: 60, deltaTime: 1.0 / 60.0) { world in
             let e = world.createEntity()
             world.addComponent(Transform2D(position: .zero), to: e)
@@ -306,14 +336,14 @@ struct ParticleSystemTests {
             return e
         }
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         // 60 rate * 60 ticks * (1/60 dt) = ~60 particles
         #expect(emitter.activeParticleCount >= 55)
         #expect(emitter.activeParticleCount <= 65)
     }
 
     @Test("Burst spawns exact count")
-    func burstSpawn() {
+    func burstSpawn() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -330,12 +360,12 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0 / 60.0)
 
-        let updated = world.getComponent(ParticleEmitter.self, from: e)!
+        let updated = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(updated.activeParticleCount == 25)
     }
 
     @Test("Burst capped by maxParticles")
-    func burstCapped() {
+    func burstCapped() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -352,12 +382,12 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0 / 60.0)
 
-        let updated = world.getComponent(ParticleEmitter.self, from: e)!
+        let updated = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(updated.activeParticleCount == 10)
     }
 
     @Test("Lifetime countdown kills particles")
-    func lifetimeKills() {
+    func lifetimeKills() throws {
         let (world, e) = runParticles(ticks: 1, deltaTime: 1.0) { world in
             let e = world.createEntity()
             world.addComponent(Transform2D(position: .zero), to: e)
@@ -371,13 +401,13 @@ struct ParticleSystemTests {
             return e
         }
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         // Particles had 0.5s lifetime, dt=1.0s → all dead
         #expect(emitter.activeParticleCount == 0)
     }
 
     @Test("Velocity integration moves particles")
-    func velocityIntegration() {
+    func velocityIntegration() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -398,14 +428,14 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0)
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(emitter.activeParticleCount == 1)
         // speed=100, angle=0, dt=1.0 → x should be ~100
         #expect(emitter.particles[0].position.x > 90)
     }
 
     @Test("Gravity accelerates particles")
-    func gravityEffect() {
+    func gravityEffect() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -425,14 +455,14 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0)
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         // Gravity 100 px/s², dt=1.0 → velocity.y = 100, position.y = 100
         #expect(emitter.particles[0].velocity.y > 90)
         #expect(emitter.particles[0].position.y > 90)
     }
 
     @Test("Damping reduces velocity")
-    func dampingEffect() {
+    func dampingEffect() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -453,14 +483,14 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0)
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         // speed=100, damping=0.5, dt=1.0 → velocity.x = 100 * (1 - 0.5) = 50
         #expect(emitter.particles[0].velocity.x > 40)
         #expect(emitter.particles[0].velocity.x < 60)
     }
 
     @Test("Dead particles are swap-removed")
-    func swapRemove() {
+    func swapRemove() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -477,17 +507,17 @@ struct ParticleSystemTests {
 
         // Tick 1: spawn 5 particles (lifetime=1.0, dt=0.5 → all alive)
         world.update(deltaTime: 0.5)
-        let after1 = world.getComponent(ParticleEmitter.self, from: e)!
+        let after1 = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(after1.activeParticleCount == 5)
 
         // Tick 2: dt=0.6 → lifetime goes to -0.1, all die
         world.update(deltaTime: 0.6)
-        let after2 = world.getComponent(ParticleEmitter.self, from: e)!
+        let after2 = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(after2.activeParticleCount == 0)
     }
 
     @Test("Zero emission rate spawns nothing")
-    func zeroRate() {
+    func zeroRate() throws {
         let (world, e) = runParticles(ticks: 60) { world in
             let e = world.createEntity()
             world.addComponent(Transform2D(position: .zero), to: e)
@@ -498,12 +528,12 @@ struct ParticleSystemTests {
             return e
         }
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(emitter.activeParticleCount == 0)
     }
 
     @Test("isEmitting false stops rate emission")
-    func notEmitting() {
+    func notEmitting() throws {
         let (world, e) = runParticles(ticks: 60) { world in
             let e = world.createEntity()
             world.addComponent(Transform2D(position: .zero), to: e)
@@ -515,12 +545,12 @@ struct ParticleSystemTests {
             return e
         }
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(emitter.activeParticleCount == 0)
     }
 
     @Test("isEmitting false still allows burst")
-    func burstWhileNotEmitting() {
+    func burstWhileNotEmitting() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -538,12 +568,12 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0 / 60.0)
 
-        let updated = world.getComponent(ParticleEmitter.self, from: e)!
+        let updated = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(updated.activeParticleCount == 10)
     }
 
     @Test("Zero maxParticles never spawns")
-    func zeroMax() {
+    func zeroMax() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -560,12 +590,12 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0)
 
-        let updated = world.getComponent(ParticleEmitter.self, from: e)!
+        let updated = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(updated.activeParticleCount == 0)
     }
 
     @Test("Angular velocity updates rotation")
-    func angularVelocityRotation() {
+    func angularVelocityRotation() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -585,12 +615,12 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0)
 
-        let emitter = world.getComponent(ParticleEmitter.self, from: e)!
+        let emitter = try #require(world.getComponent(ParticleEmitter.self, from: e))
         #expect(abs(emitter.particles[0].rotation - 1.0) < 0.01)
     }
 
     @Test("Multiple emitters update independently")
-    func multipleEmitters() {
+    func multipleEmitters() throws {
         let world = World()
         let system = ParticleSystem()
         world.addSystem(system)
@@ -609,8 +639,8 @@ struct ParticleSystemTests {
 
         world.update(deltaTime: 1.0 / 60.0)
 
-        let updated1 = world.getComponent(ParticleEmitter.self, from: e1)!
-        let updated2 = world.getComponent(ParticleEmitter.self, from: e2)!
+        let updated1 = try #require(world.getComponent(ParticleEmitter.self, from: e1))
+        let updated2 = try #require(world.getComponent(ParticleEmitter.self, from: e2))
         #expect(updated1.activeParticleCount == 3)
         #expect(updated2.activeParticleCount == 7)
     }

@@ -17,6 +17,7 @@ public struct TiledLayerData: Codable, Sendable {
     public let type: String // "tilelayer", "objectgroup", "imagelayer", "group"
     public let width: Int?
     public let height: Int?
+    // swiftlint:disable:next discouraged_optional_collection
     public let data: [Int]?
     public let visible: Bool
     public let opacity: Float

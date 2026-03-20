@@ -1,7 +1,9 @@
 import Agilis
 
 final class MenuScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
 
     func didEnter(app: Application) {
@@ -37,7 +39,7 @@ final class MenuScene: Scene {
         if app.input.isKeyPressed(.escape) { app.quit() }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         ui.render(renderer: app.renderer)
     }
 

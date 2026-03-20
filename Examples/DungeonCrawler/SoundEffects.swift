@@ -19,7 +19,7 @@ enum DungeonSounds {
         }
     }
 
-    private static let sampleRate = 44100
+    private static let sampleRate = 44_100
     private static let pi = Float.pi
 
     static func generate(audio: any AudioBackend) -> SoundSet {
@@ -64,7 +64,7 @@ enum DungeonSounds {
     }
 
     private static func toSample(_ value: Float) -> Int16 {
-        Int16(max(-1.0, min(1.0, value)) * 32000)
+        Int16(max(-1.0, min(1.0, value)) * 32_000)
     }
 
     private static func makeAudioData(samples: [Int16]) -> AudioData {

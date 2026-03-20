@@ -1,5 +1,3 @@
-
-
 /// Performs layout on a UI tree, measuring text and positioning children.
 public enum UILayoutEngine {
 
@@ -26,8 +24,10 @@ public enum UILayoutEngine {
         switch container.layout {
         case .vertical(let spacing, let alignment):
             layoutVertical(container, in: innerBounds, spacing: spacing, alignment: alignment)
+
         case .horizontal(let spacing, let alignment):
             layoutHorizontal(container, in: innerBounds, spacing: spacing, alignment: alignment)
+
         case .manual:
             break
         }
@@ -35,8 +35,12 @@ public enum UILayoutEngine {
         // Recurse into child containers
         for child in container.children {
             if let childContainer = child as? UIContainer {
-                performLayout(on: childContainer, in: child.frame,
-                              renderer: renderer, font: font)
+                performLayout(
+                    on: childContainer,
+                    in: child.frame,
+                    renderer: renderer,
+                    font: font
+                )
             }
         }
     }
@@ -101,8 +105,10 @@ public enum UILayoutEngine {
             switch alignment {
             case .leading:
                 x = bounds.x
+
             case .center:
                 x = bounds.x + (bounds.width - size.width) / 2
+
             case .trailing:
                 x = bounds.x + bounds.width - size.width
             }
@@ -136,8 +142,10 @@ public enum UILayoutEngine {
             switch alignment {
             case .top:
                 y = bounds.y
+
             case .center:
                 y = bounds.y + (bounds.height - size.height) / 2
+
             case .bottom:
                 y = bounds.y + bounds.height - size.height
             }

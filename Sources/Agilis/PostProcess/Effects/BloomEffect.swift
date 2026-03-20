@@ -1,5 +1,3 @@
-
-
 /// Glow effect that extracts bright pixels, blurs them, and adds them back.
 ///
 /// Uses a two-pass approach:
@@ -11,6 +9,8 @@
 /// postProcess.add(bloom)
 /// ```
 public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
+    deinit {}
+
     public let name = "bloom"
     public var isEnabled = true
     public var order: Int { 100 }
@@ -71,7 +71,7 @@ public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
         input: RenderTargetHandle,
         output: RenderTargetHandle,
         renderer: any RenderBackend,
-        deltaTime: Float
+        deltaTime _: Float
     ) {
         guard extractShader != .invalid,
               compositeShader != .invalid,

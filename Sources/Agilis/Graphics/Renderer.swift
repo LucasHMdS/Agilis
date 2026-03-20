@@ -1,5 +1,5 @@
-import PlatformC
 import AngleC
+import PlatformC
 import StbC
 #if canImport(Foundation)
 import Foundation
@@ -12,7 +12,9 @@ import Foundation
 /// render targets, and blend modes.
 public final class Renderer: @unchecked Sendable {
 
-    private var bgColor: Color = Color(r: 40, g: 40, b: 40)
+    deinit {}
+
+    private var bgColor = Color(r: 40, g: 40, b: 40)
     private var _screenSize: Size = .zero
 
     /// The platform window handle, available after `initialize(config:)`.
@@ -75,7 +77,7 @@ public final class Renderer: @unchecked Sendable {
 
     // MARK: - Batch Renderer State
 
-    private static let maxQuadsPerBatch = 8192
+    private static let maxQuadsPerBatch = 8_192
     private static let floatsPerVertex = 8  // x, y, u, v, r, g, b, a
     private static let verticesPerQuad = 4
     private static let indicesPerQuad = 6
@@ -90,7 +92,7 @@ public final class Renderer: @unchecked Sendable {
 
     // MARK: - MVP Matrix
 
-    private var projectionMatrix: [Float] = [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]
+    private var projectionMatrix: [Float] = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     private var mvpStack: [[Float]] = []
     private var mvpDirty: Bool = true
 
@@ -186,7 +188,7 @@ public final class Renderer: @unchecked Sendable {
             EGL_NONE
         ]
 
-        var eglCfg: UnsafeMutableRawPointer? = nil   // EGLConfig
+        var eglCfg: UnsafeMutableRawPointer?   // EGLConfig
         var numConfigs: EGLint = 0
         guard eglChooseConfig(display, &attribs, &eglCfg, 1, &numConfigs) != 0,
               numConfigs > 0,
@@ -317,9 +319,12 @@ public final class Renderer: @unchecked Sendable {
 
         // 4. Set initial orthographic projection
         projectionMatrix = Self.ortho4x4(
-            left: 0, right: _screenSize.width,
-            bottom: _screenSize.height, top: 0,
-            near: -1, far: 1
+            left: 0,
+            right: _screenSize.width,
+            bottom: _screenSize.height,
+            top: 0,
+            near: -1,
+            far: 1
         )
         mvpDirty = true
         uploadMVP()
@@ -381,15 +386,29 @@ public final class Renderer: @unchecked Sendable {
         glGenTextures(1, &glId)
         glBindTexture(GLenum(GL_TEXTURE_2D), glId)
         var pixel: [UInt8] = [255, 255, 255, 255]
-        glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GL_RGBA, 1, 1, 0,
-                     GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), &pixel)
+        glTexImage2D(
+            GLenum(GL_TEXTURE_2D),
+            0,
+            GL_RGBA,
+            1,
+            1,
+            0,
+            GLenum(GL_RGBA),
+            GLenum(GL_UNSIGNED_BYTE),
+            &pixel
+        )
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_NEAREST)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_NEAREST)
         glBindTexture(GLenum(GL_TEXTURE_2D), 0)
 
         let id = nextTextureId
         nextTextureId += 1
-        textures[id] = GLTextureInfo(glId: glId, width: 1, height: 1, isRenderTarget: false)
+        textures[id] = GLTextureInfo(
+            glId: glId,
+            width: 1,
+            height: 1,
+            isRenderTarget: false
+        )
         return TextureHandle(id: id)
     }
 
@@ -407,9 +426,12 @@ public final class Renderer: @unchecked Sendable {
         // VBO (dynamic)
         glGenBuffers(1, &batchVBO)
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), batchVBO)
-        glBufferData(GLenum(GL_ARRAY_BUFFER),
-                     GLsizeiptr(maxVerts * Self.floatsPerVertex * MemoryLayout<Float>.size),
-                     nil, GLenum(GL_DYNAMIC_DRAW))
+        glBufferData(
+            GLenum(GL_ARRAY_BUFFER),
+            GLsizeiptr(maxVerts * Self.floatsPerVertex * MemoryLayout<Float>.size),
+            nil,
+            GLenum(GL_DYNAMIC_DRAW)
+        )
 
         // IBO (static quad indices)
         var indices = [UInt16](repeating: 0, count: maxIndices)
@@ -426,33 +448,55 @@ public final class Renderer: @unchecked Sendable {
         glGenBuffers(1, &batchIBO)
         glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), batchIBO)
         indices.withUnsafeBufferPointer { ptr in
-            glBufferData(GLenum(GL_ELEMENT_ARRAY_BUFFER),
-                         GLsizeiptr(maxIndices * MemoryLayout<UInt16>.size),
-                         ptr.baseAddress, GLenum(GL_STATIC_DRAW))
+            glBufferData(
+                GLenum(GL_ELEMENT_ARRAY_BUFFER),
+                GLsizeiptr(maxIndices * MemoryLayout<UInt16>.size),
+                ptr.baseAddress,
+                GLenum(GL_STATIC_DRAW)
+            )
         }
 
         let stride = GLsizei(Self.floatsPerVertex * MemoryLayout<Float>.size)
 
         // Position: location 0, 2 floats, offset 0
         glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), stride,
-                              UnsafeRawPointer(bitPattern: 0))
+        glVertexAttribPointer(
+            0,
+            2,
+            GLenum(GL_FLOAT),
+            GLboolean(GL_FALSE),
+            stride,
+            UnsafeRawPointer(bitPattern: 0)
+        )
 
         // TexCoord: location 1, 2 floats, offset 8
         glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), stride,
-                              UnsafeRawPointer(bitPattern: 2 * MemoryLayout<Float>.size))
+        glVertexAttribPointer(
+            1,
+            2,
+            GLenum(GL_FLOAT),
+            GLboolean(GL_FALSE),
+            stride,
+            UnsafeRawPointer(bitPattern: 2 * MemoryLayout<Float>.size)
+        )
 
         // Color: location 2, 4 floats, offset 16
         glEnableVertexAttribArray(2)
-        glVertexAttribPointer(2, 4, GLenum(GL_FLOAT), GLboolean(GL_FALSE), stride,
-                              UnsafeRawPointer(bitPattern: 4 * MemoryLayout<Float>.size))
+        glVertexAttribPointer(
+            2,
+            4,
+            GLenum(GL_FLOAT),
+            GLboolean(GL_FALSE),
+            stride,
+            UnsafeRawPointer(bitPattern: 4 * MemoryLayout<Float>.size)
+        )
 
         glBindVertexArray(0)
     }
 
     // MARK: - Batch Renderer Core
 
+    // swiftlint:disable:next function_parameter_count
     private func addQuadToBatch(
         glTexId: GLuint,
         x0: Float, y0: Float, u0: Float, v0: Float,
@@ -528,9 +572,12 @@ public final class Renderer: @unchecked Sendable {
             glBufferSubData(GLenum(GL_ARRAY_BUFFER), 0, GLsizeiptr(byteCount), ptr.baseAddress)
         }
 
-        glDrawElements(GLenum(GL_TRIANGLES),
-                       GLsizei(batchQuadCount * Self.indicesPerQuad),
-                       GLenum(GL_UNSIGNED_SHORT), nil)
+        glDrawElements(
+            GLenum(GL_TRIANGLES),
+            GLsizei(batchQuadCount * Self.indicesPerQuad),
+            GLenum(GL_UNSIGNED_SHORT),
+            nil
+        )
 
         glBindVertexArray(0)
         batchQuadCount = 0
@@ -542,10 +589,13 @@ public final class Renderer: @unchecked Sendable {
         switch mode {
         case .alpha:
             glBlendFunc(GLenum(GL_SRC_ALPHA), GLenum(GL_ONE_MINUS_SRC_ALPHA))
+
         case .additive:
             glBlendFunc(GLenum(GL_SRC_ALPHA), GLenum(GL_ONE))
+
         case .multiplied:
             glBlendFunc(GLenum(GL_DST_COLOR), GLenum(GL_ONE_MINUS_SRC_ALPHA))
+
         case .premultiplied:
             glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA))
         }
@@ -585,15 +635,15 @@ public final class Renderer: @unchecked Sendable {
         let tb = top - bottom
         let fn = far - near
         return [
-            2.0 / rl,           0,                   0,                  0,
-            0,                   2.0 / tb,            0,                  0,
-            0,                   0,                  -2.0 / fn,           0,
-            -(right + left)/rl, -(top + bottom)/tb,  -(far + near)/fn,   1
+            2.0 / rl, 0, 0, 0,
+            0, 2.0 / tb, 0, 0,
+            0, 0, -2.0 / fn, 0,
+            -(right + left)/rl, -(top + bottom)/tb, -(far + near)/fn, 1
         ]
     }
 
     private static func mat4x4Identity() -> [Float] {
-        [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     }
 
     private static func mat4x4Multiply(_ a: [Float], _ b: [Float]) -> [Float] {
@@ -611,17 +661,17 @@ public final class Renderer: @unchecked Sendable {
     }
 
     private static func mat4x4Translate(_ x: Float, _ y: Float) -> [Float] {
-        [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  x, y, 0, 1]
+        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, 0, 1]
     }
 
     private static func mat4x4Scale(_ sx: Float, _ sy: Float) -> [Float] {
-        [sx, 0, 0, 0,  0, sy, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]
+        [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     }
 
     private static func mat4x4Rotate(_ angle: Float) -> [Float] {
         let c = cosf(angle)
         let s = sinf(angle)
-        return [c, s, 0, 0,  -s, c, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]
+        return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     }
 
     // MARK: - Shader Compilation
@@ -651,7 +701,10 @@ public final class Renderer: @unchecked Sendable {
             if logLength > 0 {
                 var logBuffer = [CChar](repeating: 0, count: Int(logLength))
                 glGetProgramInfoLog(program, logLength, nil, &logBuffer)
-                let message = logBuffer.withUnsafeBufferPointer { String(cString: $0.baseAddress!) }
+                let message = logBuffer.withUnsafeBufferPointer { buf in
+                    guard let base = buf.baseAddress else { return "" }
+                    return String(cString: base)
+                }
                 Log.error("Renderer", "Shader link failed: \(message)")
             }
             glDeleteProgram(program)
@@ -676,7 +729,10 @@ public final class Renderer: @unchecked Sendable {
             if logLength > 0 {
                 var logBuffer = [CChar](repeating: 0, count: Int(logLength))
                 glGetShaderInfoLog(shader, logLength, nil, &logBuffer)
-                let message = logBuffer.withUnsafeBufferPointer { String(cString: $0.baseAddress!) }
+                let message = logBuffer.withUnsafeBufferPointer { buf in
+                    guard let base = buf.baseAddress else { return "" }
+                    return String(cString: base)
+                }
                 let typeStr = type == GLenum(GL_VERTEX_SHADER) ? "vertex" : "fragment"
                 Log.error("Renderer", "Shader compile failed (\(typeStr)): \(message)")
             }
@@ -713,7 +769,8 @@ public final class Renderer: @unchecked Sendable {
     public func loadTextureFromImage(_ image: ImageData) -> TextureHandle {
         guard !image.pixels.isEmpty else { return .invalid }
         return image.pixels.withUnsafeBufferPointer { ptr in
-            uploadTexture(pixels: ptr.baseAddress!, width: image.width, height: image.height)
+            guard let base = ptr.baseAddress else { return .invalid }
+            return uploadTexture(pixels: base, width: image.width, height: image.height)
         }
     }
 
@@ -721,9 +778,17 @@ public final class Renderer: @unchecked Sendable {
         var glId: GLuint = 0
         glGenTextures(1, &glId)
         glBindTexture(GLenum(GL_TEXTURE_2D), glId)
-        glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GL_RGBA,
-                     GLsizei(width), GLsizei(height), 0,
-                     GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), pixels)
+        glTexImage2D(
+            GLenum(GL_TEXTURE_2D),
+            0,
+            GL_RGBA,
+            GLsizei(width),
+            GLsizei(height),
+            0,
+            GLenum(GL_RGBA),
+            GLenum(GL_UNSIGNED_BYTE),
+            pixels
+        )
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_NEAREST)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_NEAREST)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
@@ -732,7 +797,12 @@ public final class Renderer: @unchecked Sendable {
 
         let id = nextTextureId
         nextTextureId += 1
-        textures[id] = GLTextureInfo(glId: glId, width: width, height: height, isRenderTarget: false)
+        textures[id] = GLTextureInfo(
+            glId: glId,
+            width: width,
+            height: height,
+            isRenderTarget: false
+        )
         return TextureHandle(id: id)
     }
 
@@ -775,10 +845,10 @@ public final class Renderer: @unchecked Sendable {
         let ox = sprite.origin.x * sprite.scale.x
         let oy = sprite.origin.y * sprite.scale.y
 
-        var cx0 = -ox,      cy0 = -oy
-        var cx1 = dw - ox,  cy1 = -oy
-        var cx2 = dw - ox,  cy2 = dh - oy
-        var cx3 = -ox,      cy3 = dh - oy
+        var cx0 = -ox, cy0 = -oy
+        var cx1 = dw - ox, cy1 = -oy
+        var cx2 = dw - ox, cy2 = dh - oy
+        var cx3 = -ox, cy3 = dh - oy
 
         if sprite.rotation != 0 {
             let c = cosf(sprite.rotation)
@@ -823,11 +893,26 @@ public final class Renderer: @unchecked Sendable {
 
             addQuadToBatch(
                 glTexId: texInfo.glId,
-                x0: cx0, y0: cy0, u0: u0, v0: v0,
-                x1: cx1, y1: cy1, u1: u1, v1: v0,
-                x2: cx2, y2: cy2, u2: u1, v2: v1,
-                x3: cx3, y3: cy3, u3: u0, v3: v1,
-                r: r, g: g, b: b, a: a,
+                x0: cx0,
+                y0: cy0,
+                u0: u0,
+                v0: v0,
+                x1: cx1,
+                y1: cy1,
+                u1: u1,
+                v1: v0,
+                x2: cx2,
+                y2: cy2,
+                u2: u1,
+                v2: v1,
+                x3: cx3,
+                y3: cy3,
+                u3: u0,
+                v3: v1,
+                r: r,
+                g: g,
+                b: b,
+                a: a,
                 blendMode: effectiveBlend
             )
             flushBatch()
@@ -841,11 +926,26 @@ public final class Renderer: @unchecked Sendable {
         } else {
             addQuadToBatch(
                 glTexId: texInfo.glId,
-                x0: cx0, y0: cy0, u0: u0, v0: v0,
-                x1: cx1, y1: cy1, u1: u1, v1: v0,
-                x2: cx2, y2: cy2, u2: u1, v2: v1,
-                x3: cx3, y3: cy3, u3: u0, v3: v1,
-                r: r, g: g, b: b, a: a,
+                x0: cx0,
+                y0: cy0,
+                u0: u0,
+                v0: v0,
+                x1: cx1,
+                y1: cy1,
+                u1: u1,
+                v1: v0,
+                x2: cx2,
+                y2: cy2,
+                u2: u1,
+                v2: v1,
+                x3: cx3,
+                y3: cy3,
+                u3: u0,
+                v3: v1,
+                r: r,
+                g: g,
+                b: b,
+                a: a,
                 blendMode: effectiveBlend
             )
         }
@@ -866,11 +966,26 @@ public final class Renderer: @unchecked Sendable {
 
         addQuadToBatch(
             glTexId: wt.glId,
-            x0: rect.x,              y0: rect.y,               u0: 0, v0: 0,
-            x1: rect.x + rect.width, y1: rect.y,               u1: 1, v1: 0,
-            x2: rect.x + rect.width, y2: rect.y + rect.height, u2: 1, v2: 1,
-            x3: rect.x,              y3: rect.y + rect.height, u3: 0, v3: 1,
-            r: r, g: g, b: b, a: a,
+            x0: rect.x,
+            y0: rect.y,
+            u0: 0,
+            v0: 0,
+            x1: rect.x + rect.width,
+            y1: rect.y,
+            u1: 1,
+            v1: 0,
+            x2: rect.x + rect.width,
+            y2: rect.y + rect.height,
+            u2: 1,
+            v2: 1,
+            x3: rect.x,
+            y3: rect.y + rect.height,
+            u3: 0,
+            v3: 1,
+            r: r,
+            g: g,
+            b: b,
+            a: a,
             blendMode: batchCurrentBlendMode
         )
     }
@@ -900,11 +1015,26 @@ public final class Renderer: @unchecked Sendable {
 
         addQuadToBatch(
             glTexId: wt.glId,
-            x0: start.x + nx, y0: start.y + ny, u0: 0, v0: 0,
-            x1: end.x + nx,   y1: end.y + ny,   u1: 1, v1: 0,
-            x2: end.x - nx,   y2: end.y - ny,   u2: 1, v2: 1,
-            x3: start.x - nx, y3: start.y - ny, u3: 0, v3: 1,
-            r: r, g: g, b: b, a: a,
+            x0: start.x + nx,
+            y0: start.y + ny,
+            u0: 0,
+            v0: 0,
+            x1: end.x + nx,
+            y1: end.y + ny,
+            u1: 1,
+            v1: 0,
+            x2: end.x - nx,
+            y2: end.y - ny,
+            u2: 1,
+            v2: 1,
+            x3: start.x - nx,
+            y3: start.y - ny,
+            u3: 0,
+            v3: 1,
+            r: r,
+            g: g,
+            b: b,
+            a: a,
             blendMode: batchCurrentBlendMode
         )
     }
@@ -928,11 +1058,26 @@ public final class Renderer: @unchecked Sendable {
 
             addQuadToBatch(
                 glTexId: wt.glId,
-                x0: center.x, y0: center.y, u0: 0, v0: 0,
-                x1: px1,      y1: py1,      u1: 0, v1: 0,
-                x2: px2,      y2: py2,      u2: 0, v2: 0,
-                x3: px2,      y3: py2,      u3: 0, v3: 0,
-                r: r, g: g, b: b, a: a,
+                x0: center.x,
+                y0: center.y,
+                u0: 0,
+                v0: 0,
+                x1: px1,
+                y1: py1,
+                u1: 0,
+                v1: 0,
+                x2: px2,
+                y2: py2,
+                u2: 0,
+                v2: 0,
+                x3: px2,
+                y3: py2,
+                u3: 0,
+                v3: 0,
+                r: r,
+                g: g,
+                b: b,
+                a: a,
                 blendMode: batchCurrentBlendMode
             )
         }
@@ -945,9 +1090,16 @@ public final class Renderer: @unchecked Sendable {
             let a1 = Float(i) * angleStep
             let a2 = Float(i + 1) * angleStep
             drawLine(
-                from: Vector2(x: center.x + cosf(a1) * radius, y: center.y + sinf(a1) * radius),
-                to: Vector2(x: center.x + cosf(a2) * radius, y: center.y + sinf(a2) * radius),
-                color: color, thickness: thickness
+                from: Vector2(
+                    x: center.x + cosf(a1) * radius,
+                    y: center.y + sinf(a1) * radius
+                ),
+                to: Vector2(
+                    x: center.x + cosf(a2) * radius,
+                    y: center.y + sinf(a2) * radius
+                ),
+                color: color,
+                thickness: thickness
             )
         }
     }
@@ -961,11 +1113,26 @@ public final class Renderer: @unchecked Sendable {
 
         addQuadToBatch(
             glTexId: wt.glId,
-            x0: v1.x, y0: v1.y, u0: 0, v0: 0,
-            x1: v2.x, y1: v2.y, u1: 0, v1: 0,
-            x2: v3.x, y2: v3.y, u2: 0, v2: 0,
-            x3: v3.x, y3: v3.y, u3: 0, v3: 0,
-            r: r, g: g, b: b, a: a,
+            x0: v1.x,
+            y0: v1.y,
+            u0: 0,
+            v0: 0,
+            x1: v2.x,
+            y1: v2.y,
+            u1: 0,
+            v1: 0,
+            x2: v3.x,
+            y2: v3.y,
+            u2: 0,
+            v2: 0,
+            x3: v3.x,
+            y3: v3.y,
+            u3: 0,
+            v3: 0,
+            r: r,
+            g: g,
+            b: b,
+            a: a,
             blendMode: batchCurrentBlendMode
         )
     }
@@ -973,7 +1140,7 @@ public final class Renderer: @unchecked Sendable {
     // MARK: - Fonts & Text
 
     public func loadDefaultFont() -> FontHandle {
-        return loadFontFromBytes(DefaultFontData.ttfBytes, pixelSize: 32.0)
+        loadFontFromBytes(DefaultFontData.ttfBytes, pixelSize: 32.0)
     }
 
     public func loadFont(from path: String, size: Int) -> FontHandle {
@@ -1024,10 +1191,18 @@ public final class Renderer: @unchecked Sendable {
         bakedChars.initialize(repeating: stbtt_bakedchar(), count: Int(numChars))
         var bitmap = [UInt8](repeating: 0, count: Int(atlasW * atlasH))
 
-        let _ = bytes.withUnsafeBufferPointer { buf in
-            stbtt_BakeFontBitmap(buf.baseAddress, 0, pixelSize,
-                                 &bitmap, atlasW, atlasH,
-                                 32, numChars, bakedChars)
+        _ = bytes.withUnsafeBufferPointer { buf in
+            stbtt_BakeFontBitmap(
+                buf.baseAddress,
+                0,
+                pixelSize,
+                &bitmap,
+                atlasW,
+                atlasH,
+                32,
+                numChars,
+                bakedChars
+            )
         }
 
         // Convert alpha bitmap to RGBA
@@ -1043,9 +1218,17 @@ public final class Renderer: @unchecked Sendable {
         glGenTextures(1, &glId)
         glBindTexture(GLenum(GL_TEXTURE_2D), glId)
         rgba.withUnsafeBufferPointer { ptr in
-            glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GL_RGBA,
-                         GLsizei(atlasW), GLsizei(atlasH), 0,
-                         GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), ptr.baseAddress)
+            glTexImage2D(
+                GLenum(GL_TEXTURE_2D),
+                0,
+                GL_RGBA,
+                GLsizei(atlasW),
+                GLsizei(atlasH),
+                0,
+                GLenum(GL_RGBA),
+                GLenum(GL_UNSIGNED_BYTE),
+                ptr.baseAddress
+            )
         }
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
@@ -1055,8 +1238,12 @@ public final class Renderer: @unchecked Sendable {
 
         let texId = nextTextureId
         nextTextureId += 1
-        textures[texId] = GLTextureInfo(glId: glId, width: Int(atlasW),
-                                        height: Int(atlasH), isRenderTarget: false)
+        textures[texId] = GLTextureInfo(
+            glId: glId,
+            width: Int(atlasW),
+            height: Int(atlasH),
+            isRenderTarget: false
+        )
 
         let fontId = nextFontId
         nextFontId += 1
@@ -1107,9 +1294,16 @@ public final class Renderer: @unchecked Sendable {
             guard codepoint >= 32 && codepoint < 127 else { continue }
 
             var q = stbtt_aligned_quad()
-            stbtt_GetBakedQuad(fontInfo.bakedChars,
-                               Int32(fontInfo.atlasWidth), Int32(fontInfo.atlasHeight),
-                               Int32(codepoint - 32), &xpos, &ypos, &q, 1)
+            stbtt_GetBakedQuad(
+                fontInfo.bakedChars,
+                Int32(fontInfo.atlasWidth),
+                Int32(fontInfo.atlasHeight),
+                Int32(codepoint - 32),
+                &xpos,
+                &ypos,
+                &q,
+                1
+            )
 
             let qx0 = position.x + q.x0 * scale
             let qy0 = position.y + ascentPx + q.y0 * scale
@@ -1118,11 +1312,26 @@ public final class Renderer: @unchecked Sendable {
 
             addQuadToBatch(
                 glTexId: fontInfo.textureGlId,
-                x0: qx0, y0: qy0, u0: q.s0, v0: q.t0,
-                x1: qx1, y1: qy0, u1: q.s1, v1: q.t0,
-                x2: qx1, y2: qy1, u2: q.s1, v2: q.t1,
-                x3: qx0, y3: qy1, u3: q.s0, v3: q.t1,
-                r: r, g: g, b: b, a: a,
+                x0: qx0,
+                y0: qy0,
+                u0: q.s0,
+                v0: q.t0,
+                x1: qx1,
+                y1: qy0,
+                u1: q.s1,
+                v1: q.t0,
+                x2: qx1,
+                y2: qy1,
+                u2: q.s1,
+                v2: q.t1,
+                x3: qx0,
+                y3: qy1,
+                u3: q.s0,
+                v3: q.t1,
+                r: r,
+                g: g,
+                b: b,
+                a: a,
                 blendMode: batchCurrentBlendMode
             )
         }
@@ -1150,14 +1359,23 @@ public final class Renderer: @unchecked Sendable {
             guard codepoint >= 32 && codepoint < 127 else { continue }
 
             var q = stbtt_aligned_quad()
-            stbtt_GetBakedQuad(fontInfo.bakedChars,
-                               Int32(fontInfo.atlasWidth), Int32(fontInfo.atlasHeight),
-                               Int32(codepoint - 32), &xpos, &ypos, &q, 1)
+            stbtt_GetBakedQuad(
+                fontInfo.bakedChars,
+                Int32(fontInfo.atlasWidth),
+                Int32(fontInfo.atlasHeight),
+                Int32(codepoint - 32),
+                &xpos,
+                &ypos,
+                &q,
+                1
+            )
         }
         maxWidth = max(maxWidth, xpos)
 
-        return Size(width: maxWidth * scale,
-                    height: fontInfo.fontSize * scale * Float(lineCount))
+        return Size(
+            width: maxWidth * scale,
+            height: fontInfo.fontSize * scale * Float(lineCount)
+        )
     }
 
     // MARK: - Clipping
@@ -1174,8 +1392,8 @@ public final class Renderer: @unchecked Sendable {
         if !clipStack.isEmpty { clipStack.removeLast() }
         if clipStack.isEmpty {
             glDisable(GLenum(GL_SCISSOR_TEST))
-        } else {
-            applyScissor(clipStack.last!)
+        } else if let lastClip = clipStack.last {
+            applyScissor(lastClip)
         }
     }
 
@@ -1197,9 +1415,12 @@ public final class Renderer: @unchecked Sendable {
         mvpStack.append(projectionMatrix)
 
         let ortho = Self.ortho4x4(
-            left: 0, right: _screenSize.width,
-            bottom: _screenSize.height, top: 0,
-            near: -1, far: 1
+            left: 0,
+            right: _screenSize.width,
+            bottom: _screenSize.height,
+            top: 0,
+            near: -1,
+            far: 1
         )
 
         let tOffset = Self.mat4x4Translate(camera.offset.x, camera.offset.y)
@@ -1229,9 +1450,17 @@ public final class Renderer: @unchecked Sendable {
         var texGlId: GLuint = 0
         glGenTextures(1, &texGlId)
         glBindTexture(GLenum(GL_TEXTURE_2D), texGlId)
-        glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GL_RGBA,
-                     GLsizei(width), GLsizei(height), 0,
-                     GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), nil)
+        glTexImage2D(
+            GLenum(GL_TEXTURE_2D),
+            0,
+            GL_RGBA,
+            GLsizei(width),
+            GLsizei(height),
+            0,
+            GLenum(GL_RGBA),
+            GLenum(GL_UNSIGNED_BYTE),
+            nil
+        )
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
@@ -1240,8 +1469,13 @@ public final class Renderer: @unchecked Sendable {
         var fbo: GLuint = 0
         glGenFramebuffers(1, &fbo)
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), fbo)
-        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0),
-                               GLenum(GL_TEXTURE_2D), texGlId, 0)
+        glFramebufferTexture2D(
+            GLenum(GL_FRAMEBUFFER),
+            GLenum(GL_COLOR_ATTACHMENT0),
+            GLenum(GL_TEXTURE_2D),
+            texGlId,
+            0
+        )
 
         let status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), 0)
@@ -1257,12 +1491,21 @@ public final class Renderer: @unchecked Sendable {
 
         let texId = nextTextureId
         nextTextureId += 1
-        textures[texId] = GLTextureInfo(glId: texGlId, width: width, height: height, isRenderTarget: true)
+        textures[texId] = GLTextureInfo(
+            glId: texGlId,
+            width: width,
+            height: height,
+            isRenderTarget: true
+        )
 
         let rtId = nextRenderTargetId
         nextRenderTargetId += 1
-        renderTargets[rtId] = GLRenderTargetInfo(fbo: fbo, textureHandle: TextureHandle(id: texId),
-                                                  width: width, height: height)
+        renderTargets[rtId] = GLRenderTargetInfo(
+            fbo: fbo,
+            textureHandle: TextureHandle(id: texId),
+            width: width,
+            height: height
+        )
         return RenderTargetHandle(id: rtId)
     }
 
@@ -1272,17 +1515,24 @@ public final class Renderer: @unchecked Sendable {
 
         var viewport = [GLint](repeating: 0, count: 4)
         glGetIntegerv(GLenum(GL_VIEWPORT), &viewport)
-        savedViewports.append((x: viewport[0], y: viewport[1],
-                               w: GLsizei(viewport[2]), h: GLsizei(viewport[3])))
+        savedViewports.append((
+            x: viewport[0],
+            y: viewport[1],
+            w: GLsizei(viewport[2]),
+            h: GLsizei(viewport[3])
+        ))
 
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), rtInfo.fbo)
         glViewport(0, 0, GLsizei(rtInfo.width), GLsizei(rtInfo.height))
 
         mvpStack.append(projectionMatrix)
         projectionMatrix = Self.ortho4x4(
-            left: 0, right: Float(rtInfo.width),
-            bottom: Float(rtInfo.height), top: 0,
-            near: -1, far: 1
+            left: 0,
+            right: Float(rtInfo.width),
+            bottom: Float(rtInfo.height),
+            top: 0,
+            near: -1,
+            far: 1
         )
         mvpDirty = true
 
@@ -1445,8 +1695,14 @@ public final class Renderer: @unchecked Sendable {
     public func takeScreenshot(path: String) {
         guard let image = captureScreen() else { return }
         image.pixels.withUnsafeBufferPointer { ptr in
-            _ = stbi_write_png(path, Int32(image.width), Int32(image.height), 4,
-                               ptr.baseAddress, Int32(image.width * 4))
+            _ = stbi_write_png(
+                path,
+                Int32(image.width),
+                Int32(image.height),
+                4,
+                ptr.baseAddress,
+                Int32(image.width * 4)
+            )
         }
     }
 
@@ -1458,8 +1714,15 @@ public final class Renderer: @unchecked Sendable {
 
         var pixels = [UInt8](repeating: 0, count: w * h * 4)
         pixels.withUnsafeMutableBufferPointer { ptr in
-            glReadPixels(0, 0, GLsizei(w), GLsizei(h),
-                         GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), ptr.baseAddress)
+            glReadPixels(
+                0,
+                0,
+                GLsizei(w),
+                GLsizei(h),
+                GLenum(GL_RGBA),
+                GLenum(GL_UNSIGNED_BYTE),
+                ptr.baseAddress
+            )
         }
 
         // Y-flip (GL reads bottom-to-top)
@@ -1481,18 +1744,29 @@ public final class Renderer: @unchecked Sendable {
             switch value {
             case .float(let v):
                 setShaderFloat(material.shader, name: name, value: v)
+
             case .vec2(let v):
                 setShaderVec2(material.shader, name: name, value: v)
+
             case .vec3(let x, let y, let z):
                 setShaderVec3(material.shader, name: name, x: x, y: y, z: z)
+
             case .vec4(let x, let y, let z, let w):
                 setShaderVec4(material.shader, name: name, x: x, y: y, z: z, w: w)
+
             case .int(let v):
                 setShaderInt(material.shader, name: name, value: v)
+
             case .color(let c):
-                setShaderVec4(material.shader, name: name,
-                    x: Float(c.r) / 255.0, y: Float(c.g) / 255.0,
-                    z: Float(c.b) / 255.0, w: Float(c.a) / 255.0)
+                setShaderVec4(
+                    material.shader,
+                    name: name,
+                    x: Float(c.r) / 255.0,
+                    y: Float(c.g) / 255.0,
+                    z: Float(c.b) / 255.0,
+                    w: Float(c.a) / 255.0
+                )
+
             case .texture(let t):
                 setShaderTexture(material.shader, name: name, texture: t)
             }

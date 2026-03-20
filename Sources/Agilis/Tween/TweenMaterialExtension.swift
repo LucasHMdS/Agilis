@@ -1,5 +1,3 @@
-
-
 extension TweenSystem {
 
     /// Animate a float material uniform on a sprite from its current value to a target.
@@ -33,8 +31,7 @@ extension TweenSystem {
             return .invalid
         }
 
-        return custom(entity, duration: duration, easing: easing, delay: delay) {
-            w, e, t in
+        return custom(entity, duration: duration, easing: easing, delay: delay) { w, e, t in
             w.updateComponent(Sprite.self, on: e) { s in
                 s.material?.uniforms[name] = .float(lerp(startValue, targetValue, t: t))
             }
@@ -68,8 +65,7 @@ extension TweenSystem {
             return .invalid
         }
 
-        return custom(entity, duration: duration, easing: easing, delay: delay) {
-            w, e, t in
+        return custom(entity, duration: duration, easing: easing, delay: delay) { w, e, t in
             let r = UInt8(lerp(Float(startColor.r), Float(targetColor.r), t: t))
             let g = UInt8(lerp(Float(startColor.g), Float(targetColor.g), t: t))
             let b = UInt8(lerp(Float(startColor.b), Float(targetColor.b), t: t))

@@ -1,5 +1,3 @@
-
-
 /// Manages audio playback with group volumes, fading, and crossfading.
 ///
 /// Wraps an ``AudioEngine`` and provides higher-level audio features.
@@ -17,6 +15,8 @@
 /// ```
 public final class AudioManager: @unchecked Sendable {
 
+    deinit {}
+
     /// The underlying audio backend.
     public let backend: any AudioBackend
 
@@ -25,7 +25,7 @@ public final class AudioManager: @unchecked Sendable {
     private var groupVolumes: [AudioGroup: Float] = [
         .music: 1.0,
         .sfx: 1.0,
-        .ui: 1.0,
+        .ui: 1.0
     ]
 
     // MARK: - Active Sound Tracking
@@ -174,9 +174,13 @@ public final class AudioManager: @unchecked Sendable {
 
         let startVolume: Float = fadeDuration > 0 ? 0 : volume
         let fade: FadeState? = fadeDuration > 0
-            ? FadeState(fromVolume: 0, toVolume: volume,
-                        duration: fadeDuration, elapsed: 0,
-                        stopOnComplete: false)
+            ? FadeState(
+                fromVolume: 0,
+                toVolume: volume,
+                duration: fadeDuration,
+                elapsed: 0,
+                stopOnComplete: false
+            )
             : nil
 
         let musicGroupVolume = groupVolumes[.music] ?? 1.0

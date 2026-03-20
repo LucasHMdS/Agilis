@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Physics Component Tests")
 struct PhysicsComponentTests {
@@ -145,8 +145,11 @@ struct PhysicsComponentTests {
 
     @Test("BodyType equality")
     func bodyTypeEquality() {
+        // swiftlint:disable:next identical_operands
         #expect(BodyType.dynamic == BodyType.dynamic)
+        // swiftlint:disable:next identical_operands
         #expect(BodyType.static == BodyType.static)
+        // swiftlint:disable:next identical_operands
         #expect(BodyType.kinematic == BodyType.kinematic)
         #expect(BodyType.dynamic != BodyType.static)
     }
