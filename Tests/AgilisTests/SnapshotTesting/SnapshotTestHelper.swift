@@ -44,7 +44,15 @@ enum SnapshotTestHelper {
     /// - First run (no reference): saves captured image as the new reference.
     /// - Subsequent runs: loads reference and compares pixel-by-pixel.
     /// - On failure: saves `<name>_actual.png` and `<name>_diff.png` for debugging.
-    /// - Set `UPDATE_SNAPSHOTS=1` environment variable to force-regenerate references.
+    ///
+    /// ## Environment variables
+    /// - `UPDATE_SNAPSHOTS=1` — force-regenerate **all** reference images.
+    /// - `RETAKE_SNAPSHOT=<name>` — regenerate a **single** snapshot by name
+    ///   (e.g. `RETAKE_SNAPSHOT=outline-white`).
+    /// - `RETAKE_SNAPSHOT=<n1>,<n2>` — regenerate **multiple** snapshots
+    ///   (e.g. `RETAKE_SNAPSHOT=outline-white,wave-distortion`).
+    /// - `RETAKE_SUITE=<suite>` — regenerate **all** snapshots in a suite
+    ///   (e.g. `RETAKE_SUITE=Materials`).
     static func assertSnapshot(
         _ actual: ImageData,
         suite: String,
@@ -56,16 +64,31 @@ enum SnapshotTestHelper {
         let refPath = referenceImagePath(suite: suite, name: name, sourceFile: sourceFile)
 
         #if canImport(Foundation)
-        let shouldUpdate = ProcessInfo.processInfo.environment["UPDATE_SNAPSHOTS"] == "1"
+        let env = ProcessInfo.processInfo.environment
+        let shouldUpdateAll = env["UPDATE_SNAPSHOTS"] == "1"
+        let retakeNames = env["RETAKE_SNAPSHOT"]
+        let retakeSuite = env["RETAKE_SUITE"]
+
+        let shouldRetake: Bool = {
+            if shouldUpdateAll { return true }
+            if let retakeSuite, retakeSuite == suite { return true }
+            guard let retakeNames else { return false }
+            let names = retakeNames.split(separator: ",").map { part in
+                part.trimmingCharacters(in: .whitespaces)
+            }
+            return names.contains(name)
+        }()
         #else
-        let shouldUpdate = false
+        let shouldRetake = false
         #endif
 
-        if shouldUpdate {
+        if shouldRetake {
             ensureDirectoryExists(for: refPath)
             guard actual.save(to: refPath) else {
-                Issue.record("Failed to save reference image to \(refPath)",
-                             sourceLocation: sourceLocation)
+                Issue.record(
+                    "Failed to save reference image to \(refPath)",
+                    sourceLocation: sourceLocation
+                )
                 return
             }
             return
