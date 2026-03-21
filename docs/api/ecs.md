@@ -312,7 +312,7 @@ protocol SerializableComponent: Component, Codable {
 }
 ```
 
-Built-in conformances: `Transform2D`, `PreviousTransform2D`, `Velocity2D`, `RigidBody2D`, `Collider2D`, `Sprite`, `SpriteAnimator`, `ParticleEmitter`, `Light2D`, `ShadowCaster2D`.
+Built-in conformances: `Transform2D`, `PreviousTransform2D`, `Velocity2D`, `RigidBody2D`, `Collider2D`, `Sprite`, `SpriteAnimator`, `ParticleEmitter`, `Light2D`, `ShadowCaster2D`, `AnimationStateMachine`, `NormalMapData`.
 
 User components can conform by implementing `SerializableComponent`:
 
@@ -327,7 +327,7 @@ struct Health: SerializableComponent {
 
 ```swift
 let serializer = WorldSerializer()
-serializer.registerDefaults()        // Registers all 10 built-in types
+serializer.registerDefaults()        // Registers all 12 built-in types
 serializer.register(Health.self)     // Register custom component
 
 // Save

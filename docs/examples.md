@@ -110,7 +110,7 @@ swift run UIDemo
 
 ---
 
-## PongGame
+## Pong
 
 `Examples/Pong/`
 
@@ -212,7 +212,7 @@ func render(app: Application, interpolation: Double) {
 ### Running
 
 ```bash
-swift run PongGame
+swift run Pong
 ```
 
 ---

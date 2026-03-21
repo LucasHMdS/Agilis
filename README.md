@@ -73,7 +73,7 @@ Add Agilis to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourname/Agilis.git", from: "0.1.0"),
+    .package(url: "https://github.com/LucasHMdS/Agilis.git", from: "0.1.0"),
 ],
 targets: [
     .executableTarget(
@@ -88,7 +88,7 @@ targets: [
 
 ## Building
 
-Requires **Swift 6.0+**. No external Swift dependencies — all native backends (ANGLE, MiniAudio, PlatformC) are vendored and build from source.
+Requires **Swift 6.0+**. No external Swift dependencies — third-party C libraries (ANGLE, MiniAudio, stb) are vendored, and PlatformC is our own native windowing/input layer. All build from source.
 
 ```
 swift build
@@ -101,10 +101,10 @@ swift run Pong
 
 ```
 Sources/
-  PlatformC/               Native windowing and input (Win32/Cocoa/X11)
-  AngleC/                  ANGLE — EGL + OpenGL ES 3.0 (pre-built binaries)
-  MiniaudioC/              MiniAudio — cross-platform audio (single-header)
-  StbC/                    stb libraries — image loading, font rasterization
+  PlatformC/               Native windowing and input — our own C code (Win32/Cocoa/X11)
+  AngleC/                  ANGLE — EGL + OpenGL ES 3.0 (vendored, pre-built binaries)
+  MiniaudioC/              MiniAudio — cross-platform audio (vendored, single-header)
+  StbC/                    stb libraries — image loading, font rasterization (vendored)
 
   Agilis/                  Main framework
     Application/            Application, GameDelegate
@@ -170,7 +170,7 @@ Examples/
   TopDownShooter/         2D top-down shooter with particles and UI
 
 Tests/
-  AgilisTests/             Core framework, ECS, physics, materials, and UI tests (1450+ tests)
+  AgilisTests/             Core framework, ECS, physics, materials, and UI tests (1600+ tests)
   AgilisFormatsTests/      Format parser tests
 ```
 

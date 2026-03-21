@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **Swift 6.0+** (Windows, macOS, or Linux)
-- No external Swift dependencies — all native backends (ANGLE, MiniAudio, PlatformC) are vendored and build from source
+- No external Swift dependencies — third-party C libraries (ANGLE, MiniAudio, stb) are vendored, and PlatformC is our own native windowing/input layer. All build from source
 
 ## Creating a New Project
 
@@ -16,7 +16,7 @@ import PackageDescription
 let package = Package(
     name: "MyGame",
     dependencies: [
-        .package(url: "https://github.com/yourname/Agilis.git", from: "0.1.0"),
+        .package(url: "https://github.com/LucasHMdS/Agilis.git", from: "0.1.0"),
     ],
     targets: [
         .executableTarget(
@@ -76,7 +76,7 @@ From the Agilis repository:
 
 ```
 swift run UIDemo           # UI demo with all 12 widgets
-swift run PongGame         # Full Pong game with menus and AI
+swift run Pong             # Full Pong game with menus and AI
 swift run Platformer       # Side-scrolling platformer with parallel ECS
 swift run DungeonCrawler   # Top-down dungeon with lighting and shadows
 swift run TopDownShooter   # Arena shooter with waves and particles
@@ -95,7 +95,7 @@ swift run SaveLoadDemo     # Entity serialization with save/load
 - [Input](api/input.md) — Handle keyboard, mouse, and gamepad input
 - [Audio](api/audio.md) — Sound effects, music, group volumes, fading
 - [ECS](api/ecs.md) — Entity-Component-System with sparse-set storage, type-safe queries, prefabs, hierarchy, serialization
-- [Physics](api/physics.md) — 2D collision detection, physics simulation, continuous collision detection (CCD), joints (revolute, distance, weld), ray casting, spatial queries
+- [Physics](api/physics.md) — 2D collision detection, physics simulation, continuous collision detection (CCD), joints (revolute, distance, weld, prismatic, rope, motor), ray casting, spatial queries
 - [Lighting](api/lighting.md) — 2D lighting, shadow volumes, shaders, debug overlays
 - [Scenes](api/scenes.md) — Scene management with animated transitions
 - [Tweening](api/tweening.md) — Animate properties over time with easing, sequences, yoyo, repeat, and callbacks

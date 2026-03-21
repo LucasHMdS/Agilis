@@ -277,7 +277,7 @@ Features where Agilis holds its own or excels compared to competitors:
 - **Scene transitions** — built-in animated transitions (fade, flash, custom) with duration, color, easing, and midpoint callbacks. Godot has no built-in transition system. Better than most frameworks.
 - **Time scaling** — single-property game speed control affecting all fixed-timestep systems. Simple but effective; competitors handle this differently (Godot: Engine.time_scale, Unity: Time.timeScale).
 - **Event bus** — lightweight pub/sub on World for decoupled game logic. Type-keyed, re-entrant safe.
-- **Comprehensive test suite** — 1350+ tests across 206 suites using Swift Testing framework. Unusual level of test coverage for a game framework.
+- **Comprehensive test suite** — 1600+ tests across 255 suites using Swift Testing framework. Unusual level of test coverage for a game framework.
 
 ---
 
@@ -390,5 +390,5 @@ Issues identified via deep codebase analysis. Organized by severity — critical
 
 ---
 
-*Last updated: 2026-03-03*
+*Last updated: 2026-03-21*
 *Compared against: Godot 4.4+, Unity 6, Bevy 0.15+, MonoGame/FNA, Love2D 11.5, Defold 1.9.x, Macroquad 0.4.x*

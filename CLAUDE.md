@@ -9,7 +9,7 @@ Agilis is a cross-platform 2D game framework written in Swift 6.0+, targeting Wi
 ```bash
 swift build              # Debug build
 swift build -c release   # Release build
-swift test               # Run all tests (1450+ tests)
+swift test               # Run all tests (1600+ tests)
 swiftlint lint --strict  # Run SwiftLint (enforced in CI on PRs)
 swift run UIDemo         # UI widget showcase
 swift run Pong           # Classic Pong game
@@ -36,10 +36,10 @@ Tests use Swift Testing (`import Testing`, `@Suite`, `@Test`, `#expect`), not XC
 ## Project Structure
 
 ```
-Sources/PlatformC/            Native windowing and input (Win32/Cocoa/X11)
-Sources/AngleC/               ANGLE — EGL + OpenGL ES 3.0 (pre-built binaries)
-Sources/MiniaudioC/           MiniAudio — cross-platform audio (single-header)
-Sources/StbC/                 stb libraries — image loading, font rasterization
+Sources/PlatformC/            Native windowing and input — our own C code (Win32/Cocoa/X11)
+Sources/AngleC/               ANGLE — EGL + OpenGL ES 3.0 (vendored, pre-built binaries)
+Sources/MiniaudioC/           MiniAudio — cross-platform audio (vendored, single-header)
+Sources/StbC/                 stb libraries — image loading, font rasterization (vendored)
 Sources/Agilis/               Main framework (depends on all C targets above)
   Application/               Application, GameDelegate
   Core/                      ECS: Entity, Component, System, World, Query,
@@ -688,13 +688,13 @@ Visualize colliders, contacts, velocities, surface normals, and joints for physi
 ### Usage
 ```swift
 // Basic debug draw — colliders + contacts
-app.renderer.drawPhysicsDebug(world: app.world, events: physics.lastEvents)
+app.renderer.drawPhysicsDebug(world: app.world, events: physics.events)
 
 // Custom options
 var options = PhysicsDebugRendererOptions()
 options.drawVelocities = true
 options.drawNormals = true
-app.renderer.drawPhysicsDebug(world: app.world, events: physics.lastEvents, options: options)
+app.renderer.drawPhysicsDebug(world: app.world, events: physics.events, options: options)
 ```
 
 ## Ray Casting & Spatial Queries
@@ -776,12 +776,12 @@ Save and load ECS world state to JSON. Registry-based type system for component 
 
 ### SerializableComponent Protocol
 - **`SerializableComponent`** — extends `Component` + `Codable` with a `static var componentName: String`
-- Built-in conformances: Transform2D, PreviousTransform2D, Velocity2D, RigidBody2D, Collider2D, Sprite, SpriteAnimator, ParticleEmitter, Light2D, ShadowCaster2D
+- Built-in conformances: Transform2D, PreviousTransform2D, Velocity2D, RigidBody2D, Collider2D, Sprite, SpriteAnimator, ParticleEmitter, Light2D, ShadowCaster2D, AnimationStateMachine, NormalMapData
 - Users can conform their own components to `SerializableComponent`
 
 ### WorldSerializer
 - **`register(_:)`** — register a component type for serialization
-- **`registerDefaults()`** — registers all 10 built-in component types
+- **`registerDefaults()`** — registers all 12 built-in component types
 - **`encode(world:)`** → `Data` — serializes all entities, components, hierarchy, names, tags to JSON
 - **`decode(from:into:)`** → `[UInt32: Entity]` — deserializes JSON into a world, returns old-index → new-entity remap table
 
@@ -1503,7 +1503,7 @@ class GameScene: Scene {
 - `internal` access for cross-file helpers within the Agilis module
 - `private` for state within a single file
 - No external Swift dependencies — everything is self-contained
-- ANGLE, MiniAudio, PlatformC, and stb are vendored C sources, built via SPM C targets
+- ANGLE, MiniAudio, and stb are vendored C sources; PlatformC is our own C code for native windowing/input — all built via SPM C targets
 - Windows linker flags: `/SUBSYSTEM:WINDOWS`, `/ENTRY:mainCRTStartup` on executables
 - C language standard: C99
 
