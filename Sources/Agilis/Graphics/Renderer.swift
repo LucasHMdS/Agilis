@@ -24,6 +24,7 @@ public final class Renderer: @unchecked Sendable {
     private var eglDpy: UnsafeMutableRawPointer?   // EGLDisplay
     private var eglSfc: UnsafeMutableRawPointer?   // EGLSurface
     private var eglCtx: UnsafeMutableRawPointer?   // EGLContext
+    private var isHeadless: Bool = false
 
     // MARK: - Internal GPU Types
 
@@ -234,6 +235,76 @@ public final class Renderer: @unchecked Sendable {
         try initGPU()
     }
 
+    /// Initializes the renderer with an off-screen EGL pbuffer surface.
+    /// No platform window is created — suitable for headless snapshot testing.
+    public func initializeHeadless(width: Int, height: Int) throws {
+        isHeadless = true
+
+        // EGL initialization (no native display needed for pbuffer)
+        guard let display = angle_get_display(nil) else {
+            throw RendererInitError.eglFailed("eglGetDisplay returned EGL_NO_DISPLAY (headless)")
+        }
+        self.eglDpy = display
+
+        var major: EGLint = 0
+        var minor: EGLint = 0
+        guard eglInitialize(display, &major, &minor) != 0 else {
+            throw RendererInitError.eglFailed("eglInitialize failed (headless)")
+        }
+
+        // Choose config with EGL_PBUFFER_BIT surface type
+        var attribs: [EGLint] = [
+            EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+            EGL_RED_SIZE, 8,
+            EGL_GREEN_SIZE, 8,
+            EGL_BLUE_SIZE, 8,
+            EGL_ALPHA_SIZE, 8,
+            EGL_DEPTH_SIZE, 24,
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+            EGL_NONE
+        ]
+
+        var eglCfg: UnsafeMutableRawPointer?
+        var numConfigs: EGLint = 0
+        guard eglChooseConfig(display, &attribs, &eglCfg, 1, &numConfigs) != 0,
+              numConfigs > 0,
+              let chosenConfig = eglCfg else {
+            throw RendererInitError.eglFailed("eglChooseConfig failed (headless)")
+        }
+
+        // Create pbuffer surface (no window needed)
+        guard let surface = angle_create_pbuffer_surface(
+            display, chosenConfig, EGLint(width), EGLint(height)
+        ) else {
+            throw RendererInitError.eglFailed("eglCreatePbufferSurface failed")
+        }
+        self.eglSfc = surface
+
+        // Create ES 3.0 context
+        var ctxAttribs: [EGLint] = [
+            EGL_CONTEXT_MAJOR_VERSION, 3,
+            EGL_CONTEXT_MINOR_VERSION, 0,
+            EGL_NONE
+        ]
+        guard let context = eglCreateContext(display, chosenConfig, nil, &ctxAttribs) else {
+            throw RendererInitError.eglFailed("eglCreateContext failed (headless)")
+        }
+        self.eglCtx = context
+
+        guard eglMakeCurrent(display, surface, surface, context) != 0 else {
+            throw RendererInitError.eglFailed("eglMakeCurrent failed (headless)")
+        }
+
+        _screenSize = Size(width: Float(width), height: Float(height))
+
+        glViewport(0, 0, GLsizei(width), GLsizei(height))
+        glEnable(GLenum(GL_BLEND))
+        glBlendFunc(GLenum(GL_SRC_ALPHA), GLenum(GL_ONE_MINUS_SRC_ALPHA))
+        applyClearColor()
+
+        try initGPU()
+    }
+
     public func shutdown() {
         shutdownGPU()
 
@@ -247,7 +318,7 @@ public final class Renderer: @unchecked Sendable {
         eglCtx = nil
         eglDpy = nil
 
-        if let window {
+        if !isHeadless, let window {
             platform_destroy_window(window)
         }
         window = nil
@@ -259,21 +330,23 @@ public final class Renderer: @unchecked Sendable {
     }
 
     public func beginFrame() {
-        guard let window else { return }
+        if !isHeadless {
+            guard let window else { return }
 
-        // Poll platform events (keyboard, mouse, resize, close)
-        platform_poll_events(window)
+            // Poll platform events (keyboard, mouse, resize, close)
+            platform_poll_events(window)
 
-        // Handle resize
-        if platform_window_resized(window) {
-            let w = platform_window_width(window)
-            let h = platform_window_height(window)
-            _screenSize = Size(width: Float(w), height: Float(h))
-            glViewport(0, 0, GLsizei(w), GLsizei(h))
-            projectionMatrix = Self.ortho4x4(
-                left: 0, right: Float(w), bottom: Float(h), top: 0, near: -1, far: 1
-            )
-            mvpDirty = true
+            // Handle resize
+            if platform_window_resized(window) {
+                let w = platform_window_width(window)
+                let h = platform_window_height(window)
+                _screenSize = Size(width: Float(w), height: Float(h))
+                glViewport(0, 0, GLsizei(w), GLsizei(h))
+                projectionMatrix = Self.ortho4x4(
+                    left: 0, right: Float(w), bottom: Float(h), top: 0, near: -1, far: 1
+                )
+                mvpDirty = true
+            }
         }
 
         glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
@@ -281,8 +354,12 @@ public final class Renderer: @unchecked Sendable {
 
     public func endFrame() {
         flushBatch()
-        guard let display = eglDpy, let surface = eglSfc else { return }
-        eglSwapBuffers(display, surface)
+        if isHeadless {
+            glFinish()
+        } else {
+            guard let display = eglDpy, let surface = eglSfc else { return }
+            eglSwapBuffers(display, surface)
+        }
     }
 
     public func setBackgroundColor(_ color: Color) {
