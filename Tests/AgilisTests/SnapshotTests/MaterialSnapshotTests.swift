@@ -145,6 +145,33 @@ struct MaterialSnapshotTests {
         SnapshotTestHelper.assertSnapshot(image, suite: "Materials", name: "dissolve-edge-color")
     }
 
+    /// Create a texture with a centered opaque rectangle surrounded by transparent pixels.
+    /// The outline shader needs alpha edges to produce a visible outline.
+    private static func createPaddedTexture(
+        renderer: Renderer,
+        size: Int = 64,
+        padding: Int = 8,
+        color: Color = Color(r: 60, g: 120, b: 200)
+    ) -> TextureHandle {
+        var pixels = [UInt8](repeating: 0, count: size * size * 4)
+        for y in 0..<size {
+            for x in 0..<size {
+                let i = (y * size + x) * 4
+                let inside = x >= padding && x < size - padding
+                    && y >= padding && y < size - padding
+                if inside {
+                    pixels[i]     = color.r
+                    pixels[i + 1] = color.g
+                    pixels[i + 2] = color.b
+                    pixels[i + 3] = 255
+                }
+                // else stays 0,0,0,0 (transparent)
+            }
+        }
+        let image = ImageData(width: size, height: size, pixels: pixels)
+        return renderer.loadTextureFromImage(image)
+    }
+
     @Test("White outline")
     func outlineWhite() throws {
         guard let renderer = SnapshotTestUtilities.createHeadlessRenderer() else {
@@ -152,7 +179,10 @@ struct MaterialSnapshotTests {
         }
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
-        let (library, tex) = Self.setupMaterial(renderer: renderer)
+        // Padded texture with transparent border — outline shader needs alpha edges
+        let tex = Self.createPaddedTexture(renderer: renderer)
+        let library = MaterialLibrary()
+        library.initialize(renderer: renderer)
         defer { library.shutdown(); renderer.destroyTexture(tex) }
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -161,7 +191,7 @@ struct MaterialSnapshotTests {
             sprite.position = Vector2(x: 128, y: 88)
             sprite.material = library.outline(
                 color: .white,
-                width: 2.0,
+                width: 3.0,
                 textureSize: Vector2(x: 64, y: 64)
             )
             r.drawSprite(sprite)
@@ -208,14 +238,30 @@ struct MaterialSnapshotTests {
         }
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
-        let (library, tex) = Self.setupMaterial(renderer: renderer)
+        // Use a checkerboard texture so wave distortion is clearly visible
+        let tex = SnapshotTestUtilities.createCheckerboardTexture(
+            renderer: renderer,
+            width: 64,
+            height: 64,
+            tileSize: 8,
+            colorA: Color(r: 200, g: 100, b: 50),
+            colorB: Color(r: 50, g: 100, b: 200)
+        )
+        let library = MaterialLibrary()
+        library.initialize(renderer: renderer)
         defer { library.shutdown(); renderer.destroyTexture(tex) }
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             var sprite = Sprite(texture: tex)
             sprite.position = Vector2(x: 128, y: 88)
-            sprite.material = library.wave(time: 0, amplitude: 0.03, frequency: 10, speed: 3)
+            // High amplitude + non-zero time for clearly visible wave displacement
+            sprite.material = library.wave(
+                time: 1.5,
+                amplitude: 0.08,
+                frequency: 8,
+                speed: 3
+            )
             r.drawSprite(sprite)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "Materials", name: "wave-distortion")
