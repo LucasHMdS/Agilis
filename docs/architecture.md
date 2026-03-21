@@ -2,13 +2,13 @@
 
 ## Layered Design
 
-Agilis is organized into two Swift library targets plus four vendored C targets:
+Agilis is organized into two Swift library targets plus four C targets (three vendored third-party, one first-party):
 
 ```
-PlatformC               Native windowing and input (Win32/Cocoa/X11)
-AngleC                  ANGLE — EGL + OpenGL ES 3.0 (pre-built binaries)
-MiniaudioC              MiniAudio — cross-platform audio (single-header)
-StbC                    stb libraries — image loading, font rasterization
+PlatformC               Native windowing and input (Win32/Cocoa/X11) — our own code
+AngleC                  ANGLE — EGL + OpenGL ES 3.0 (pre-built binaries, vendored)
+MiniaudioC              MiniAudio — cross-platform audio (single-header, vendored)
+StbC                    stb libraries — image loading, font rasterization (vendored)
 
 Agilis                  Main framework (depends on all C targets above)
 AgilisFormats           Pure Swift file format parsers
