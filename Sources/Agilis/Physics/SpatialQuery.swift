@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -82,35 +80,60 @@ public enum SpatialQuery {
     ///   - shapeRot: Rotation of the shape in radians.
     /// - Returns: Hit info, or nil if no intersection within tMax.
     public static func raycast(
-        origin: Vector2, direction: Vector2, tMax: Float,
-        shape: CollisionShape, shapePos: Vector2, shapeRot: Float
+        origin: Vector2,
+        direction: Vector2,
+        tMax: Float,
+        shape: CollisionShape,
+        shapePos: Vector2,
+        shapeRot: Float
     ) -> RayHit? {
         switch shape {
         case .aabb(let halfExtents):
             if shapeRot == 0 {
-                return rayVsAABB(origin: origin, direction: direction, tMax: tMax,
-                                 aabbPos: shapePos, halfExtents: halfExtents)
+                return rayVsAABB(
+                    origin: origin,
+                    direction: direction,
+                    tMax: tMax,
+                    aabbPos: shapePos,
+                    halfExtents: halfExtents
+                )
             }
             // Rotated AABB: promote to polygon
             let verts = rotatedAABBVertices(pos: shapePos, half: halfExtents, rot: shapeRot)
-            return rayVsPolygon(origin: origin, direction: direction, tMax: tMax,
-                                vertices: verts)
+            return rayVsPolygon(
+                origin: origin,
+                direction: direction,
+                tMax: tMax,
+                vertices: verts
+            )
 
         case .circle(let radius):
-            return rayVsCircle(origin: origin, direction: direction, tMax: tMax,
-                               circlePos: shapePos, radius: radius)
+            return rayVsCircle(
+                origin: origin,
+                direction: direction,
+                tMax: tMax,
+                circlePos: shapePos,
+                radius: radius
+            )
 
         case .polygon(let poly):
             let verts = transformVertices(poly.vertices, position: shapePos, rotation: shapeRot)
-            return rayVsPolygon(origin: origin, direction: direction, tMax: tMax,
-                                vertices: verts)
+            return rayVsPolygon(
+                origin: origin,
+                direction: direction,
+                tMax: tMax,
+                vertices: verts
+            )
         }
     }
 
     /// Cast a ray against an axis-aligned bounding box (slab method).
     public static func rayVsAABB(
-        origin: Vector2, direction: Vector2, tMax: Float,
-        aabbPos: Vector2, halfExtents: Vector2
+        origin: Vector2,
+        direction: Vector2,
+        tMax: Float,
+        aabbPos: Vector2,
+        halfExtents: Vector2
     ) -> RayHit? {
         let minX = aabbPos.x - halfExtents.x
         let maxX = aabbPos.x + halfExtents.x
@@ -178,8 +201,11 @@ public enum SpatialQuery {
 
     /// Cast a ray against a circle (quadratic formula).
     public static func rayVsCircle(
-        origin: Vector2, direction: Vector2, tMax: Float,
-        circlePos: Vector2, radius: Float
+        origin: Vector2,
+        direction: Vector2,
+        tMax: Float,
+        circlePos: Vector2,
+        radius: Float
     ) -> RayHit? {
         let oc = origin - circlePos
         let a = direction.dot(direction)  // 1.0 if normalized
@@ -227,7 +253,9 @@ public enum SpatialQuery {
     ///   - vertices: World-space polygon vertices (convex, ordered CW or CCW).
     /// - Returns: Hit info, or nil if no intersection within tMax.
     public static func rayVsPolygon(
-        origin: Vector2, direction: Vector2, tMax: Float,
+        origin: Vector2,
+        direction: Vector2,
+        tMax: Float,
         vertices: [Vector2]
     ) -> RayHit? {
         guard vertices.count >= 3 else { return nil }
@@ -238,7 +266,7 @@ public enum SpatialQuery {
         }
 
         // Test ray against each edge segment
-        var closestT: Float = tMax
+        var closestT = tMax
         var hitNormal = Vector2.zero
         var found = false
 
@@ -278,7 +306,9 @@ public enum SpatialQuery {
     /// Test whether a point is inside a collision shape at a given position and rotation.
     public static func pointTest(
         point: Vector2,
-        shape: CollisionShape, shapePos: Vector2, shapeRot: Float
+        shape: CollisionShape,
+        shapePos: Vector2,
+        shapeRot: Float
     ) -> Bool {
         switch shape {
         case .aabb(let halfExtents):
@@ -299,7 +329,9 @@ public enum SpatialQuery {
 
     /// Test whether a point is inside an axis-aligned bounding box.
     public static func pointInAABB(
-        point: Vector2, aabbPos: Vector2, halfExtents: Vector2
+        point: Vector2,
+        aabbPos: Vector2,
+        halfExtents: Vector2
     ) -> Bool {
         abs(point.x - aabbPos.x) <= halfExtents.x &&
         abs(point.y - aabbPos.y) <= halfExtents.y
@@ -307,7 +339,9 @@ public enum SpatialQuery {
 
     /// Test whether a point is inside a circle.
     public static func pointInCircle(
-        point: Vector2, circlePos: Vector2, radius: Float
+        point: Vector2,
+        circlePos: Vector2,
+        radius: Float
     ) -> Bool {
         (point - circlePos).lengthSquared <= radius * radius
     }
@@ -318,7 +352,8 @@ public enum SpatialQuery {
     /// if all cross products of (edge × point-to-vertex) have the same sign.
     /// Works for both CW and CCW vertex orderings.
     public static func pointInPolygon(
-        point: Vector2, vertices: [Vector2]
+        point: Vector2,
+        vertices: [Vector2]
     ) -> Bool {
         guard vertices.count >= 3 else { return false }
         var positive = false
@@ -340,7 +375,9 @@ public enum SpatialQuery {
     /// Test whether a rectangle overlaps a collision shape at a given position and rotation.
     public static func areaTest(
         rect: Rect,
-        shape: CollisionShape, shapePos: Vector2, shapeRot: Float
+        shape: CollisionShape,
+        shapePos: Vector2,
+        shapeRot: Float
     ) -> Bool {
         switch shape {
         case .aabb(let halfExtents):
@@ -363,7 +400,9 @@ public enum SpatialQuery {
 
     /// Test whether a rectangle overlaps an axis-aligned bounding box.
     public static func rectOverlapsAABB(
-        rect: Rect, aabbPos: Vector2, halfExtents: Vector2
+        rect: Rect,
+        aabbPos: Vector2,
+        halfExtents: Vector2
     ) -> Bool {
         let shapeRect = Rect(
             x: aabbPos.x - halfExtents.x,
@@ -379,7 +418,9 @@ public enum SpatialQuery {
     /// Finds the closest point on the rectangle to the circle center,
     /// then checks if the distance is within the radius.
     public static func rectOverlapsCircle(
-        rect: Rect, circlePos: Vector2, radius: Float
+        rect: Rect,
+        circlePos: Vector2,
+        radius: Float
     ) -> Bool {
         let closestX = clamp(circlePos.x, min: rect.minX, max: rect.maxX)
         let closestY = clamp(circlePos.y, min: rect.minY, max: rect.maxY)
@@ -393,7 +434,9 @@ public enum SpatialQuery {
     /// Tests the 2 rect axes (x, y) and all polygon normals as potential
     /// separating axes.
     public static func rectOverlapsPolygon(
-        rect: Rect, vertices: [Vector2], normals: [Vector2]
+        rect: Rect,
+        vertices: [Vector2],
+        normals: [Vector2]
     ) -> Bool {
         guard vertices.count >= 3 else { return false }
 

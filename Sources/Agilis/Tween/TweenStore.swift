@@ -1,11 +1,11 @@
-
-
 /// Manages the lifecycle and storage of active tweens.
 ///
 /// Follows the `JointStore` pattern: centralized handle-keyed dictionary
 /// with a reverse entity-to-tweens map for efficient entity cleanup.
 /// Used internally by `TweenSystem`.
 internal final class TweenStore: @unchecked Sendable {
+
+    deinit {}
 
     /// All active tweens, keyed by handle ID.
     private var tweens: [UInt32: Tween] = [:]
@@ -154,11 +154,9 @@ internal final class TweenStore: @unchecked Sendable {
         var completed: [Tween] = []
         var toRemove: [UInt32] = []
 
-        for (key, tween) in tweens {
-            if tween.state == .completed {
-                completed.append(tween)
-                toRemove.append(key)
-            }
+        for (key, tween) in tweens where tween.state == .completed {
+            completed.append(tween)
+            toRemove.append(key)
         }
 
         for id in toRemove {

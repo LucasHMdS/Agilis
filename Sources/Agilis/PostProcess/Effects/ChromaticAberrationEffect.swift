@@ -1,5 +1,3 @@
-
-
 /// Offsets RGB color channels radially from the screen center for a lens distortion look.
 ///
 /// ```swift
@@ -7,6 +5,8 @@
 /// postProcess.add(chromatic)
 /// ```
 public final class ChromaticAberrationEffect: PostProcessEffect, @unchecked Sendable {
+    deinit {}
+
     public let name = "chromaticAberration"
     public var isEnabled = true
     public var order: Int { 200 }
@@ -36,7 +36,7 @@ public final class ChromaticAberrationEffect: PostProcessEffect, @unchecked Send
         input: RenderTargetHandle,
         output: RenderTargetHandle,
         renderer: any RenderBackend,
-        deltaTime: Float
+        deltaTime _: Float
     ) {
         guard shader != .invalid else { return }
 

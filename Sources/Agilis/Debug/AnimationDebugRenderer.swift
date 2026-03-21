@@ -1,5 +1,3 @@
-
-
 /// Configuration for animation debug rendering.
 public struct AnimationDebugRendererOptions: Sendable {
     /// Draw outlines around sprite source rectangles.
@@ -65,9 +63,13 @@ extension RenderBackend {
                 let totalFrames = animator.clip.frames.count
                 let status = animator.isPlaying ? ">" : "||"
                 let text = "\(status) \(clipName) [\(frameIndex)/\(totalFrames)]"
-                drawText(text,
-                         position: Vector2(x: pos.x, y: pos.y - 20),
-                         font: font, size: options.fontSize, color: options.stateTextColor)
+                drawText(
+                    text,
+                    position: Vector2(x: pos.x, y: pos.y - 20),
+                    font: font,
+                    size: options.fontSize,
+                    color: options.stateTextColor
+                )
             }
         }
     }

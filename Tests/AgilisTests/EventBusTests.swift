@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Test Events
 
@@ -194,6 +194,8 @@ struct EventBusTests {
 // MARK: - Helper System
 
 private final class EventEmitterSystem: System {
+    deinit {}
+
     func update(context: SystemContext) {
         context.world.emit(ScoreChanged(oldScore: 0, newScore: 50))
     }

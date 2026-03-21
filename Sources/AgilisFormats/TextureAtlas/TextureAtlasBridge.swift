@@ -33,7 +33,7 @@ extension AnimationClip {
         let matchedFrames = atlas.frames
             .filter { $0.key.hasPrefix(prefix) }
             .sorted { $0.key < $1.key }
-            .map { (_, atlasFrame) in
+            .map { _, atlasFrame in
                 AnimationFrame(
                     sourceRect: Rect(
                         x: Float(atlasFrame.frame.x),

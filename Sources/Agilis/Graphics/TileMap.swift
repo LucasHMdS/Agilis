@@ -1,5 +1,3 @@
-
-
 /// A tile within a tilemap layer.
 public struct Tile: Sendable, Hashable {
     /// The tile ID (index into the tileset). 0 typically means empty.

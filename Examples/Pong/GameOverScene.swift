@@ -3,11 +3,14 @@ import Agilis
 // MARK: - Game Over Scene
 
 final class GameOverScene: Scene {
+    deinit {}
     let leftScore: Int
     let rightScore: Int
     let leftWon: Bool
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: PongSounds.SoundSet!
 
     init(leftScore: Int, rightScore: Int, leftWon: Bool) {
@@ -83,7 +86,7 @@ final class GameOverScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
         let cx = screen.width / 2
 
@@ -92,8 +95,12 @@ final class GameOverScene: Scene {
 
         // FPS counter
         let fpsColor = Color(r: 80, g: 80, b: 80)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: 4, y: screen.height - 18),
-                              font: ui.font, size: 14, color: fpsColor)
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: 4, y: screen.height - 18),
+            font: ui.font,
+            size: 14,
+            color: fpsColor
+        )
     }
 }

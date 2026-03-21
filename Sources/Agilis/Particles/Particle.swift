@@ -1,5 +1,3 @@
-
-
 /// Internal per-particle simulation state.
 ///
 /// Particles are stored in a flat array inside `ParticleEmitter`, not as ECS entities.

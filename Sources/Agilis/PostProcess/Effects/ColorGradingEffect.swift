@@ -1,5 +1,3 @@
-
-
 /// Adjusts brightness, contrast, saturation, gamma, and color tint of the scene.
 ///
 /// ```swift
@@ -7,6 +5,8 @@
 /// postProcess.add(grading)
 /// ```
 public final class ColorGradingEffect: PostProcessEffect, @unchecked Sendable {
+    deinit {}
+
     public let name = "colorGrading"
     public var isEnabled = true
     public var order: Int { 300 }
@@ -58,7 +58,7 @@ public final class ColorGradingEffect: PostProcessEffect, @unchecked Sendable {
         input: RenderTargetHandle,
         output: RenderTargetHandle,
         renderer: any RenderBackend,
-        deltaTime: Float
+        deltaTime _: Float
     ) {
         guard shader != .invalid else { return }
 
@@ -66,10 +66,13 @@ public final class ColorGradingEffect: PostProcessEffect, @unchecked Sendable {
         renderer.setShaderFloat(shader, name: "contrast", value: contrast)
         renderer.setShaderFloat(shader, name: "saturation", value: saturation)
         renderer.setShaderFloat(shader, name: "gamma", value: gamma)
-        renderer.setShaderVec3(shader, name: "tint",
+        renderer.setShaderVec3(
+            shader,
+            name: "tint",
             x: Float(tint.r) / 255.0,
             y: Float(tint.g) / 255.0,
-            z: Float(tint.b) / 255.0)
+            z: Float(tint.b) / 255.0
+        )
 
         let texture = renderer.renderTargetTexture(input)
         let size = renderer.renderTargetSize(input)

@@ -1,37 +1,35 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Test Components
 
 struct Position: Component {
     var x: Float
     var y: Float
-    init(x: Float, y: Float) { self.x = x; self.y = y }
 }
 
 struct Velocity: Component {
     var dx: Float
     var dy: Float
-    init(dx: Float, dy: Float) { self.dx = dx; self.dy = dy }
 }
 
 struct Health: Component {
     var hp: Int
-    init(hp: Int) { self.hp = hp }
 }
 
 /// A zero-size tag component for testing.
 struct Frozen: Component {
-    init() {}
 }
 
 // MARK: - Test Systems
 
 final class MovementSystem: System {
+    deinit {}
+
     var updateCount = 0
 
     func update(context: SystemContext) {
-        context.world.forEach { (entity: Entity, pos: inout Position, vel: inout Velocity) in
+        context.world.forEach { (_: Entity, pos: inout Position, vel: inout Velocity) in
             pos.x += vel.dx * Float(context.deltaTime)
             pos.y += vel.dy * Float(context.deltaTime)
         }
@@ -40,40 +38,48 @@ final class MovementSystem: System {
 }
 
 final class CountingSystem: System {
+    deinit {}
+
     var setupCalled = false
     var updateCount = 0
 
-    func setup(world: World) {
+    func setup(world _: World) {
         setupCalled = true
     }
 
-    func update(context: SystemContext) {
+    func update(context _: SystemContext) {
         updateCount += 1
     }
 }
 
 final class HighPrioritySystem: System {
+    deinit {}
+
     var priority: Int { -10 }
     var order: Int = 0
     var executionTracker: ExecutionTracker?
 
-    func update(context: SystemContext) {
+    func update(context _: SystemContext) {
         order = executionTracker?.next() ?? 0
     }
 }
 
 final class LowPrioritySystem: System {
+    deinit {}
+
     var priority: Int { 10 }
     var order: Int = 0
     var executionTracker: ExecutionTracker?
 
-    func update(context: SystemContext) {
+    func update(context _: SystemContext) {
         order = executionTracker?.next() ?? 0
     }
 }
 
 /// Helper for tracking system execution order.
 final class ExecutionTracker {
+    deinit {}
+
     private var counter = 0
     func next() -> Int {
         counter += 1
@@ -295,7 +301,7 @@ struct QueryTests {
         world.addComponent(Position(x: 30, y: 40), to: e2)
 
         var count = 0
-        world.forEach { (entity: Entity, pos: inout Position) in
+        world.forEach { (_: Entity, pos: inout Position) in
             pos.x += 1
             count += 1
         }
@@ -320,7 +326,7 @@ struct QueryTests {
         world.addComponent(Position(x: 100, y: 100), to: e3)
         world.addComponent(Velocity(dx: -1, dy: -1), to: e3)
 
-        world.forEach { (entity: Entity, pos: inout Position, vel: inout Velocity) in
+        world.forEach { (_: Entity, pos: inout Position, vel: inout Velocity) in
             pos.x += vel.dx
             pos.y += vel.dy
         }
@@ -339,7 +345,7 @@ struct QueryTests {
         world.addComponent(Health(hp: 100), to: entity)
 
         var count = 0
-        world.forEach { (e: Entity, pos: inout Position, vel: inout Velocity, hp: inout Health) in
+        world.forEach { (_: Entity, pos: inout Position, vel: inout Velocity, hp: inout Health) in
             pos.x += vel.dx
             hp.hp -= 1
             count += 1
@@ -360,7 +366,7 @@ struct QueryTests {
         world.destroyEntity(e1)
 
         var count = 0
-        world.forEach { (entity: Entity, pos: inout Position) in
+        world.forEach { (_: Entity, _: inout Position) in
             count += 1
         }
         #expect(count == 1)
@@ -368,11 +374,11 @@ struct QueryTests {
 
     @Test func forEachEmptyWorld() {
         let world = World()
-        var count = 0
-        world.forEach { (entity: Entity, pos: inout Position) in
-            count += 1
+        var worldCount = 0
+        world.forEach { (_: Entity, _: inout Position) in
+            worldCount += 1
         }
-        #expect(count == 0)
+        #expect(worldCount == 0)
     }
 }
 
@@ -859,7 +865,7 @@ struct SparseSetTests {
         set.insert(key: 1, value: 2)
         set.removeAll()
         #expect(set.isEmpty)
-        #expect(set.count == 0)
+        #expect(set.isEmpty)
     }
 
     @Test func withValue() {

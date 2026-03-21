@@ -1,5 +1,3 @@
-
-
 // MARK: - Animation State Machine System
 
 /// ECS system that evaluates animation state machine transitions each tick.
@@ -22,6 +20,8 @@
 /// 2. `AnimationStateMachineSystem` (45) evaluates transitions, switches clips
 /// 3. `AnimationSystem` (50) advances frames on the new/current clip
 public final class AnimationStateMachineSystem: System, @unchecked Sendable {
+
+    deinit {}
 
     // MARK: - System Conformance
 
@@ -149,6 +149,7 @@ public final class AnimationStateMachineSystem: System, @unchecked Sendable {
                 // Just verify the trigger is set, don't consume yet
                 guard sm.checkTrigger(name) else { return false }
                 triggerNames.append(name)
+
             default:
                 if !evaluateCondition(condition, sm: sm, animator: animator) {
                     return false
@@ -173,19 +174,26 @@ public final class AnimationStateMachineSystem: System, @unchecked Sendable {
         switch condition {
         case .boolEquals(let name, let expected):
             return sm.getBool(name) == expected
+
         case .floatGreater(let name, let threshold):
             return sm.getFloat(name) > threshold
+
         case .floatLess(let name, let threshold):
             return sm.getFloat(name) < threshold
+
         case .intEquals(let name, let expected):
             return sm.getInt(name) == expected
+
         case .trigger:
             // Handled in checkTransition's two-pass logic
             return true
+
         case .animationFinished:
             return animator.isFinished
+
         case .animationLooped:
             return animator.lastEvent == .looped
+
         case .afterTime(let seconds):
             return sm.timeInState >= seconds
         }

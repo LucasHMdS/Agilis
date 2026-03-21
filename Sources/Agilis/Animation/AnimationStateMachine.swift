@@ -1,5 +1,3 @@
-
-
 // MARK: - Animation State
 
 /// A named state in an animation state machine, mapping to an animation clip.
@@ -245,7 +243,8 @@ public struct AnimationStateMachine: Component, Sendable, SerializableComponent 
         exitTime: Float? = nil
     ) -> Self {
         transitions.append(AnimationTransition(
-            from: from, to: to,
+            from: from,
+            to: to,
             conditions: conditions,
             exitTime: exitTime
         ))

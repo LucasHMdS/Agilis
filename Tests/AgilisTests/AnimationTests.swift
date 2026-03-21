@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Test Helpers
 
@@ -66,9 +66,12 @@ struct AnimationClipTests {
     func fromSpriteSheet() {
         let clip = AnimationClip.fromSpriteSheet(
             name: "walk",
-            startX: 0, y: 64,
-            frameWidth: 32, frameHeight: 32,
-            count: 4, frameDuration: 0.1
+            startX: 0,
+            y: 64,
+            frameWidth: 32,
+            frameHeight: 32,
+            count: 4,
+            frameDuration: 0.1
         )
         #expect(clip.name == "walk")
         #expect(clip.frameCount == 4)
@@ -88,9 +91,12 @@ struct AnimationClipTests {
     func fromSpriteSheetCustomMode() {
         let clip = AnimationClip.fromSpriteSheet(
             name: "bounce",
-            startX: 0, y: 0,
-            frameWidth: 16, frameHeight: 16,
-            count: 3, frameDuration: 0.2,
+            startX: 0,
+            y: 0,
+            frameWidth: 16,
+            frameHeight: 16,
+            count: 3,
+            frameDuration: 0.2,
             mode: .pingPong
         )
         #expect(clip.mode == .pingPong)
@@ -109,9 +115,18 @@ struct AnimationClipTests {
     @Test("AnimationClip with variable frame durations")
     func variableDurations() {
         let frames = [
-            AnimationFrame(sourceRect: Rect(x: 0, y: 0, width: 32, height: 32), duration: 0.1),
-            AnimationFrame(sourceRect: Rect(x: 32, y: 0, width: 32, height: 32), duration: 0.2),
-            AnimationFrame(sourceRect: Rect(x: 64, y: 0, width: 32, height: 32), duration: 0.15),
+            AnimationFrame(
+                sourceRect: Rect(x: 0, y: 0, width: 32, height: 32),
+                duration: 0.1
+            ),
+            AnimationFrame(
+                sourceRect: Rect(x: 32, y: 0, width: 32, height: 32),
+                duration: 0.2
+            ),
+            AnimationFrame(
+                sourceRect: Rect(x: 64, y: 0, width: 32, height: 32),
+                duration: 0.15
+            )
         ]
         let clip = AnimationClip(name: "varied", frames: frames, mode: .forward)
         #expect(abs(clip.totalDuration - 0.45) < 0.001)
@@ -317,8 +332,8 @@ struct AnimationSystemTests {
     }
 
     @Test("AnimationSystem forward playback advances frames")
-    func forwardPlayback() {
-        // 4 frames at 0.1s each, dt = 0.1s → should advance one frame per tick
+    func forwardPlayback() throws {
+        // 4 frames at 0.1s each, dt = 0.1s -> should advance one frame per tick
         let (world, _) = runAnimation(ticks: 1, deltaTime: 0.1) { world, _ in
             let e = world.createEntity()
             world.setName("sprite", for: e)
@@ -326,13 +341,13 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
         #expect(animator.currentFrameIndex == 1)
     }
 
     @Test("AnimationSystem writes sourceRect to Sprite")
-    func writesSourceRect() {
+    func writesSourceRect() throws {
         let clip = makeClip(frameCount: 3, frameDuration: 0.1)
         let (world, _) = runAnimation(ticks: 2, deltaTime: 0.1) { world, _ in
             let e = world.createEntity()
@@ -341,9 +356,9 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let sprite = world.getComponent(Sprite.self, from: e)!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let sprite = try #require(world.getComponent(Sprite.self, from: e))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         // After 2 ticks at 0.1s per frame: should be on frame 2
         #expect(animator.currentFrameIndex == 2)
@@ -351,10 +366,10 @@ struct AnimationSystemTests {
     }
 
     @Test("AnimationSystem forward loop emits event")
-    func forwardLoopEvent() {
+    func forwardLoopEvent() throws {
         var receivedEvents: [(Entity, AnimationEvent)] = []
 
-        // 4 frames at 0.1s → completes a cycle at 0.4s → 4 ticks at dt=0.1
+        // 4 frames at 0.1s -> completes a cycle at 0.4s -> 4 ticks at dt=0.1
         let (world, _) = runAnimation(ticks: 4, deltaTime: 0.1) { world, system in
             system.onAnimationEvent = { entity, event in
                 receivedEvents.append((entity, event))
@@ -365,8 +380,8 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         // Should have looped back to frame 0
         #expect(animator.currentFrameIndex == 0)
@@ -375,10 +390,10 @@ struct AnimationSystemTests {
     }
 
     @Test("AnimationSystem reverse playback")
-    func reversePlayback() {
+    func reversePlayback() throws {
         let clip = makeClip(frameCount: 4, frameDuration: 0.1, mode: .reverse)
 
-        // Reverse starts at frame 0 and goes backward → wraps to last frame
+        // Reverse starts at frame 0 and goes backward -> wraps to last frame
         let (world, _) = runAnimation(ticks: 1, deltaTime: 0.1) { world, _ in
             let e = world.createEntity()
             world.setName("sprite", for: e)
@@ -389,19 +404,19 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
-        // Should have gone from 3 → 2
+        // Should have gone from 3 -> 2
         #expect(animator.currentFrameIndex == 2)
     }
 
     @Test("AnimationSystem reverse wraps and emits looped")
-    func reverseWrap() {
+    func reverseWrap() throws {
         let clip = makeClip(frameCount: 3, frameDuration: 0.1, mode: .reverse)
         var receivedEvents: [(Entity, AnimationEvent)] = []
 
-        // Start at frame 0, advance once → should wrap to frame 2
+        // Start at frame 0, advance once -> should wrap to frame 2
         let (world, _) = runAnimation(ticks: 1, deltaTime: 0.1) { world, system in
             system.onAnimationEvent = { entity, event in
                 receivedEvents.append((entity, event))
@@ -412,8 +427,8 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         #expect(animator.currentFrameIndex == 2)
         #expect(receivedEvents.count == 1)
@@ -427,10 +442,12 @@ struct AnimationSystemTests {
         var frameSequence: [Int] = []
 
         let (_, _) = runAnimation(
-            ticks: 8, deltaTime: 0.1,
-            afterTick: { world, _, tick in
-                let e = world.entity(named: "sprite")!
-                let animator = world.getComponent(SpriteAnimator.self, from: e)!
+            ticks: 8,
+            deltaTime: 0.1,
+            afterTick: { world, _, _ in
+                let e = world.entity(named: "sprite")
+                guard let entity = e else { return }
+                guard let animator = world.getComponent(SpriteAnimator.self, from: entity) else { return }
                 frameSequence.append(animator.currentFrameIndex)
             },
             setup: { world, _ in
@@ -442,20 +459,20 @@ struct AnimationSystemTests {
         )
 
         // Expected: start at 0, after ticks:
-        // Tick 0: 0→1
-        // Tick 1: 1→2
-        // Tick 2: 2→3
-        // Tick 3: 3→4(≥4), reverses to index 2
-        // Tick 4: 2→1
-        // Tick 5: 1→0
-        // Tick 6: 0→-1(<0), reverses to index 1
-        // Tick 7: 1→2
+        // Tick 0: 0->1
+        // Tick 1: 1->2
+        // Tick 2: 2->3
+        // Tick 3: 3->4(>=4), reverses to index 2
+        // Tick 4: 2->1
+        // Tick 5: 1->0
+        // Tick 6: 0->-1(<0), reverses to index 1
+        // Tick 7: 1->2
         // No double endpoints: 0,1,2,3,2,1,0,1,2,3,...
         #expect(frameSequence == [1, 2, 3, 2, 1, 0, 1, 2])
     }
 
     @Test("AnimationSystem oneShot stops on last frame")
-    func oneShotStops() {
+    func oneShotStops() throws {
         let clip = makeClip(frameCount: 3, frameDuration: 0.1, mode: .oneShot)
         var receivedEvents: [(Entity, AnimationEvent)] = []
 
@@ -470,8 +487,8 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         #expect(animator.currentFrameIndex == 2) // Last frame
         #expect(animator.isPlaying == false)
@@ -481,7 +498,7 @@ struct AnimationSystemTests {
     }
 
     @Test("AnimationSystem paused animation does not advance")
-    func pausedNoAdvance() {
+    func pausedNoAdvance() throws {
         let clip = makeClip(frameDuration: 0.1)
 
         let (world, _) = runAnimation(ticks: 5, deltaTime: 0.1) { world, _ in
@@ -491,14 +508,14 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         #expect(animator.currentFrameIndex == 0)
     }
 
     @Test("AnimationSystem paused animation still writes sourceRect")
-    func pausedWritesSourceRect() {
+    func pausedWritesSourceRect() throws {
         let clip = makeClip(frameCount: 3)
 
         let (world, _) = runAnimation(ticks: 1, deltaTime: 0.1) { world, _ in
@@ -510,15 +527,15 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let sprite = world.getComponent(Sprite.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let sprite = try #require(world.getComponent(Sprite.self, from: e))
 
         // Even though paused, sprite should show frame 1's sourceRect
         #expect(sprite.sourceRect == Rect(x: 32, y: 0, width: 32, height: 32))
     }
 
     @Test("AnimationSystem speed multiplier")
-    func speedMultiplier() {
+    func speedMultiplier() throws {
         // 2x speed: 0.1s frames at dt=0.05 should still advance one frame per tick
         let clip = makeClip(frameDuration: 0.1)
 
@@ -529,18 +546,18 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
-        // 0.05 * 2.0 = 0.1 → exactly one frame
+        // 0.05 * 2.0 = 0.1 -> exactly one frame
         #expect(animator.currentFrameIndex == 1)
     }
 
     @Test("AnimationSystem half speed")
-    func halfSpeed() {
+    func halfSpeed() throws {
         let clip = makeClip(frameDuration: 0.1)
 
-        // 0.5x speed, dt=0.1 → effective advance = 0.05 → not enough for one frame
+        // 0.5x speed, dt=0.1 -> effective advance = 0.05 -> not enough for one frame
         let (world, _) = runAnimation(ticks: 1, deltaTime: 0.1) { world, _ in
             let e = world.createEntity()
             world.setName("sprite", for: e)
@@ -548,17 +565,17 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         #expect(animator.currentFrameIndex == 0) // Not enough time
     }
 
     @Test("AnimationSystem lastEvent cleared each tick")
-    func lastEventCleared() {
+    func lastEventCleared() throws {
         let clip = makeClip(frameCount: 3, frameDuration: 0.1, mode: .oneShot)
 
-        // Tick 1: frame 0→1, tick 2: frame 1→2, tick 3: frame 2→3(clamped to 2, completed)
+        // Tick 1: frame 0->1, tick 2: frame 1->2, tick 3: frame 2->3(clamped to 2, completed)
         // Tick 4: paused, event cleared
         let (world, _) = runAnimation(ticks: 4, deltaTime: 0.1) { world, _ in
             let e = world.createEntity()
@@ -567,15 +584,15 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         // Event was completed on tick 3, cleared on tick 4
         #expect(animator.lastEvent == nil)
     }
 
     @Test("AnimationSystem skips entities without Sprite")
-    func skipsMissingSpriteComponent() {
+    func skipsMissingSpriteComponent() throws {
         // Entity with SpriteAnimator but no Sprite — should not crash
         let (world, _) = runAnimation(ticks: 3, deltaTime: 0.1) { world, _ in
             let e = world.createEntity()
@@ -585,13 +602,13 @@ struct AnimationSystemTests {
         }
 
         // Should not crash, animator is untouched since forEach won't match
-        let e = world.entity(named: "animOnly")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "animOnly"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
         #expect(animator.currentFrameIndex == 0) // Unchanged
     }
 
     @Test("AnimationSystem handles empty clip gracefully")
-    func emptyClip() {
+    func emptyClip() throws {
         let clip = AnimationClip(name: "empty", frames: [], mode: .forward)
 
         let (world, _) = runAnimation(ticks: 3, deltaTime: 0.1) { world, _ in
@@ -601,15 +618,15 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let sprite = world.getComponent(Sprite.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let sprite = try #require(world.getComponent(Sprite.self, from: e))
 
         // Should not crash, sourceRect should be zero
         #expect(sprite.sourceRect == Rect())
     }
 
     @Test("AnimationSystem single frame clip doesn't loop")
-    func singleFrame() {
+    func singleFrame() throws {
         let clip = makeClip(frameCount: 1, frameDuration: 0.1)
         var eventCount = 0
 
@@ -621,8 +638,8 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         // Single frame loops back to itself, emitting looped events
         #expect(animator.currentFrameIndex == 0)
@@ -630,7 +647,7 @@ struct AnimationSystemTests {
     }
 
     @Test("AnimationSystem multiple entities animate independently")
-    func multipleEntities() {
+    func multipleEntities() throws {
         let fastClip = makeClip(name: "fast", frameDuration: 0.05)
         let slowClip = makeClip(name: "slow", frameDuration: 0.2)
 
@@ -646,10 +663,10 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e2)
         }
 
-        let fast = world.entity(named: "fast")!
-        let slow = world.entity(named: "slow")!
-        let fastAnim = world.getComponent(SpriteAnimator.self, from: fast)!
-        let slowAnim = world.getComponent(SpriteAnimator.self, from: slow)!
+        let fast = try #require(world.entity(named: "fast"))
+        let slow = try #require(world.entity(named: "slow"))
+        let fastAnim = try #require(world.getComponent(SpriteAnimator.self, from: fast))
+        let slowAnim = try #require(world.getComponent(SpriteAnimator.self, from: slow))
 
         // 0.1s elapsed: fast (0.05s frames) should be on frame 2, slow (0.2s) on frame 0
         #expect(fastAnim.currentFrameIndex == 2)
@@ -657,10 +674,10 @@ struct AnimationSystemTests {
     }
 
     @Test("AnimationSystem large deltaTime skips multiple frames")
-    func largeTimestep() {
+    func largeTimestep() throws {
         let clip = makeClip(frameCount: 4, frameDuration: 0.1)
 
-        // dt = 0.25 → should advance past 2 frames (0.1 + 0.1 = 0.2)
+        // dt = 0.25 -> should advance past 2 frames (0.1 + 0.1 = 0.2)
         let (world, _) = runAnimation(ticks: 1, deltaTime: 0.25) { world, _ in
             let e = world.createEntity()
             world.setName("sprite", for: e)
@@ -668,8 +685,8 @@ struct AnimationSystemTests {
             world.addComponent(Sprite(texture: .invalid), to: e)
         }
 
-        let e = world.entity(named: "sprite")!
-        let animator = world.getComponent(SpriteAnimator.self, from: e)!
+        let e = try #require(world.entity(named: "sprite"))
+        let animator = try #require(world.getComponent(SpriteAnimator.self, from: e))
 
         #expect(animator.currentFrameIndex == 2) // Skipped past frame 0 and 1
     }

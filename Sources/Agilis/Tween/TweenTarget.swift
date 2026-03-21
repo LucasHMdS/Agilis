@@ -1,5 +1,3 @@
-
-
 /// Defines what property a tween animates and the start/end values.
 ///
 /// Each case targets a specific component property. The tween system

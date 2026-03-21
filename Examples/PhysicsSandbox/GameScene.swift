@@ -9,8 +9,11 @@ import CRT
 #endif
 
 final class GameScene: Scene {
+    deinit {}
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var physics: PhysicsWorld2D!
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: SandboxSounds.SoundSet!
     private var currentTab: Int = 0
     private var demoEntities: [Entity] = []
@@ -40,9 +43,9 @@ final class GameScene: Scene {
         physics = PhysicsWorld2D(gravity: Sandbox.gravity)
         app.world.addSystem(physics)
 
-        physics.onJointBroken = { [weak self] event in
+        physics.onJointBroken = { [weak self] _ in
             if let self = self {
-                app.audio.playSound(self.sounds.jointBreak, volume: 0.5, pitch: 1.0, looping: false)
+                app.audio.playSound(sounds.jointBreak, volume: 0.5, pitch: 1.0, looping: false)
             }
         }
 
@@ -53,6 +56,7 @@ final class GameScene: Scene {
         loadTab(0, app: app)
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func update(app: Application, deltaTime: Double) {
         let dt = Float(deltaTime)
 
@@ -71,18 +75,18 @@ final class GameScene: Scene {
         if app.input.isKeyPressed(.f3) { app.timeScale = 4.0 }
 
         // Toggle debug rendering
-        if app.input.isKeyPressed(.d) { showDebug = !showDebug }
+        if app.input.isKeyPressed(.d) { showDebug.toggle() }
 
         // Toggle velocity/normal debug
-        if app.input.isKeyPressed(.v) { debugOptions.drawVelocities = !debugOptions.drawVelocities }
-        if app.input.isKeyPressed(.n) { debugOptions.drawNormals = !debugOptions.drawNormals }
+        if app.input.isKeyPressed(.v) { debugOptions.drawVelocities.toggle() }
+        if app.input.isKeyPressed(.n) { debugOptions.drawNormals.toggle() }
 
         // Mouse picking via pointQuery
         let mousePos = app.input.mousePosition
         if app.input.isMouseButtonPressed(.left) {
             let hits = physics.pointQuery(world: app.world, point: mousePos)
             for hit in hits {
-                if let _ = app.world.getComponent(Draggable.self, from: hit.entity),
+                if app.world.getComponent(Draggable.self, from: hit.entity) != nil,
                    let transform = app.world.getComponent(Transform2D.self, from: hit.entity) {
                     draggedEntity = hit.entity
                     dragOffset = Vector2(x: transform.position.x - mousePos.x, y: transform.position.y - mousePos.y)
@@ -162,7 +166,7 @@ final class GameScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
 
         // Draw wall entities as rects
@@ -192,8 +196,10 @@ final class GameScene: Scene {
                     Rect(x: pos.position.x - he.x, y: pos.position.y - he.y, width: he.x * 2, height: he.y * 2),
                     color: color
                 )
+
             case .circle(let r):
                 app.renderer.drawCircle(center: pos.position, radius: r, color: color)
+
             default:
                 break
             }
@@ -220,30 +226,54 @@ final class GameScene: Scene {
             let x: Float = 10 + Float(i) * (tabWidth + 5)
             let color = i == currentTab ? Sandbox.activeTab : Sandbox.inactiveTab
             app.renderer.drawRect(Rect(x: x, y: tabY, width: tabWidth, height: tabHeight), color: color)
-            app.renderer.drawText(name,
-                                  position: Vector2(x: x + 5, y: tabY + 7),
-                                  font: font, size: 13, color: Sandbox.textBright)
+            app.renderer.drawText(
+                name,
+                position: Vector2(x: x + 5, y: tabY + 7),
+                font: font,
+                size: 13,
+                color: Sandbox.textBright
+            )
         }
 
         // HUD info
         let infoY = screen.height - 80
-        app.renderer.drawText("[1-6] Switch Demo  [D] Debug  [V] Velocities  [N] Normals",
-                              position: Vector2(x: 10, y: infoY),
-                              font: font, size: 12, color: Sandbox.textDim)
-        app.renderer.drawText("[P] Pause  [F1] Slow  [F2] Normal  [F3] Fast  |  Time: \(String(format: "%.2f", app.timeScale))x",
-                              position: Vector2(x: 10, y: infoY + 16),
-                              font: font, size: 12, color: Sandbox.textDim)
-        app.renderer.drawText("[Left-Click] Drag  [Right-Click] Explosion" + (currentTab == 5 ? "  [Space] Fire" : ""),
-                              position: Vector2(x: 10, y: infoY + 32),
-                              font: font, size: 12, color: Sandbox.textDim)
-        app.renderer.drawText("Joints: \(physics.jointCount)  |  Debug: \(showDebug ? "ON" : "OFF")",
-                              position: Vector2(x: 10, y: infoY + 48),
-                              font: font, size: 12, color: Sandbox.textDim)
+        app.renderer.drawText(
+            "[1-6] Switch Demo  [D] Debug  [V] Velocities  [N] Normals",
+            position: Vector2(x: 10, y: infoY),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
+        app.renderer.drawText(
+            "[P] Pause  [F1] Slow  [F2] Normal  [F3] Fast  |  Time: \(String(format: "%.2f", app.timeScale))x",
+            position: Vector2(x: 10, y: infoY + 16),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
+        app.renderer.drawText(
+            "[Left-Click] Drag  [Right-Click] Explosion" + (currentTab == 5 ? "  [Space] Fire" : ""),
+            position: Vector2(x: 10, y: infoY + 32),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
+        app.renderer.drawText(
+            "Joints: \(physics.jointCount)  |  Debug: \(showDebug ? "ON" : "OFF")",
+            position: Vector2(x: 10, y: infoY + 48),
+            font: font,
+            size: 12,
+            color: Sandbox.textDim
+        )
 
         // FPS
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: screen.width - 80, y: screen.height - 18),
-                              font: font, size: 14, color: Color(r: 80, g: 80, b: 80))
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: screen.width - 80, y: screen.height - 18),
+            font: font,
+            size: 14,
+            color: Color(r: 80, g: 80, b: 80)
+        )
     }
 
     func willExit(app: Application) {

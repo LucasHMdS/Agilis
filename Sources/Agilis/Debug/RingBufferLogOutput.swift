@@ -1,5 +1,3 @@
-
-
 /// Stores recent log entries in a fixed-size circular buffer.
 ///
 /// Useful for displaying an on-screen log overlay via the `DebugOverlay`.
@@ -14,6 +12,8 @@
 /// let recent = ringBuffer.entries  // oldest first
 /// ```
 public final class RingBufferLogOutput: LogOutput, @unchecked Sendable {
+
+    deinit {}
 
     public var minimumLevel: LogLevel
 
@@ -38,6 +38,7 @@ public final class RingBufferLogOutput: LogOutput, @unchecked Sendable {
 
     /// Returns all stored entries, oldest first.
     public var entries: [LogEntry] {
+        // swiftlint:disable:next empty_count
         guard count > 0 else { return [] }
         var result = [LogEntry]()
         result.reserveCapacity(count)

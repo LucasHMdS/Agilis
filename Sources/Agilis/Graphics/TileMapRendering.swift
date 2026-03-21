@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -287,11 +285,9 @@ private func _visibleTileRange(
 /// `firstGid` that is <= the tile ID wins.
 private func _findTileset(for tileId: Int, in tilesets: [Tileset]) -> Tileset? {
     var best: Tileset?
-    for tileset in tilesets {
-        if tileId >= tileset.firstGid {
-            if best == nil || tileset.firstGid > best!.firstGid {
-                best = tileset
-            }
+    for tileset in tilesets where tileId >= tileset.firstGid {
+        if best == nil || tileset.firstGid > (best?.firstGid ?? 0) {
+            best = tileset
         }
     }
     return best

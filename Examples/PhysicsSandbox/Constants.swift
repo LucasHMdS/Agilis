@@ -1,7 +1,7 @@
 import Agilis
 
 enum Sandbox {
-    static let screenWidth: Float = 1024
+    static let screenWidth: Float = 1_024
     static let screenHeight: Float = 768
 
     static let gravity = Vector2(x: 0, y: 400)
@@ -13,7 +13,7 @@ enum Sandbox {
         "3: Crane",
         "4: Elevator",
         "5: Motor",
-        "6: Projectiles",
+        "6: Projectiles"
     ]
 
     // Colors

@@ -1,12 +1,14 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Mock Renderer for Screenshot Tests
 
 private final class ScreenshotMockRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var screenshotPaths: [String] = []
     var captureCallCount = 0
-    var captureResult: ImageData? = nil
+    var captureResult: ImageData?
 
     func takeScreenshot(path: String) {
         screenshotPaths.append(path)
@@ -18,30 +20,30 @@ private final class ScreenshotMockRenderer: @unchecked Sendable, RenderBackend {
     }
 
     // Unused Renderer stubs
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
-    func loadTextureFromImage(_ image: ImageData) -> TextureHandle { .invalid }
-    func drawSprite(_ sprite: Sprite) {}
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
+    func loadTextureFromImage(_: ImageData) -> TextureHandle { .invalid }
+    func drawSprite(_: Sprite) {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
     var screenSize: Size { Size(width: 800, height: 600) }
 }
@@ -91,29 +93,31 @@ struct ScreenshotDefaultTests {
 
     /// A minimal renderer that only implements required methods, using defaults for screenshots.
     private final class MinimalRenderer: @unchecked Sendable, RenderBackend {
-        func initialize(config: WindowConfig) throws {}
+        deinit {}
+
+        func initialize(config _: WindowConfig) {}
         func shutdown() {}
         func shouldClose() -> Bool { false }
         func beginFrame() {}
         func endFrame() {}
-        func setBackgroundColor(_ color: Color) {}
-        func loadTexture(from path: String) -> TextureHandle { .invalid }
-        func textureSize(_ handle: TextureHandle) -> Size { .zero }
-        func destroyTexture(_ handle: TextureHandle) {}
-        func drawSprite(_ sprite: Sprite) {}
-        func drawRect(_ rect: Rect, color: Color) {}
-        func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-        func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-        func drawCircle(center: Vector2, radius: Float, color: Color) {}
-        func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+        func setBackgroundColor(_: Color) {}
+        func loadTexture(from _: String) -> TextureHandle { .invalid }
+        func textureSize(_: TextureHandle) -> Size { .zero }
+        func destroyTexture(_: TextureHandle) {}
+        func drawSprite(_: Sprite) {}
+        func drawRect(_: Rect, color _: Color) {}
+        func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+        func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+        func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+        func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
         func loadDefaultFont() -> FontHandle { .invalid }
-        func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-        func destroyFont(_ handle: FontHandle) {}
-        func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-        func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-        func beginClip(_ rect: Rect) {}
+        func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+        func destroyFont(_: FontHandle) {}
+        func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+        func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+        func beginClip(_: Rect) {}
         func endClip() {}
-        func beginCamera(_ camera: Camera2D) {}
+        func beginCamera(_: Camera2D) {}
         func endCamera() {}
         var screenSize: Size { .zero }
     }

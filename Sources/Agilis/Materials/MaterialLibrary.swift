@@ -1,5 +1,3 @@
-
-
 /// A library of built-in material effects with shader lifecycle management.
 ///
 /// `MaterialLibrary` loads and caches the GLSL shaders for built-in effects,
@@ -19,6 +17,8 @@
 /// materials.shutdown()
 /// ```
 public final class MaterialLibrary: @unchecked Sendable {
+    deinit {}
+
     private var shaderCache: [String: ShaderHandle] = [:]
     private var renderer: (any RenderBackend)?
 
@@ -68,7 +68,7 @@ public final class MaterialLibrary: @unchecked Sendable {
         let shader = getOrLoadShader(name: "flash", source: MaterialShaders.flashFragment)
         return Material2D(shader: shader, uniforms: [
             "flashColor": .color(color),
-            "flashAmount": .float(amount),
+            "flashAmount": .float(amount)
         ])
     }
 
@@ -82,7 +82,7 @@ public final class MaterialLibrary: @unchecked Sendable {
     public func grayscale(amount: Float = 1.0) -> Material2D {
         let shader = getOrLoadShader(name: "grayscale", source: MaterialShaders.grayscaleFragment)
         return Material2D(shader: shader, uniforms: [
-            "amount": .float(amount),
+            "amount": .float(amount)
         ])
     }
 
@@ -105,7 +105,7 @@ public final class MaterialLibrary: @unchecked Sendable {
         return Material2D(shader: shader, uniforms: [
             "threshold": .float(threshold),
             "edgeWidth": .float(edgeWidth),
-            "edgeColor": .color(edgeColor),
+            "edgeColor": .color(edgeColor)
         ])
     }
 
@@ -128,7 +128,7 @@ public final class MaterialLibrary: @unchecked Sendable {
         return Material2D(shader: shader, uniforms: [
             "outlineColor": .color(color),
             "outlineWidth": .float(width),
-            "textureSize": .vec2(textureSize),
+            "textureSize": .vec2(textureSize)
         ])
     }
 
@@ -159,7 +159,7 @@ public final class MaterialLibrary: @unchecked Sendable {
                 y: Float(replacement.g) / 255.0,
                 z: Float(replacement.b) / 255.0
             ),
-            "tolerance": .float(tolerance),
+            "tolerance": .float(tolerance)
         ])
     }
 
@@ -185,7 +185,7 @@ public final class MaterialLibrary: @unchecked Sendable {
             "time": .float(time),
             "amplitude": .float(amplitude),
             "frequency": .float(frequency),
-            "speed": .float(speed),
+            "speed": .float(speed)
         ])
     }
 
@@ -213,41 +213,46 @@ public final class MaterialLibrary: @unchecked Sendable {
             let shader = getOrLoadShader(name: "flash", source: MaterialShaders.flashFragment)
             return MaterialTemplate(name: "flash", shader: shader, defaults: [
                 "flashColor": .color(.white),
-                "flashAmount": .float(1.0),
+                "flashAmount": .float(1.0)
             ])
+
         case .grayscale:
             let shader = getOrLoadShader(name: "grayscale", source: MaterialShaders.grayscaleFragment)
             return MaterialTemplate(name: "grayscale", shader: shader, defaults: [
-                "amount": .float(1.0),
+                "amount": .float(1.0)
             ])
+
         case .dissolve:
             let shader = getOrLoadShader(name: "dissolve", source: MaterialShaders.dissolveFragment)
             return MaterialTemplate(name: "dissolve", shader: shader, defaults: [
                 "threshold": .float(0.0),
                 "edgeWidth": .float(0.05),
-                "edgeColor": .color(.white),
+                "edgeColor": .color(.white)
             ])
+
         case .outline:
             let shader = getOrLoadShader(name: "outline", source: MaterialShaders.outlineFragment)
             return MaterialTemplate(name: "outline", shader: shader, defaults: [
                 "outlineColor": .color(.white),
                 "outlineWidth": .float(1.0),
-                "textureSize": .vec2(Vector2(x: 64, y: 64)),
+                "textureSize": .vec2(Vector2(x: 64, y: 64))
             ])
+
         case .colorReplace:
             let shader = getOrLoadShader(name: "colorReplace", source: MaterialShaders.colorReplaceFragment)
             return MaterialTemplate(name: "colorReplace", shader: shader, defaults: [
                 "targetColor": .vec3(x: 1, y: 0, z: 0),
                 "replacementColor": .vec3(x: 0, y: 0, z: 1),
-                "tolerance": .float(0.1),
+                "tolerance": .float(0.1)
             ])
+
         case .wave:
             let shader = getOrLoadShader(name: "wave", source: MaterialShaders.waveFragment)
             return MaterialTemplate(name: "wave", shader: shader, defaults: [
                 "time": .float(0),
                 "amplitude": .float(0.01),
                 "frequency": .float(10.0),
-                "speed": .float(3.0),
+                "speed": .float(3.0)
             ])
         }
     }
@@ -256,7 +261,7 @@ public final class MaterialLibrary: @unchecked Sendable {
     ///
     /// Update this each frame to provide `_time`, `_resolution`, `_deltaTime`
     /// to shaders that declare those uniforms.
-    public var context: MaterialContext = MaterialContext()
+    public var context = MaterialContext()
 
     // MARK: - Private
 

@@ -1,0 +1,29 @@
+name: SwiftLint
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "**/*.swift"
+      - ".swiftlint.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: SwiftLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SwiftLint
+        run: |
+          SWIFTLINT_VERSION="0.64.0-rc.1"
+          curl -fsSL "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/swiftlint_linux_amd64.zip" -o swiftlint.zip
+          unzip -o swiftlint.zip -d swiftlint_bin
+          sudo install swiftlint_bin/swiftlint /usr/local/bin/swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --strict --reporter github-actions-logging

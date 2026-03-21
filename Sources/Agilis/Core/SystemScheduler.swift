@@ -10,6 +10,8 @@
 /// in their own sequential stage.
 internal final class SystemScheduler: @unchecked Sendable {
 
+    deinit {}
+
     /// Build an execution plan from a priority-sorted system list.
     ///
     /// Returns an array of stages. Each stage contains systems that can run

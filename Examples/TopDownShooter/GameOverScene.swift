@@ -1,11 +1,13 @@
 import Agilis
 
 final class GameOverScene: Scene {
+    deinit {}
     let finalScore: Int
     let finalWave: Int
     let finalKills: Int
 
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
 
     init(score: Int, wave: Int, kills: Int) {
@@ -50,7 +52,7 @@ final class GameOverScene: Scene {
         ui.update(app: app, deltaTime: deltaTime)
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         ui.render(renderer: app.renderer)
     }
 

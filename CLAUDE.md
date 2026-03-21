@@ -10,6 +10,7 @@ Agilis is a cross-platform 2D game framework written in Swift 6.0+, targeting Wi
 swift build              # Debug build
 swift build -c release   # Release build
 swift test               # Run all tests (1450+ tests)
+swiftlint lint --strict  # Run SwiftLint (enforced in CI on PRs)
 swift run UIDemo         # UI widget showcase
 swift run Pong           # Classic Pong game
 swift run Platformer     # 2D platformer with animation, particles, lighting
@@ -21,6 +22,16 @@ swift run TopDownShooter # 2D top-down shooter
 ```
 
 Tests use Swift Testing (`import Testing`, `@Suite`, `@Test`, `#expect`), not XCTest.
+- Test targets: `AgilisTests` (main framework), `AgilisFormatsTests` (format parsers)
+- Examples live in `Examples/` directory (each has `main.swift`)
+
+## CI & Linting
+
+- **CI platforms**: Linux (Ubuntu), macOS (macos-26), Windows — all run `swift build` + `swift test`
+- **SwiftLint**: v0.64.0-rc.1, runs on PRs to `main`/`develop`, `--strict` mode
+- **SwiftLint config**: `.swiftlint.yml` — disabled rules: `file_length`, `function_body_length`, `large_tuple`, `type_body_length`
+- **ANGLE pre-built libs**: Required before first build. Use `scripts/build_angle_macos.sh` (macOS), `scripts/build_angle_linux.sh` (Linux), `scripts/build_angle.bat` (Windows). CI caches these.
+- **PR branches**: Target `main` or `develop`
 
 ## Project Structure
 

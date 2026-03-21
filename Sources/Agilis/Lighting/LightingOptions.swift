@@ -1,5 +1,3 @@
-
-
 /// Quality level for soft shadow blur passes.
 public enum SoftShadowQuality: Int, Sendable, Codable {
     /// 1 blur pass — fast, slightly soft edges.

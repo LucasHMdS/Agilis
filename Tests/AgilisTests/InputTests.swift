@@ -1,14 +1,16 @@
-import Testing
 @testable import Agilis
+import Testing
 
 /// A mock input backend for testing. Allows programmatic control of key/mouse state.
 final class MockNativeInput: @unchecked Sendable, InputBackend {
+    deinit {}
+
     var keysDown: Set<Key> = []
     var mouseButtonsDown: Set<MouseButton> = []
     var currentMousePosition = Vector2.zero
     var currentMouseDelta = Vector2.zero
     var currentScrollDelta: Float = 0
-    var currentCharPressed: Character? = nil
+    var currentCharPressed: Character?
 
     func isKeyDown(_ key: Key) -> Bool {
         keysDown.contains(key)

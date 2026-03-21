@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -79,6 +77,8 @@ public struct DebugOverlayOptions: Sendable {
 /// ```
 public final class DebugOverlay: @unchecked Sendable {
 
+    deinit {}
+
     /// Font used for text rendering.
     public let font: FontHandle
 
@@ -89,11 +89,11 @@ public final class DebugOverlay: @unchecked Sendable {
     public var logBuffer: RingBufferLogOutput?
 
     /// Whether the overlay is visible.
-    public var isVisible: Bool = true
+    public var isVisible = true
 
     private var frameHistory: [Double]
-    private var frameWriteIndex: Int = 0
-    private var frameCount: Int = 0
+    private var frameWriteIndex = 0
+    private var frameCount = 0
 
     public init(font: FontHandle, options: DebugOverlayOptions = DebugOverlayOptions()) {
         self.font = font
@@ -119,12 +119,15 @@ public final class DebugOverlay: @unchecked Sendable {
         // FPS + Frame Time
         if options.showFPS {
             let fps = app.fps
-            let ms = app.frameTime * 1000.0
+            let ms = app.frameTime * 1_000.0
             let text = "\(fps) FPS  \(String(format: "%.1f", ms))ms"
             let bg = Rect(x: 0, y: y - 2, width: 200, height: lineHeight + 4)
             renderer.drawRect(bg, color: options.backgroundColor)
-            renderer.drawText(text, position: Vector2(x: padding, y: y),
-                              font: font, size: options.fontSize, color: fpsColor(fps))
+            renderer.drawText(text,
+                              position: Vector2(x: padding, y: y),
+                              font: font,
+                              size: options.fontSize,
+                              color: fpsColor(fps))
             y += lineHeight + 4
         }
 
@@ -136,7 +139,7 @@ public final class DebugOverlay: @unchecked Sendable {
             renderer.drawRect(bg, color: options.backgroundColor)
 
             let barWidth = graphWidth / Float(frameHistory.count)
-            let targetFT: Double = 1.0 / 60.0
+            let targetFT = 1.0 / 60.0
             let maxFT = targetFT * 3.0
 
             for i in 0..<frameCount {
@@ -179,8 +182,11 @@ public final class DebugOverlay: @unchecked Sendable {
             let text = "Entities: \(app.world.entityCount)  Components: \(app.world.componentStoreCount)"
             let bg = Rect(x: 0, y: y - 2, width: 300, height: lineHeight + 4)
             renderer.drawRect(bg, color: options.backgroundColor)
-            renderer.drawText(text, position: Vector2(x: padding, y: y),
-                              font: font, size: options.fontSize, color: options.textColor)
+            renderer.drawText(text,
+                              position: Vector2(x: padding, y: y),
+                              font: font,
+                              size: options.fontSize,
+                              color: options.textColor)
             y += lineHeight + 4
         }
 
@@ -192,16 +198,22 @@ public final class DebugOverlay: @unchecked Sendable {
                 let bg = Rect(x: 0, y: y - 2, width: 300, height: sectionHeight)
                 renderer.drawRect(bg, color: options.backgroundColor)
 
-                renderer.drawText("Systems:", position: Vector2(x: padding, y: y),
-                                  font: font, size: options.fontSize, color: options.textColor)
+                renderer.drawText("Systems:",
+                                  position: Vector2(x: padding, y: y),
+                                  font: font,
+                                  size: options.fontSize,
+                                  color: options.textColor)
                 y += lineHeight
 
                 for timing in timings {
-                    let ms = timing.duration * 1000.0
+                    let ms = timing.duration * 1_000.0
                     let text = "  \(timing.name): \(String(format: "%.2f", ms))ms"
                     let color = ms > 2.0 ? options.warningColor : options.textColor
-                    renderer.drawText(text, position: Vector2(x: padding, y: y),
-                                      font: font, size: options.fontSize, color: color)
+                    renderer.drawText(text,
+                                      position: Vector2(x: padding, y: y),
+                                      font: font,
+                                      size: options.fontSize,
+                                      color: color)
                     y += lineHeight
                 }
                 y += 4
@@ -222,13 +234,18 @@ public final class DebugOverlay: @unchecked Sendable {
                     let color: Color
                     switch entry.level {
                     case .error: color = options.errorColor
+
                     case .warn: color = options.warningColor
+
                     default: color = options.textColor
                     }
 
                     let text = "[\(entry.level)] [\(entry.category)] \(entry.message)"
-                    renderer.drawText(text, position: Vector2(x: padding, y: y),
-                                      font: font, size: options.fontSize, color: color)
+                    renderer.drawText(text,
+                                      position: Vector2(x: padding, y: y),
+                                      font: font,
+                                      size: options.fontSize,
+                                      color: color)
                     y += lineHeight
                 }
             }

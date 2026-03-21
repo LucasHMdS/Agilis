@@ -1,9 +1,5 @@
-import Testing
 @testable import Agilis
-import Agilis
-
-// MARK: - Test Components (unique to this file to avoid collisions)
-
+import Testing
 private struct PosA: Component { var x: Float = 0 }
 private struct VelA: Component { var dx: Float = 0 }
 private struct SpriteData: Component { var frame: Int = 0 }
@@ -13,64 +9,78 @@ private struct LightData: Component { var intensity: Float = 0 }
 // MARK: - Test Systems
 
 private final class SystemA: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 10 }
     var componentAccess: ComponentAccess {
         ComponentAccess(reads: [], writes: [PosA.self])
     }
     var updateCount = 0
-    func update(context: SystemContext) { updateCount += 1 }
+    func update(context _: SystemContext) { updateCount += 1 }
 }
 
 private final class SystemB: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 20 }
     var componentAccess: ComponentAccess {
         ComponentAccess(reads: [], writes: [VelA.self])
     }
     var updateCount = 0
-    func update(context: SystemContext) { updateCount += 1 }
+    func update(context _: SystemContext) { updateCount += 1 }
 }
 
 private final class SystemC: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 30 }
     var componentAccess: ComponentAccess {
         ComponentAccess(reads: [PosA.self], writes: [SpriteData.self])
     }
     var updateCount = 0
-    func update(context: SystemContext) { updateCount += 1 }
+    func update(context _: SystemContext) { updateCount += 1 }
 }
 
 private final class ReadOnlySystem: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 40 }
     var componentAccess: ComponentAccess {
         ComponentAccess(reads: [PosA.self, VelA.self])
     }
     var updateCount = 0
-    func update(context: SystemContext) { updateCount += 1 }
+    func update(context _: SystemContext) { updateCount += 1 }
 }
 
 private final class EntityMutatingSystem: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 50 }
     var componentAccess: ComponentAccess {
         ComponentAccess(reads: [], writes: [], mutatesEntities: true)
     }
     var updateCount = 0
-    func update(context: SystemContext) { updateCount += 1 }
+    func update(context _: SystemContext) { updateCount += 1 }
 }
 
 private final class EventEmittingSystem: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 60 }
     var componentAccess: ComponentAccess {
         ComponentAccess(reads: [], writes: [LightData.self], emitsEvents: true)
     }
     var updateCount = 0
-    func update(context: SystemContext) { updateCount += 1 }
+    func update(context _: SystemContext) { updateCount += 1 }
 }
 
 private final class DefaultAccessSystem: System, @unchecked Sendable {
+    deinit {}
+
     var priority: Int { 70 }
     // Uses default componentAccess (maximally conservative)
     var updateCount = 0
-    func update(context: SystemContext) { updateCount += 1 }
+    func update(context _: SystemContext) { updateCount += 1 }
 }
 
 // MARK: - ComponentAccess Tests
@@ -115,7 +125,7 @@ struct ComponentBitsetTests {
     @Test func emptyBitset() {
         let bits = ComponentBitset()
         #expect(bits.isEmpty)
-        #expect(bits.count == 0)
+        #expect(bits.isEmpty)
     }
 
     @Test func setBit() {
@@ -253,7 +263,7 @@ struct SystemSchedulerTests {
         let b = SystemB()  // writes VelA
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: a, priority: 10),
-            SystemEntry(system: b, priority: 20),
+            SystemEntry(system: b, priority: 20)
         ])
         // Disjoint writes → should be in same stage
         #expect(plan.count == 1)
@@ -266,7 +276,7 @@ struct SystemSchedulerTests {
         let c = SystemC()  // reads PosA, writes SpriteData
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: a, priority: 10),
-            SystemEntry(system: c, priority: 30),
+            SystemEntry(system: c, priority: 30)
         ])
         // C reads PosA which A writes → different stages
         #expect(plan.count == 2)
@@ -280,7 +290,7 @@ struct SystemSchedulerTests {
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: a, priority: 10),
             SystemEntry(system: m, priority: 50),
-            SystemEntry(system: b, priority: 60),
+            SystemEntry(system: b, priority: 60)
         ])
         // a alone (or grouped), m alone, b alone (or grouped)
         #expect(plan.count == 3)
@@ -295,7 +305,7 @@ struct SystemSchedulerTests {
         let e = EventEmittingSystem()
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: b, priority: 20),
-            SystemEntry(system: e, priority: 60),
+            SystemEntry(system: e, priority: 60)
         ])
         #expect(plan.count == 2)
     }
@@ -308,7 +318,7 @@ struct SystemSchedulerTests {
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: a, priority: 10),
             SystemEntry(system: d, priority: 70),
-            SystemEntry(system: b, priority: 80),
+            SystemEntry(system: b, priority: 80)
         ])
         // Default system is serial (mutatesEntities + emitsEvents), must be alone
         #expect(plan.count == 3)
@@ -320,7 +330,7 @@ struct SystemSchedulerTests {
         let r = ReadOnlySystem()    // reads PosA, VelA
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: a, priority: 10),
-            SystemEntry(system: r, priority: 40),
+            SystemEntry(system: r, priority: 40)
         ])
         // r reads PosA which a writes → separate stages
         #expect(plan.count == 2)
@@ -332,7 +342,7 @@ struct SystemSchedulerTests {
         let r2 = ReadOnlySystem()  // reads PosA, VelA
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: r1, priority: 40),
-            SystemEntry(system: r2, priority: 41),
+            SystemEntry(system: r2, priority: 41)
         ])
         // Both read-only with no writes → same stage
         #expect(plan.count == 1)
@@ -428,6 +438,8 @@ struct ParallelWorldUpdateTests {
 
         // A system that moves position by velocity
         final class MoveSystem: System, @unchecked Sendable {
+            deinit {}
+
             var priority: Int { 10 }
             var componentAccess: ComponentAccess {
                 ComponentAccess(writes: [PosA.self, VelA.self])
@@ -466,6 +478,8 @@ struct ParallelWorldUpdateTests {
 
         // Two systems writing to completely different components
         final class PosSystem: System, @unchecked Sendable {
+            deinit {}
+
             var priority: Int { 10 }
             var componentAccess: ComponentAccess {
                 ComponentAccess(writes: [PosA.self])
@@ -478,6 +492,8 @@ struct ParallelWorldUpdateTests {
         }
 
         final class ParticleCountSystem: System, @unchecked Sendable {
+            deinit {}
+
             var priority: Int { 20 }
             var componentAccess: ComponentAccess {
                 ComponentAccess(writes: [ParticleData.self])
@@ -569,7 +585,7 @@ struct BuiltinSystemAccessTests {
 
         let plan = scheduler.buildExecutionPlan(systems: [
             SystemEntry(system: particle, priority: particle.priority),
-            SystemEntry(system: lighting, priority: lighting.priority),
+            SystemEntry(system: lighting, priority: lighting.priority)
         ])
 
         // ParticleSystem writes ParticleEmitter, reads Transform2D

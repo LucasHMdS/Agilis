@@ -1,7 +1,7 @@
-
-
 /// A toggle (checkbox/switch) widget.
 public class UIToggle: UINode, @unchecked Sendable {
+    deinit {}
+
     public var label: String
     public var isOn: Bool
     public var onChange: ((Bool) -> Void)?
@@ -22,14 +22,14 @@ public class UIToggle: UINode, @unchecked Sendable {
         self.isFocusable = true
     }
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_: Size) -> Size {
         let labelWidth = cachedLabelSize?.width ?? 100
         let labelHeight = cachedLabelSize?.height ?? (fontSize + 4)
         return Size(width: boxSize + 8 + labelWidth,
                     height: max(boxSize, labelHeight))
     }
 
-    public override func update(context: UIContext, deltaTime: Double) {
+    override public func update(context: UIContext, deltaTime _: Double) {
         guard isVisible, let app = context.app else { return }
         let input = app.input
         if frame.contains(input.mousePosition) && input.isMouseButtonPressed(.left) {
@@ -43,7 +43,7 @@ public class UIToggle: UINode, @unchecked Sendable {
         onChange?(isOn)
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
 
         // Draw checkbox
@@ -60,8 +60,12 @@ public class UIToggle: UINode, @unchecked Sendable {
             let cy = boxRect.y + boxSize / 2
             let mid = Vector2(x: cx + 4, y: boxRect.y + boxSize - 5)
             let end = Vector2(x: boxRect.x + boxSize - 4, y: boxRect.y + 5)
-            renderer.drawLine(from: Vector2(x: cx, y: cy), to: mid,
-                              color: .white, thickness: 2)
+            renderer.drawLine(
+                from: Vector2(x: cx, y: cy),
+                to: mid,
+                color: .white,
+                thickness: 2
+            )
             renderer.drawLine(from: mid, to: end, color: .white, thickness: 2)
         }
 

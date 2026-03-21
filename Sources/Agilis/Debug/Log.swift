@@ -1,5 +1,3 @@
-
-
 /// Global logging facade. Dispatches log entries to registered outputs.
 ///
 /// ## Usage

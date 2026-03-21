@@ -102,9 +102,9 @@ extension TileMap {
 
 /// Tiled GID bit masks for flip flags.
 private let _flipHorizontal: UInt32 = 0x80000000
-private let _flipVertical:   UInt32 = 0x40000000
-private let _flipDiagonal:   UInt32 = 0x20000000
-private let _gidMask:        UInt32 = 0x1FFFFFFF
+private let _flipVertical: UInt32 = 0x40000000
+private let _flipDiagonal: UInt32 = 0x20000000
+private let _gidMask: UInt32 = 0x1FFFFFFF
 
 /// Decode a Tiled raw GID into the actual tile ID and flip flags.
 private func _decodeTiledGid(_ rawGid: Int) -> (gid: Int, flipX: Bool, flipY: Bool) {

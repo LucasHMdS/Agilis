@@ -30,7 +30,7 @@ enum MarioSounds {
         }
     }
 
-    private static let sampleRate = 44100
+    private static let sampleRate = 44_100
     private static let pi = Float.pi
 
     static func generate(audio: any AudioBackend) -> SoundSet {
@@ -76,7 +76,7 @@ enum MarioSounds {
 
         for i in 0..<samples {
             let t = Float(i) / Float(samples)
-            let freq: Float = i < halfPoint ? 988.0 : 1319.0
+            let freq: Float = i < halfPoint ? 988.0 : 1_319.0
             phase += freq / Float(sampleRate)
             let wave = squareWave(phase) * 0.25
             let envelope = 1.0 - t * 0.7  // Gentle decay
@@ -92,7 +92,7 @@ enum MarioSounds {
         let samples = Int(Float(sampleRate) * duration)
         var data = [Int16](repeating: 0, count: samples)
         var phase: Float = 0
-        var noiseState: UInt32 = 12345
+        var noiseState: UInt32 = 12_345
 
         for i in 0..<samples {
             let t = Float(i) / Float(samples)
@@ -100,8 +100,8 @@ enum MarioSounds {
             phase += freq / Float(sampleRate)
             let sine = sinf(phase * 2 * pi) * 0.3
             // Simple noise (LFSR-ish)
-            noiseState = noiseState &* 1103515245 &+ 12345
-            let noise = (Float(noiseState >> 16 & 0x7FFF) / 16383.5 - 1.0) * 0.15
+            noiseState = noiseState &* 1_103_515_245 &+ 12_345
+            let noise = (Float(noiseState >> 16 & 0x7FFF) / 16_383.5 - 1.0) * 0.15
             let envelope = 1.0 - t
             data[i] = toSample((sine + noise * (1.0 - t)) * envelope)
         }
@@ -154,7 +154,7 @@ enum MarioSounds {
             (523.25, 0.2),   // C5
             (659.25, 0.2),   // E5
             (783.99, 0.2),   // G5
-            (1046.50, 0.5),  // C6 (held longer)
+            (1_046.50, 0.5)  // C6 (held longer)
         ]
         let totalDuration = notes.reduce(0) { $0 + $1.duration }
         let totalSamples = Int(Float(sampleRate) * totalDuration)
@@ -188,7 +188,7 @@ enum MarioSounds {
             (329.63, 0.25),   // E4
             (261.63, 0.25),   // C4
             (220.00, 0.25),   // A3
-            (174.61, 0.45),   // F3 (held longer, low and final)
+            (174.61, 0.45)   // F3 (held longer, low and final)
         ]
         let totalDuration = notes.reduce(0) { $0 + $1.duration }
         let totalSamples = Int(Float(sampleRate) * totalDuration)
@@ -224,7 +224,7 @@ enum MarioSounds {
 
     private static func toSample(_ value: Float) -> Int16 {
         let clamped = max(-1.0, min(1.0, value))
-        return Int16(clamped * 32000)
+        return Int16(clamped * 32_000)
     }
 
     private static func lerp(_ a: Float, _ b: Float, t: Float) -> Float {

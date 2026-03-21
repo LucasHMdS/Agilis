@@ -29,9 +29,12 @@ enum DemoBuilders {
 
         // Head-Torso joint (neck)
         physics.createJoint(.revolute(RevoluteJointDef(
-            entityA: torso, entityB: head,
+            entityA: torso,
+            entityB: head,
             anchor: Vector2(x: cx, y: startY + 22),
-            enableLimit: true, lowerAngle: -0.4, upperAngle: 0.4
+            enableLimit: true,
+            lowerAngle: -0.4,
+            upperAngle: 0.4
         )), in: world)
 
         // Upper arms
@@ -40,14 +43,20 @@ enum DemoBuilders {
         entities.append(contentsOf: [leftArm, rightArm])
 
         physics.createJoint(.revolute(RevoluteJointDef(
-            entityA: torso, entityB: leftArm,
+            entityA: torso,
+            entityB: leftArm,
             anchor: Vector2(x: cx - 16, y: startY + 30),
-            enableLimit: true, lowerAngle: -1.5, upperAngle: 1.5
+            enableLimit: true,
+            lowerAngle: -1.5,
+            upperAngle: 1.5
         )), in: world)
         physics.createJoint(.revolute(RevoluteJointDef(
-            entityA: torso, entityB: rightArm,
+            entityA: torso,
+            entityB: rightArm,
             anchor: Vector2(x: cx + 16, y: startY + 30),
-            enableLimit: true, lowerAngle: -1.5, upperAngle: 1.5
+            enableLimit: true,
+            lowerAngle: -1.5,
+            upperAngle: 1.5
         )), in: world)
 
         // Legs
@@ -56,14 +65,20 @@ enum DemoBuilders {
         entities.append(contentsOf: [leftLeg, rightLeg])
 
         physics.createJoint(.revolute(RevoluteJointDef(
-            entityA: torso, entityB: leftLeg,
+            entityA: torso,
+            entityB: leftLeg,
             anchor: Vector2(x: cx - 8, y: startY + 85),
-            enableLimit: true, lowerAngle: -0.8, upperAngle: 0.8
+            enableLimit: true,
+            lowerAngle: -0.8,
+            upperAngle: 0.8
         )), in: world)
         physics.createJoint(.revolute(RevoluteJointDef(
-            entityA: torso, entityB: rightLeg,
+            entityA: torso,
+            entityB: rightLeg,
             anchor: Vector2(x: cx + 8, y: startY + 85),
-            enableLimit: true, lowerAngle: -0.8, upperAngle: 0.8
+            enableLimit: true,
+            lowerAngle: -0.8,
+            upperAngle: 0.8
         )), in: world)
 
         return entities
@@ -95,10 +110,12 @@ enum DemoBuilders {
 
             let anchorX = px - plankWidth / 2
             physics.createJoint(.distance(DistanceJointDef(
-                entityA: prevEntity, entityB: plank,
+                entityA: prevEntity,
+                entityB: plank,
                 anchorA: Vector2(x: prevAnchorX, y: bridgeY),
                 anchorB: Vector2(x: anchorX, y: bridgeY),
-                frequencyHz: 3.0, dampingRatio: 0.4
+                frequencyHz: 3.0,
+                dampingRatio: 0.4
             )), in: world)
 
             prevEntity = plank
@@ -111,10 +128,12 @@ enum DemoBuilders {
         entities.append(rightAnchor)
 
         physics.createJoint(.distance(DistanceJointDef(
-            entityA: prevEntity, entityB: rightAnchor,
+            entityA: prevEntity,
+            entityB: rightAnchor,
             anchorA: Vector2(x: prevAnchorX, y: bridgeY),
             anchorB: Vector2(x: rightX - 10, y: bridgeY),
-            frequencyHz: 3.0, dampingRatio: 0.4
+            frequencyHz: 3.0,
+            dampingRatio: 0.4
         )), in: world)
 
         // Heavy ball to drop on bridge
@@ -142,7 +161,8 @@ enum DemoBuilders {
 
         // Rope joint — goes slack when close
         physics.createJoint(.rope(RopeJointDef(
-            entityA: anchor, entityB: ropeBody,
+            entityA: anchor,
+            entityB: ropeBody,
             anchorA: anchorPos,
             anchorB: Vector2(x: anchorPos.x, y: 220),
             maxLength: 200
@@ -155,13 +175,15 @@ enum DemoBuilders {
 
         // Weld payload pieces together
         physics.createJoint(.weld(WeldJointDef(
-            entityA: payloadA, entityB: payloadB,
+            entityA: payloadA,
+            entityB: payloadB,
             anchor: Vector2(x: payloadPos.x, y: payloadPos.y + 20)
         )), in: world)
 
         // Rope body to payload
         physics.createJoint(.rope(RopeJointDef(
-            entityA: ropeBody, entityB: payloadA,
+            entityA: ropeBody,
+            entityB: payloadA,
             anchorA: Vector2(x: anchorPos.x, y: 220),
             anchorB: payloadPos,
             maxLength: 150
@@ -188,7 +210,8 @@ enum DemoBuilders {
 
         // Prismatic joint — vertical axis with motor
         physics.createJoint(.prismatic(PrismaticJointDef(
-            entityA: rail, entityB: platform,
+            entityA: rail,
+            entityB: platform,
             anchor: Vector2(x: railX, y: railY),
             axis: Vector2(x: 0, y: 1),
             enableLimit: true,
@@ -204,7 +227,9 @@ enum DemoBuilders {
             let box = createDynamicBox(
                 in: world,
                 pos: Vector2(x: railX - 30 + Float(i) * 30, y: railY - 150),
-                hw: 10, hh: 10, mass: 1
+                hw: 10,
+                hh: 10,
+                mass: 1
             )
             entities.append(box)
         }
@@ -230,7 +255,8 @@ enum DemoBuilders {
 
         // Motor joint — drives follower toward an offset relative to reference
         physics.createJoint(.motor(MotorJointDef(
-            entityA: reference, entityB: follower,
+            entityA: reference,
+            entityB: follower,
             linearOffset: Vector2(x: 100, y: 0),
             correctionFactor: 0.3,
             maxForce: 500,
@@ -279,7 +305,8 @@ enum DemoBuilders {
                 let rowIdx = wallBoxes.firstIndex(where: { $0.contains(row[i]) }) ?? 0
                 let ay = wallStartY + Float(rowIdx) * (boxSize + 2)
                 physics.createJoint(.weld(WeldJointDef(
-                    entityA: row[i], entityB: row[i + 1],
+                    entityA: row[i],
+                    entityB: row[i + 1],
                     anchor: Vector2(x: posA.x, y: ay),
                     maxForce: 200
                 )), in: world)
@@ -292,7 +319,8 @@ enum DemoBuilders {
                 let x = wallX + Float(col) * (boxSize + 2)
                 let y = wallStartY + Float(rowIdx) * (boxSize + 2) + boxSize / 2 + 1
                 physics.createJoint(.weld(WeldJointDef(
-                    entityA: wallBoxes[rowIdx][col], entityB: wallBoxes[rowIdx + 1][col],
+                    entityA: wallBoxes[rowIdx][col],
+                    entityB: wallBoxes[rowIdx + 1][col],
                     anchor: Vector2(x: x, y: y),
                     maxForce: 200
                 )), in: world)
@@ -316,7 +344,8 @@ enum DemoBuilders {
         world.addComponent(RigidBody2D(
             mass: mass,
             inertia: RigidBody2D.computeInertia(mass: mass, shape: shape),
-            restitution: 0.3, friction: 0.5,
+            restitution: 0.3,
+            friction: 0.5,
             bodyType: .dynamic
         ), to: entity)
         world.addComponent(Collider2D(
@@ -336,7 +365,8 @@ enum DemoBuilders {
         world.addComponent(RigidBody2D(
             mass: mass,
             inertia: RigidBody2D.computeInertia(mass: mass, shape: shape),
-            restitution: 0.4, friction: 0.3,
+            restitution: 0.4,
+            friction: 0.3,
             bodyType: .dynamic
         ), to: entity)
         world.addComponent(Collider2D(
@@ -365,13 +395,16 @@ enum DemoBuilders {
         let dir = Vector2(x: target.x - pos.x, y: target.y - pos.y)
         let len = sqrtf(dir.x * dir.x + dir.y * dir.y)
         let norm = len > 0.001 ? Vector2(x: dir.x / len, y: dir.y / len) : Vector2(x: 1, y: 0)
-        let speed: Float = 2000
+        let speed: Float = 2_000
 
         world.addComponent(Transform2D(position: pos), to: entity)
         world.addComponent(Velocity2D(linear: Vector2(x: norm.x * speed, y: norm.y * speed)), to: entity)
         let shape = CollisionShape.circle(radius: 5)
         world.addComponent(RigidBody2D(
-            mass: 0.5, gravityScale: 0, bodyType: .dynamic, useCCD: true
+            mass: 0.5,
+            gravityScale: 0,
+            bodyType: .dynamic,
+            useCCD: true
         ), to: entity)
         world.addComponent(Collider2D(
             shape: shape,

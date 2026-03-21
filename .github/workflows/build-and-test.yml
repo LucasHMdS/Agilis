@@ -1,0 +1,127 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-linux:
+    name: Linux (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.2"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev pkg-config
+
+      - name: Cache ANGLE build
+        id: cache-angle
+        uses: actions/cache@v4
+        with:
+          path: Sources/AngleC/lib/linux
+          key: angle-linux-${{ hashFiles('scripts/build_angle_linux.sh') }}
+
+      - name: Install ANGLE build dependencies
+        if: steps.cache-angle.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get install -y ninja-build python3 libxext-dev
+
+      - name: Build ANGLE from source
+        if: steps.cache-angle.outputs.cache-hit != 'true'
+        run: |
+          chmod +x scripts/build_angle_linux.sh
+          ./scripts/build_angle_linux.sh
+
+      - name: Cache SPM build
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: spm-linux-${{ hashFiles('Package.swift') }}-${{ github.sha }}
+          restore-keys: |
+            spm-linux-${{ hashFiles('Package.swift') }}-
+
+      - name: Build
+        run: swift build
+
+      - name: Test
+        run: swift test
+
+  build-macos:
+    name: macOS
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache ANGLE build
+        id: cache-angle
+        uses: actions/cache@v4
+        with:
+          path: Sources/AngleC/lib/macos
+          key: angle-macos-${{ hashFiles('scripts/build_angle_macos.sh') }}
+
+      - name: Install ANGLE build dependencies
+        if: steps.cache-angle.outputs.cache-hit != 'true'
+        run: |
+          brew install ninja
+
+      - name: Build ANGLE from source
+        if: steps.cache-angle.outputs.cache-hit != 'true'
+        run: |
+          chmod +x scripts/build_angle_macos.sh
+          ./scripts/build_angle_macos.sh
+
+      - name: Cache SPM build
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: spm-macos-${{ hashFiles('Package.swift') }}-${{ github.sha }}
+          restore-keys: |
+            spm-macos-${{ hashFiles('Package.swift') }}-
+
+      - name: Build
+        run: swift build
+
+      - name: Test
+        run: swift test
+
+  build-windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Visual Studio Developer Environment
+        uses: compnerd/gha-setup-vsdevenv@main
+
+      - name: Install Swift
+        uses: compnerd/gha-setup-swift@main
+        with:
+          swift-version: "swift-6.2.4-RELEASE"
+          swift-build: "6.2.4-RELEASE"
+
+      - name: Cache SPM build
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: spm-windows-${{ hashFiles('Package.swift') }}-${{ github.sha }}
+          restore-keys: |
+            spm-windows-${{ hashFiles('Package.swift') }}-
+
+      - name: Build
+        run: swift build
+
+      - name: Test
+        run: swift test

@@ -1,6 +1,10 @@
 // swift-tools-version: 6.0
 
 import PackageDescription
+import Foundation
+
+// Absolute path to package directory for rpath resolution
+let packageDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 
 // MARK: - PlatformC build configuration
 
@@ -64,7 +68,8 @@ var angleCLinkerSettings: [LinkerSetting] {
         "-Xlinker", "libGLESv2.dll.lib"
     ], .when(platforms: [.windows])))
     settings.append(.unsafeFlags([
-        "-L", "Sources/AngleC/lib/macos", "-lEGL", "-lGLESv2"
+        "-L", "Sources/AngleC/lib/macos", "-lEGL", "-lGLESv2",
+        "-Xlinker", "-rpath", "-Xlinker", "\(packageDirectory)/Sources/AngleC/lib/macos"
     ], .when(platforms: [.macOS])))
     settings.append(.unsafeFlags([
         "-L", "Sources/AngleC/lib/linux", "-lEGL", "-lGLESv2"
@@ -102,9 +107,16 @@ var stbCSettings: [CSetting] {
 }
 
 // MARK: - Package
-
 let package = Package(
     name: "Agilis",
+    // Minimum OS versions for Apple platforms (Swift Concurrency requirement)
+    // Windows/Linux: Supported via Swift 6.0 toolchain
+    platforms: [
+        .macOS(.v12),
+        .iOS(.v13),
+        .tvOS(.v13),
+        .watchOS(.v6),
+    ],
     products: [
         .library(name: "Agilis", targets: ["Agilis"]),
         .library(name: "AgilisFormats", targets: ["AgilisFormats"]),

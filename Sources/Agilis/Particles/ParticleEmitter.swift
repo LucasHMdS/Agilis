@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -59,7 +57,6 @@ public enum ParticleRenderShape: Sendable, Equatable, Codable {
 /// ```
 public struct ParticleEmitter: Component, Sendable, SerializableComponent {
     public static let componentName = "ParticleEmitter"
-
 
     // MARK: - Emission Control
 

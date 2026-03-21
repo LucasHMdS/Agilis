@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 @Suite("Material2D")
 struct Material2DTests {
@@ -73,7 +73,7 @@ struct Material2DTests {
             shader: ShaderHandle(id: 3),
             uniforms: [
                 "time": .float(1.5),
-                "color": .color(.red),
+                "color": .color(.red)
             ]
         )
         #expect(mat.shader == ShaderHandle(id: 3))
@@ -174,7 +174,7 @@ struct Material2DTests {
                 "offset": .vec2(Vector2(x: 10, y: 20)),
                 "rgb": .vec3(x: 0.1, y: 0.2, z: 0.3),
                 "rgba": .vec4(x: 0.1, y: 0.2, z: 0.3, w: 0.4),
-                "count": .int(42),
+                "count": .int(42)
             ],
             blendMode: .additive
         )

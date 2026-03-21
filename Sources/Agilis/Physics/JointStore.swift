@@ -1,5 +1,3 @@
-
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -13,6 +11,8 @@ import CRT
 /// Handles creation, destruction, and entity-to-joint lookups.
 /// Used internally by `PhysicsWorld2D`.
 internal final class JointStore: @unchecked Sendable {
+
+    deinit {}
 
     /// All active joints, keyed by handle ID.
     private var joints: [UInt32: Joint2D] = [:]
@@ -58,14 +58,19 @@ internal final class JointStore: @unchecked Sendable {
         switch definition {
         case .revolute(let def):
             joint = createRevolute(handle: handle, def: def, world: world)
+
         case .distance(let def):
             joint = createDistance(handle: handle, def: def, world: world)
+
         case .weld(let def):
             joint = createWeld(handle: handle, def: def, world: world)
+
         case .prismatic(let def):
             joint = createPrismatic(handle: handle, def: def, world: world)
+
         case .rope(let def):
             joint = createRope(handle: handle, def: def, world: world)
+
         case .motor(let def):
             joint = createMotor(handle: handle, def: def, world: world)
         }
@@ -199,15 +204,17 @@ internal final class JointStore: @unchecked Sendable {
             )
 
             let jointType: String
-            var worldAxis: Vector2? = nil
+            var worldAxis: Vector2?
             switch joint.definition {
             case .revolute: jointType = "revolute"
             case .distance: jointType = "distance"
             case .weld: jointType = "weld"
+
             case .prismatic:
                 jointType = "prismatic"
                 let rotA = tA?.rotation ?? 0
                 worldAxis = rotateVector(joint.localAxisA, angle: rotA)
+
             case .rope: jointType = "rope"
             case .motor: jointType = "motor"
             }
@@ -391,9 +398,9 @@ internal final class JointStore: @unchecked Sendable {
         )
     }
 
-    private func createMotor(handle: JointHandle, def: MotorJointDef, world: World) -> Joint2D {
+    private func createMotor(handle: JointHandle, def: MotorJointDef, world _: World) -> Joint2D {
         // Motor joint acts at body centers — no anchors needed
-        return Joint2D(
+        Joint2D(
             handle: handle,
             definition: .motor(def),
             entityA: def.entityA,

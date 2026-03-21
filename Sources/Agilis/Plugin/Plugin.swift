@@ -14,6 +14,6 @@ public protocol Plugin: AnyObject {
 }
 
 public extension Plugin {
-    func update(deltaTime: Double) {}
+    func update(deltaTime _: Double) {}
     func uninstall() {}
 }

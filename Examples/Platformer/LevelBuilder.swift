@@ -60,14 +60,14 @@ enum LevelBuilder {
         let gY = groundY() - Mario.goombaHeight / 2
         entities.append(createGoomba(at: Vector2(x: 400, y: gY), in: world))
         entities.append(createGoomba(at: Vector2(x: 700, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 1100, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 1600, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 2200, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 2600, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 3200, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 3800, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 4400, y: gY), in: world))
-        entities.append(createGoomba(at: Vector2(x: 5200, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 1_100, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 1_600, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 2_200, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 2_600, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 3_200, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 3_800, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 4_400, y: gY), in: world))
+        entities.append(createGoomba(at: Vector2(x: 5_200, y: gY), in: world))
 
         // Flagpole
         entities.append(createFlagpole(col: 193, in: world))
@@ -119,13 +119,19 @@ enum LevelBuilder {
 
         // Top ground tile (grass)
         let topY = Float(Mario.groundRow) * Mario.tileSize + Mario.tileSize / 2
-        entities.append(createStaticTile(position: Vector2(x: x, y: topY),
-                                         type: .groundTop, in: world))
+        entities.append(createStaticTile(
+            position: Vector2(x: x, y: topY),
+            type: .groundTop,
+            in: world
+        ))
 
         // Fill below with ground
         let bottomY = Float(Mario.groundRow + 1) * Mario.tileSize + Mario.tileSize / 2
-        entities.append(createStaticTile(position: Vector2(x: x, y: bottomY),
-                                         type: .ground, in: world))
+        entities.append(createStaticTile(
+            position: Vector2(x: x, y: bottomY),
+            type: .ground,
+            in: world
+        ))
         return entities
     }
 
@@ -147,8 +153,11 @@ enum LevelBuilder {
         for i in 0..<width {
             let x = Float(startCol + i) * Mario.tileSize + Mario.tileSize / 2
             let y = Float(row) * Mario.tileSize + Mario.tileSize / 2
-            entities.append(createStaticTile(position: Vector2(x: x, y: y),
-                                             type: .brick, in: world))
+            entities.append(createStaticTile(
+                position: Vector2(x: x, y: y),
+                type: .brick,
+                in: world
+            ))
         }
         return entities
     }

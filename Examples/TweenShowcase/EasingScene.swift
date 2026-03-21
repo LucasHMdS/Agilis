@@ -9,6 +9,8 @@ import CRT
 #endif
 
 final class EasingScene: Scene {
+    deinit {}
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var tweens: TweenSystem!
     private var font: FontHandle = .invalid
     private var ballEntities: [Entity] = []
@@ -52,7 +54,9 @@ final class EasingScene: Scene {
             let handle = tweens.moveTo(
                 entity,
                 target: Vector2(x: trackEndX, y: cellY + 55),
-                duration: 1.5, easing: entry.easing, in: app.world
+                duration: 1.5,
+                easing: entry.easing,
+                in: app.world
             )
             tweens.setYoyo(handle)
             tweens.setRepeat(handle, count: -1)
@@ -67,7 +71,11 @@ final class EasingScene: Scene {
             to: customEntity
         )
         app.world.addComponent(Sprite(texture: .invalid, tint: Showcase.accentColor), to: customEntity)
-        let customHandle = tweens.custom(customEntity, duration: 2.0, easing: .sineInOut) { world, entity, t in
+        let customHandle = tweens.custom(
+            customEntity,
+            duration: 2.0,
+            easing: .sineInOut
+        ) { world, entity, t in
             world.updateComponent(Sprite.self, on: entity) { sprite in
                 let r = UInt8(100 + t * 155)
                 let g = UInt8(180 - t * 130)
@@ -98,14 +106,16 @@ final class EasingScene: Scene {
             let rtHandle = tweens.moveTo(
                 rtEntity,
                 target: Vector2(x: Showcase.screenWidth - 50, y: Showcase.screenHeight - 170),
-                duration: 2.0, easing: .bounceOut, in: app.world
+                duration: 2.0,
+                easing: .bounceOut,
+                in: app.world
             )
             tweens.setYoyo(rtHandle)
             tweens.setRepeat(rtHandle, count: -1)
         }
     }
 
-    func update(app: Application, deltaTime: Double) {
+    func update(app: Application, deltaTime _: Double) {
         // Escape returns to menu
         if app.input.isKeyPressed(.escape) {
             app.sceneManager.replace(
@@ -130,17 +140,25 @@ final class EasingScene: Scene {
         }
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
         let easings = Showcase.allEasings
 
         // Title
-        app.renderer.drawText("Easing Functions (19)",
-                              position: Vector2(x: 10, y: 8),
-                              font: font, size: 24, color: Showcase.textBright)
-        app.renderer.drawText("[ESC] Menu  [SPACE] Restart  [TAB] Sequences",
-                              position: Vector2(x: 10, y: 34),
-                              font: font, size: 12, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Easing Functions (19)",
+            position: Vector2(x: 10, y: 8),
+            font: font,
+            size: 24,
+            color: Showcase.textBright
+        )
+        app.renderer.drawText(
+            "[ESC] Menu  [SPACE] Restart  [TAB] Sequences",
+            position: Vector2(x: 10, y: 34),
+            font: font,
+            size: 12,
+            color: Showcase.textDim
+        )
 
         // Draw grid cells
         let ninePatch = NinePatchSprite(texture: ninePatchTex, sourceRect: ninePatchSourceRect, border: 12)
@@ -153,27 +171,46 @@ final class EasingScene: Scene {
             let cellY = Showcase.gridOffsetY + Float(row) * (Showcase.cellHeight + Showcase.cellPadding)
 
             // Nine-patch panel background
-            app.renderer.drawNinePatch(ninePatch, destination: Rect(
-                x: cellX, y: cellY,
-                width: Showcase.cellWidth, height: Showcase.cellHeight
-            ))
+            app.renderer.drawNinePatch(
+                ninePatch,
+                destination: Rect(
+                    x: cellX,
+                    y: cellY,
+                    width: Showcase.cellWidth,
+                    height: Showcase.cellHeight
+                )
+            )
 
             // Label
-            app.renderer.drawText(entry.name,
-                                  position: Vector2(x: cellX + 5, y: cellY + 5),
-                                  font: font, size: 12, color: Showcase.textDim)
+            app.renderer.drawText(
+                entry.name,
+                position: Vector2(x: cellX + 5, y: cellY + 5),
+                font: font,
+                size: 12,
+                color: Showcase.textDim
+            )
 
             // Easing curve (small, in upper right of cell)
             let curveRect = Rect(x: cellX + 5, y: cellY + 20, width: 48, height: 30)
-            drawEasingCurve(easing: entry.easing, rect: curveRect, resolution: 30,
-                           color: Color(r: 80, g: 80, b: 100), renderer: app.renderer)
+            drawEasingCurve(
+                easing: entry.easing,
+                rect: curveRect,
+                resolution: 30,
+                color: Color(r: 80, g: 80, b: 100),
+                renderer: app.renderer
+            )
 
             // Track line
             let trackStartX = cellX + 60
             let trackEndX = trackStartX + Showcase.trackLength
             let trackY = cellY + 55
-            drawTrack(startX: trackStartX, endX: trackEndX, y: trackY,
-                     color: Showcase.trackColor, renderer: app.renderer)
+            drawTrack(
+                startX: trackStartX,
+                endX: trackEndX,
+                y: trackY,
+                color: Showcase.trackColor,
+                renderer: app.renderer
+            )
 
             // Draw the ball at its tweened position
             if i < ballEntities.count,
@@ -189,12 +226,22 @@ final class EasingScene: Scene {
         // Custom tween demo panel
         let customPanelX = Showcase.screenWidth - 200
         let customPanelY = Showcase.screenHeight - 100
-        app.renderer.drawNinePatch(ninePatch, destination: Rect(
-            x: customPanelX, y: customPanelY, width: 190, height: 35
-        ))
-        app.renderer.drawText("Custom Color Tween",
-                              position: Vector2(x: customPanelX + 5, y: customPanelY + 3),
-                              font: font, size: 11, color: Showcase.textDim)
+        app.renderer.drawNinePatch(
+            ninePatch,
+            destination: Rect(
+                x: customPanelX,
+                y: customPanelY,
+                width: 190,
+                height: 35
+            )
+        )
+        app.renderer.drawText(
+            "Custom Color Tween",
+            position: Vector2(x: customPanelX + 5, y: customPanelY + 3),
+            font: font,
+            size: 11,
+            color: Showcase.textDim
+        )
         // Draw color swatch
         if let sprite = app.world.getComponent(Sprite.self, from: customEntity) {
             app.renderer.drawRect(
@@ -205,25 +252,45 @@ final class EasingScene: Scene {
 
         // Render target demo
         if renderTarget != .invalid, let pos = app.world.getComponent(Transform2D.self, from: rtEntity) {
-            app.renderer.drawNinePatch(ninePatch, destination: Rect(
-                x: customPanelX, y: customPanelY - 85, width: 190, height: 80
-            ))
-            app.renderer.drawText("Render Target + Tween",
-                                  position: Vector2(x: customPanelX + 5, y: customPanelY - 82),
-                                  font: font, size: 11, color: Showcase.textDim)
-            app.renderer.drawRenderTarget(renderTarget,
-                                          position: Vector2(x: pos.position.x - 60, y: pos.position.y - 20))
+            app.renderer.drawNinePatch(
+                ninePatch,
+                destination: Rect(
+                    x: customPanelX,
+                    y: customPanelY - 85,
+                    width: 190,
+                    height: 80
+                )
+            )
+            app.renderer.drawText(
+                "Render Target + Tween",
+                position: Vector2(x: customPanelX + 5, y: customPanelY - 82),
+                font: font,
+                size: 11,
+                color: Showcase.textDim
+            )
+            app.renderer.drawRenderTarget(
+                renderTarget,
+                position: Vector2(x: pos.position.x - 60, y: pos.position.y - 20)
+            )
         }
 
         // Tween count
-        app.renderer.drawText("Active tweens: \(tweens.tweenCount)",
-                              position: Vector2(x: customPanelX, y: Showcase.screenHeight - 22),
-                              font: font, size: 12, color: Showcase.textDim)
+        app.renderer.drawText(
+            "Active tweens: \(tweens.tweenCount)",
+            position: Vector2(x: customPanelX, y: Showcase.screenHeight - 22),
+            font: font,
+            size: 12,
+            color: Showcase.textDim
+        )
 
         // FPS
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: 4, y: screen.height - 18),
-                              font: font, size: 14, color: Color(r: 80, g: 80, b: 80))
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: 4, y: screen.height - 18),
+            font: font,
+            size: 14,
+            color: Color(r: 80, g: 80, b: 80)
+        )
     }
 
     func willExit(app: Application) {
@@ -266,7 +333,9 @@ final class EasingScene: Scene {
             let handle = tweens.moveTo(
                 ballEntities[i],
                 target: Vector2(x: trackEndX, y: cellY + 55),
-                duration: 1.5, easing: entry.easing, in: app.world
+                duration: 1.5,
+                easing: entry.easing,
+                in: app.world
             )
             tweens.setYoyo(handle)
             tweens.setRepeat(handle, count: -1)

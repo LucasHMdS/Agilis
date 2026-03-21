@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Tile Tests")
 struct TileTests {
@@ -100,7 +100,7 @@ struct TileLayerTests {
     @Test func tileAtPosition() {
         let tiles = [
             Tile(id: 1), Tile(id: 2), Tile(id: 3),
-            Tile(id: 4), Tile(id: 5), Tile(id: 6),
+            Tile(id: 4), Tile(id: 5), Tile(id: 6)
         ]
         let layer = TileLayer(name: "ground", width: 3, height: 2, tiles: tiles)
 
@@ -113,7 +113,7 @@ struct TileLayerTests {
     @Test func tileOutOfBounds() {
         let layer = TileLayer(name: "test", width: 2, height: 2, tiles: [
             Tile(id: 1), Tile(id: 2),
-            Tile(id: 3), Tile(id: 4),
+            Tile(id: 3), Tile(id: 4)
         ])
 
         #expect(layer.tile(atColumn: -1, row: 0) == nil)

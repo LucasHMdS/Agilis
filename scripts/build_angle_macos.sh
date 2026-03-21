@@ -6,7 +6,7 @@ set -euo pipefail
 # Output: libEGL.dylib, libGLESv2.dylib
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ANGLE_BUILD_DIR="$SCRIPT_DIR/../build/angle"
+ANGLE_BUILD_DIR="$SCRIPT_DIR/../.build/angle"
 ANGLE_OUTPUT_DIR="$SCRIPT_DIR/../Sources/AngleC/lib/macos"
 
 # Detect host CPU for default target
@@ -26,7 +26,8 @@ if [ ! -d "$ANGLE_BUILD_DIR/depot_tools" ]; then
 else
     echo "depot_tools already exists, updating..."
     cd "$ANGLE_BUILD_DIR/depot_tools"
-    git pull
+    git fetch origin
+    git checkout -f origin/main
 fi
 
 export PATH="$ANGLE_BUILD_DIR/depot_tools:$PATH"
@@ -57,7 +58,7 @@ angle_enable_gl_desktop_backend = false
 angle_enable_null = false
 angle_build_tests = false
 angle_build_samples = false
-is_component_build = true
+is_component_build = false
 target_cpu = "$TARGET_CPU"
 EOF
 
@@ -73,6 +74,14 @@ mkdir -p "$ANGLE_OUTPUT_DIR"
 
 cp -f out/Release/libEGL.dylib "$ANGLE_OUTPUT_DIR/"
 cp -f out/Release/libGLESv2.dylib "$ANGLE_OUTPUT_DIR/"
+
+# Step 6: Fix install names for portability
+echo "=== Step 6: Fixing install names ==="
+install_name_tool -id @rpath/libEGL.dylib "$ANGLE_OUTPUT_DIR/libEGL.dylib"
+install_name_tool -id @rpath/libGLESv2.dylib "$ANGLE_OUTPUT_DIR/libGLESv2.dylib"
+
+# Make libEGL find libGLESv2 via rpath
+install_name_tool -change @rpath/libGLESv2.dylib @rpath/libGLESv2.dylib "$ANGLE_OUTPUT_DIR/libEGL.dylib" 2>/dev/null || true
 
 echo "=== Done! ==="
 echo "ANGLE binaries copied to: $ANGLE_OUTPUT_DIR"

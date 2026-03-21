@@ -10,9 +10,13 @@ import CRT
 #endif
 
 final class GameScene: Scene {
+    deinit {}
     private var font: FontHandle = .invalid
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var physics: PhysicsWorld2D!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: RPGSounds.SoundSet!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var serializer: WorldSerializer!
     private var savedData: Data?
 
@@ -23,10 +27,15 @@ final class GameScene: Scene {
     private var npcEntities: [Entity] = []
 
     // UI
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var inventoryList: UIListView!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var weaponLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var armorLabel: UILabel!
+    // swiftlint:disable:next implicitly_unwrapped_optional
     private var statusLabel: UILabel!
 
     func didEnter(app: Application) {
@@ -104,7 +113,7 @@ final class GameScene: Scene {
         ui.update(app: app, deltaTime: Double(dt))
     }
 
-    func render(app: Application, interpolation: Double) {
+    func render(app: Application, interpolation _: Double) {
         let screen = app.renderer.screenSize
 
         // Draw floor
@@ -119,7 +128,12 @@ final class GameScene: Scene {
                let col = app.world.getComponent(Collider2D.self, from: entity) {
                 if case .aabb(let he) = col.shape {
                     app.renderer.drawRect(
-                        Rect(x: pos.position.x - he.x, y: pos.position.y - he.y, width: he.x * 2, height: he.y * 2),
+                        Rect(
+                            x: pos.position.x - he.x,
+                            y: pos.position.y - he.y,
+                            width: he.x * 2,
+                            height: he.y * 2
+                        ),
                         color: RPG.wallColor
                     )
                 }
@@ -139,7 +153,12 @@ final class GameScene: Scene {
                let chest = app.world.getComponent(Chest.self, from: entity) {
                 let color = chest.isOpen ? RPG.chestOpenColor : RPG.chestColor
                 app.renderer.drawRect(
-                    Rect(x: pos.position.x - 14, y: pos.position.y - 12, width: 28, height: 24),
+                    Rect(
+                        x: pos.position.x - 14,
+                        y: pos.position.y - 12,
+                        width: 28,
+                        height: 24
+                    ),
                     color: color
                 )
             }
@@ -150,9 +169,13 @@ final class GameScene: Scene {
             if let pos = app.world.getComponent(Transform2D.self, from: entity),
                let npc = app.world.getComponent(NPCTag.self, from: entity) {
                 app.renderer.drawCircle(center: pos.position, radius: 14, color: RPG.npcColor)
-                app.renderer.drawText(npc.npcName,
-                                      position: Vector2(x: pos.position.x - 20, y: pos.position.y - 26),
-                                      font: font, size: 10, color: RPG.textBright)
+                app.renderer.drawText(
+                    npc.npcName,
+                    position: Vector2(x: pos.position.x - 20, y: pos.position.y - 26),
+                    font: font,
+                    size: 10,
+                    color: RPG.textBright
+                )
             }
         }
 
@@ -172,12 +195,20 @@ final class GameScene: Scene {
         ui.render(renderer: app.renderer)
 
         // HUD
-        app.renderer.drawText("[ESC] Menu  [WASD] Move",
-                              position: Vector2(x: 5, y: RPG.screenHeight - 18),
-                              font: font, size: 11, color: RPG.textDim)
-        app.renderer.drawText("\(app.fps) FPS",
-                              position: Vector2(x: screen.width - 65, y: screen.height - 18),
-                              font: font, size: 12, color: Color(r: 80, g: 80, b: 80))
+        app.renderer.drawText(
+            "[ESC] Menu  [WASD] Move",
+            position: Vector2(x: 5, y: RPG.screenHeight - 18),
+            font: font,
+            size: 11,
+            color: RPG.textDim
+        )
+        app.renderer.drawText(
+            "\(app.fps) FPS",
+            position: Vector2(x: screen.width - 65, y: screen.height - 18),
+            font: font,
+            size: 12,
+            color: Color(r: 80, g: 80, b: 80)
+        )
     }
 
     func willExit(app: Application) {
@@ -257,11 +288,14 @@ final class GameScene: Scene {
         let entity = app.world.createEntity()
         app.world.addComponent(Transform2D(position: pos), to: entity)
         app.world.addComponent(RigidBody2D(mass: 0, bodyType: .static), to: entity)
-        app.world.addComponent(Collider2D(
-            shape: .aabb(halfExtents: Vector2(x: RPG.tileSize / 2, y: RPG.tileSize / 2)),
-            layer: RPG.layerWall,
-            mask: RPG.layerPlayer | RPG.layerNPC
-        ), to: entity)
+        app.world.addComponent(
+            Collider2D(
+                shape: .aabb(halfExtents: Vector2(x: RPG.tileSize / 2, y: RPG.tileSize / 2)),
+                layer: RPG.layerWall,
+                mask: RPG.layerPlayer | RPG.layerNPC
+            ),
+            to: entity
+        )
         return entity
     }
 
@@ -269,14 +303,23 @@ final class GameScene: Scene {
         playerEntity = app.world.createEntity()
         app.world.addComponent(Transform2D(position: Vector2(x: 80, y: 80)), to: playerEntity)
         app.world.addComponent(Velocity2D(), to: playerEntity)
-        app.world.addComponent(RigidBody2D(
-            mass: 1, gravityScale: 0, bodyType: .dynamic, linearDamping: 10
-        ), to: playerEntity)
-        app.world.addComponent(Collider2D(
-            shape: .circle(radius: 12),
-            layer: RPG.layerPlayer,
-            mask: RPG.layerWall | RPG.layerItem | RPG.layerNPC | RPG.layerChest
-        ), to: playerEntity)
+        app.world.addComponent(
+            RigidBody2D(
+                mass: 1,
+                gravityScale: 0,
+                bodyType: .dynamic,
+                linearDamping: 10
+            ),
+            to: playerEntity
+        )
+        app.world.addComponent(
+            Collider2D(
+                shape: .circle(radius: 12),
+                layer: RPG.layerPlayer,
+                mask: RPG.layerWall | RPG.layerItem | RPG.layerNPC | RPG.layerChest
+            ),
+            to: playerEntity
+        )
         app.world.addComponent(PlayerTag(name: "Hero"), to: playerEntity)
         app.world.addComponent(Inventory(), to: playerEntity)
         app.world.addComponent(Equipment(), to: playerEntity)
@@ -288,7 +331,7 @@ final class GameScene: Scene {
             (Vector2(x: 200, y: 100), { ItemPrefabs.sword(at: Vector2(x: 200, y: 100)) }),
             (Vector2(x: 300, y: 200), { ItemPrefabs.shield(at: Vector2(x: 300, y: 200)) }),
             (Vector2(x: 120, y: 300), { ItemPrefabs.healthPotion(at: Vector2(x: 120, y: 300)) }),
-            (Vector2(x: 400, y: 150), { ItemPrefabs.healthPotion(at: Vector2(x: 400, y: 150)) }),
+            (Vector2(x: 400, y: 150), { ItemPrefabs.healthPotion(at: Vector2(x: 400, y: 150)) })
         ]
         for (_, factory) in positions {
             let entity = factory().instantiate(in: app.world)
@@ -297,27 +340,33 @@ final class GameScene: Scene {
     }
 
     private func spawnChests(app: Application) {
-        let chest1 = ItemPrefabs.chest(
-            at: Vector2(x: 350, y: 350),
-            containsItemId: "gold_sword",
-            containsName: "Golden Sword"
-        ).instantiate(in: app.world)
+        let chest1 = ItemPrefabs
+            .chest(
+                at: Vector2(x: 350, y: 350),
+                containsItemId: "gold_sword",
+                containsName: "Golden Sword"
+            )
+            .instantiate(in: app.world)
         chestEntities.append(chest1)
 
-        let chest2 = ItemPrefabs.chest(
-            at: Vector2(x: 450, y: 250),
-            containsItemId: "magic_armor",
-            containsName: "Magic Armor"
-        ).instantiate(in: app.world)
+        let chest2 = ItemPrefabs
+            .chest(
+                at: Vector2(x: 450, y: 250),
+                containsItemId: "magic_armor",
+                containsName: "Magic Armor"
+            )
+            .instantiate(in: app.world)
         chestEntities.append(chest2)
     }
 
     private func spawnNPCs(app: Application) {
-        let npc1 = ItemPrefabs.npc(
-            at: Vector2(x: 250, y: 300),
-            name: "Elder",
-            dialogue: "Welcome, adventurer!"
-        ).instantiate(in: app.world)
+        let npc1 = ItemPrefabs
+            .npc(
+                at: Vector2(x: 250, y: 300),
+                name: "Elder",
+                dialogue: "Welcome, adventurer!"
+            )
+            .instantiate(in: app.world)
         npcEntities.append(npc1)
     }
 
@@ -326,24 +375,24 @@ final class GameScene: Scene {
     private func setupEvents(app: Application) {
         app.world.on(ItemPickedUp.self) { [weak self] event in
             guard let self = self else { return }
-            app.world.updateComponent(Inventory.self, on: self.playerEntity) { inv in
+            app.world.updateComponent(Inventory.self, on: playerEntity) { inv in
                 if inv.items.count < inv.maxSlots {
                     inv.items.append(event.displayName)
                 }
             }
-            app.world.emit(InventoryChanged(playerEntity: self.playerEntity))
-            app.audio.playSound(self.sounds.pickup, volume: 0.5, pitch: 1.0, looping: false)
+            app.world.emit(InventoryChanged(playerEntity: playerEntity))
+            app.audio.playSound(sounds.pickup, volume: 0.5, pitch: 1.0, looping: false)
         }
 
         app.world.on(ChestOpened.self) { [weak self] event in
             guard let self = self else { return }
-            app.world.updateComponent(Inventory.self, on: self.playerEntity) { inv in
+            app.world.updateComponent(Inventory.self, on: playerEntity) { inv in
                 if inv.items.count < inv.maxSlots {
                     inv.items.append(event.displayName)
                 }
             }
-            app.world.emit(InventoryChanged(playerEntity: self.playerEntity))
-            app.audio.playSound(self.sounds.chestOpen, volume: 0.5, pitch: 1.0, looping: false)
+            app.world.emit(InventoryChanged(playerEntity: playerEntity))
+            app.audio.playSound(sounds.chestOpen, volume: 0.5, pitch: 1.0, looping: false)
         }
 
         app.world.on(InventoryChanged.self) { [weak self] _ in
@@ -458,6 +507,7 @@ final class GameScene: Scene {
     private func saveGame(app: Application) {
         do {
             savedData = try serializer.encode(world: app.world)
+            // swiftlint:disable:next force_unwrapping
             statusLabel.text = "Saved! (\(savedData!.count) bytes)"
             app.audio.playSound(sounds.save, volume: 0.5, pitch: 1.0, looping: false)
         } catch {

@@ -1,7 +1,7 @@
-
-
 /// The main application class. Owns the game loop and all engine subsystems.
 public final class Application: @unchecked Sendable {
+    deinit {}
+
     public let config: WindowConfig
     public let renderer: any RenderBackend
     public let audio: any AudioBackend

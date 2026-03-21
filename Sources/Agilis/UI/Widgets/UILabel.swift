@@ -1,7 +1,7 @@
-
-
 /// A text label widget.
 public class UILabel: UINode, @unchecked Sendable {
+    deinit {}
+
     public var text: String { didSet { if text != oldValue { cachedTextSize = nil } } }
     public var fontSize: Float { didSet { if fontSize != oldValue { cachedTextSize = nil } } }
     public var color: Color?
@@ -19,12 +19,12 @@ public class UILabel: UINode, @unchecked Sendable {
         super.init()
     }
 
-    public override func sizeThatFits(_ available: Size) -> Size {
+    override public func sizeThatFits(_: Size) -> Size {
         let textSize = cachedTextSize ?? Size(width: 100, height: fontSize + 4)
         return Size(width: textSize.width, height: textSize.height)
     }
 
-    public override func render(renderer: any RenderBackend, theme: UITheme) {
+    override public func render(renderer: any RenderBackend, theme: UITheme) {
         guard isVisible else { return }
         let textColor = color ?? theme.textColor
         let textWidth = cachedTextSize?.width ?? 0

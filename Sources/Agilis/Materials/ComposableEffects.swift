@@ -24,7 +24,7 @@ public enum ComposableEffects {
     ///
     /// - Uniform `grayscaleAmount` (float, 0–1): blend between original and grayscale.
     public static func grayscale() -> Snippet {
-        return (
+        (
             uniforms: ["grayscaleAmount": "float"],
             includes: [.color],
             body: """
@@ -39,7 +39,7 @@ public enum ComposableEffects {
     /// - Uniform `flashColor` (vec3): target flash color.
     /// - Uniform `flashAmount` (float, 0–1): blend strength.
     public static func flash() -> Snippet {
-        return (
+        (
             uniforms: ["flashColor": "vec3", "flashAmount": "float"],
             includes: [],
             body: """
@@ -52,7 +52,7 @@ public enum ComposableEffects {
     ///
     /// - Uniform `hueShift` (float): amount to rotate hue (0–1 = full rotation).
     public static func hueShift() -> Snippet {
-        return (
+        (
             uniforms: ["hueShift": "float"],
             includes: [.color],
             body: """
@@ -67,7 +67,7 @@ public enum ComposableEffects {
     ///
     /// - Uniform `tintColor` (vec3): multiplicative tint.
     public static func tint() -> Snippet {
-        return (
+        (
             uniforms: ["tintColor": "vec3"],
             includes: [],
             body: """
@@ -80,7 +80,7 @@ public enum ComposableEffects {
     ///
     /// - Uniform `invertAmount` (float, 0–1): blend between original and inverted.
     public static func invertColors() -> Snippet {
-        return (
+        (
             uniforms: ["invertAmount": "float"],
             includes: [],
             body: """
@@ -95,7 +95,7 @@ public enum ComposableEffects {
     /// - Uniform `brightnessOffset` (float, -1 to 1): additive brightness.
     /// - Uniform `contrastScale` (float, 0–2): contrast multiplier.
     public static func brightnessContrast() -> Snippet {
-        return (
+        (
             uniforms: ["brightnessOffset": "float", "contrastScale": "float"],
             includes: [],
             body: """

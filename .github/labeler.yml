@@ -1,0 +1,65 @@
+ecs:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/Core/**"
+
+physics:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/Physics/**"
+
+graphics:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "Sources/Agilis/Graphics/**"
+          - "Sources/Agilis/Lighting/**"
+          - "Sources/Agilis/Materials/**"
+          - "Sources/Agilis/PostProcess/**"
+
+ui:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/UI/**"
+
+audio:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/Audio/**"
+
+animation:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/Animation/**"
+
+particles:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/Particles/**"
+
+tween:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/Tween/**"
+
+input:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/Agilis/Input/**"
+
+platform:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/PlatformC/**"
+
+formats:
+  - changed-files:
+      - any-glob-to-any-file: "Sources/AgilisFormats/**"
+
+examples:
+  - changed-files:
+      - any-glob-to-any-file: "Examples/**"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: "Tests/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - "CLAUDE.md"

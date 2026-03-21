@@ -25,13 +25,14 @@ enum DungeonBuilder {
         var centerY: Int { y + h / 2 }
 
         func overlaps(_ other: Room, margin: Int = 2) -> Bool {
-            return x - margin < other.x + other.w &&
+            x - margin < other.x + other.w &&
                    x + w + margin > other.x &&
                    y - margin < other.y + other.h &&
                    y + h + margin > other.y
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     static func generate(renderer: any RenderBackend, world: World) -> DungeonData {
         let cols = Dungeon.mapCols
         let rows = Dungeon.mapRows
@@ -45,13 +46,13 @@ enum DungeonBuilder {
         var seed: UInt32 = 42
         for _ in 0..<30 { // attempts
             guard rooms.count < 7 else { break }
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let rw = 4 + Int(seed % 5)
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let rh = 4 + Int(seed % 4)
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let rx = 1 + Int(seed % UInt32(cols - rw - 2))
-            seed = seed &* 1664525 &+ 1013904223
+            seed = seed &* 1_664_525 &+ 1_013_904_223
             let ry = 1 + Int(seed % UInt32(rows - rh - 2))
 
             let room = Room(x: rx, y: ry, w: rw, h: rh)
@@ -126,8 +127,14 @@ enum DungeonBuilder {
             }
         }
         let layer = TileLayer(name: "ground", width: cols, height: rows, tiles: tiles)
-        let tileMap = TileMap(layers: [layer], tilesets: [tileset],
-                              tileWidth: ts, tileHeight: ts, width: cols, height: rows)
+        let tileMap = TileMap(
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: ts,
+            tileHeight: ts,
+            width: cols,
+            height: rows
+        )
 
         // Create wall entities with colliders + shadow casters
         // Merge horizontally adjacent shadow-casting walls into runs to eliminate shadow seams
@@ -163,11 +170,14 @@ enum DungeonBuilder {
                 )
                 world.addComponent(Transform2D(position: pos), to: entity)
                 world.addComponent(RigidBody2D(mass: 0, bodyType: .static), to: entity)
-                world.addComponent(Collider2D(
-                    shape: .aabb(halfExtents: Vector2(x: Float(ts) / 2, y: Float(ts) / 2)),
-                    layer: Dungeon.layerWall,
-                    mask: Dungeon.layerPlayer | Dungeon.layerEnemy
-                ), to: entity)
+                world.addComponent(
+                    Collider2D(
+                        shape: .aabb(halfExtents: Vector2(x: Float(ts) / 2, y: Float(ts) / 2)),
+                        layer: Dungeon.layerWall,
+                        mask: Dungeon.layerPlayer | Dungeon.layerEnemy
+                    ),
+                    to: entity
+                )
                 wallEntities.append(entity)
             }
         }
@@ -212,11 +222,14 @@ enum DungeonBuilder {
                 let centerY = Float(row * ts) + Float(runHeight * ts) / 2
                 world.addComponent(Transform2D(position: Vector2(x: centerX, y: centerY)), to: entity)
                 world.addComponent(RigidBody2D(mass: 0, bodyType: .static), to: entity)
-                world.addComponent(Collider2D(
-                    shape: .aabb(halfExtents: Vector2(x: Float(runLength * ts) / 2, y: Float(runHeight * ts) / 2)),
-                    layer: Dungeon.layerWall,
-                    mask: Dungeon.layerPlayer | Dungeon.layerEnemy
-                ), to: entity)
+                world.addComponent(
+                    Collider2D(
+                        shape: .aabb(halfExtents: Vector2(x: Float(runLength * ts) / 2, y: Float(runHeight * ts) / 2)),
+                        layer: Dungeon.layerWall,
+                        mask: Dungeon.layerPlayer | Dungeon.layerEnemy
+                    ),
+                    to: entity
+                )
                 world.addComponent(ShadowCaster2D(), to: entity)
                 wallEntities.append(entity)
             }
@@ -224,8 +237,10 @@ enum DungeonBuilder {
 
         // Room centers for light placement
         let roomCenters = rooms.map { room in
-            Vector2(x: Float(room.centerX * ts) + Float(ts) / 2,
-                    y: Float(room.centerY * ts) + Float(ts) / 2)
+            Vector2(
+                x: Float(room.centerX * ts) + Float(ts) / 2,
+                y: Float(room.centerY * ts) + Float(ts) / 2
+            )
         }
 
         return DungeonData(

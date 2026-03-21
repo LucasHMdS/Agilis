@@ -22,7 +22,7 @@ func drawDigit(_ digit: Int, at origin: Vector2, scale: Float, color: Color, ren
         0b1111101,  // 6
         0b0000111,  // 7
         0b1111111,  // 8
-        0b1101111,  // 9
+        0b1101111  // 9
     ]
 
     let clamped = max(0, min(digit, 9))
@@ -118,7 +118,8 @@ func drawPongTitle(centerX: Float, y: Float, renderer: any RenderBackend) {
     renderer.drawLine(
         from: Vector2(x: x + t / 2, y: y),
         to: Vector2(x: x + lw - t / 2, y: y + lh),
-        color: color, thickness: t
+        color: color,
+        thickness: t
     )
     x += lw + gap
 

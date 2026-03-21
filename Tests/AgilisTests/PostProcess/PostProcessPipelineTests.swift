@@ -1,9 +1,11 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 /// A mock renderer that tracks render target and shader operations for pipeline testing.
 private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
+    deinit {}
+
     var nextRTId: UInt32 = 1
     var createdRTs: [UInt32] = []
     var destroyedRTs: [UInt32] = []
@@ -17,9 +19,9 @@ private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
     var spritesDrawn: [Sprite] = []
     var floatUniforms: [(shader: UInt32, name: String, value: Float)] = []
     var vec2Uniforms: [(shader: UInt32, name: String, value: Vector2)] = []
-    var _screenSize: Size = Size(width: 800, height: 600)
+    var _screenSize = Size(width: 800, height: 600)
 
-    func createRenderTarget(width: Int, height: Int) -> RenderTargetHandle {
+    func createRenderTarget(width _: Int, height _: Int) -> RenderTargetHandle {
         let id = nextRTId
         nextRTId += 1
         createdRTs.append(id)
@@ -38,7 +40,7 @@ private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
         TextureHandle(id: handle.id + 100)
     }
 
-    func renderTargetSize(_ handle: RenderTargetHandle) -> Size {
+    func renderTargetSize(_: RenderTargetHandle) -> Size {
         _screenSize
     }
 
@@ -46,7 +48,7 @@ private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
         destroyedRTs.append(handle.id)
     }
 
-    func loadShader(vertexSource: String?, fragmentSource: String) -> ShaderHandle {
+    func loadShader(vertexSource _: String?, fragmentSource _: String) -> ShaderHandle {
         let id = nextShaderId
         nextShaderId += 1
         loadedShaders.append(id)
@@ -78,38 +80,40 @@ private final class PipelineMockRenderer: @unchecked Sendable, RenderBackend {
     }
 
     // Stub remaining Renderer methods
-    func initialize(config: WindowConfig) throws {}
+    func initialize(config _: WindowConfig) {}
     func shutdown() {}
     func shouldClose() -> Bool { false }
     func beginFrame() {}
     func endFrame() {}
-    func setBackgroundColor(_ color: Color) {}
-    func loadTexture(from path: String) -> TextureHandle { .invalid }
-    func textureSize(_ handle: TextureHandle) -> Size { .zero }
-    func destroyTexture(_ handle: TextureHandle) {}
-    func drawRect(_ rect: Rect, color: Color) {}
-    func drawRectOutline(_ rect: Rect, color: Color, thickness: Float) {}
-    func drawLine(from start: Vector2, to end: Vector2, color: Color, thickness: Float) {}
-    func drawCircle(center: Vector2, radius: Float, color: Color) {}
-    func drawCircleOutline(center: Vector2, radius: Float, color: Color, thickness: Float) {}
+    func setBackgroundColor(_: Color) {}
+    func loadTexture(from _: String) -> TextureHandle { .invalid }
+    func textureSize(_: TextureHandle) -> Size { .zero }
+    func destroyTexture(_: TextureHandle) {}
+    func drawRect(_: Rect, color _: Color) {}
+    func drawRectOutline(_: Rect, color _: Color, thickness _: Float) {}
+    func drawLine(from _: Vector2, to _: Vector2, color _: Color, thickness _: Float) {}
+    func drawCircle(center _: Vector2, radius _: Float, color _: Color) {}
+    func drawCircleOutline(center _: Vector2, radius _: Float, color _: Color, thickness _: Float) {}
     func loadDefaultFont() -> FontHandle { .invalid }
-    func loadFont(from path: String, size: Int) -> FontHandle { .invalid }
-    func destroyFont(_ handle: FontHandle) {}
-    func drawText(_ text: String, position: Vector2, font: FontHandle, size: Float, color: Color) {}
-    func measureText(_ text: String, font: FontHandle, size: Float) -> Size { .zero }
-    func beginClip(_ rect: Rect) {}
+    func loadFont(from _: String, size _: Int) -> FontHandle { .invalid }
+    func destroyFont(_: FontHandle) {}
+    func drawText(_: String, position _: Vector2, font _: FontHandle, size _: Float, color _: Color) {}
+    func measureText(_: String, font _: FontHandle, size _: Float) -> Size { .zero }
+    func beginClip(_: Rect) {}
     func endClip() {}
-    func beginCamera(_ camera: Camera2D) {}
+    func beginCamera(_: Camera2D) {}
     func endCamera() {}
-    func setShaderVec3(_ handle: ShaderHandle, name: String, x: Float, y: Float, z: Float) {}
-    func setShaderVec4(_ handle: ShaderHandle, name: String, x: Float, y: Float, z: Float, w: Float) {}
-    func setShaderInt(_ handle: ShaderHandle, name: String, value: Int32) {}
-    func setShaderTexture(_ handle: ShaderHandle, name: String, texture: TextureHandle) {}
+    func setShaderVec3(_: ShaderHandle, name _: String, x _: Float, y _: Float, z _: Float) {}
+    func setShaderVec4(_: ShaderHandle, name _: String, x _: Float, y _: Float, z _: Float, w _: Float) {}
+    func setShaderInt(_: ShaderHandle, name _: String, value _: Int32) {}
+    func setShaderTexture(_: ShaderHandle, name _: String, texture _: TextureHandle) {}
     var screenSize: Size { _screenSize }
 }
 
 /// A minimal test effect that records its lifecycle calls.
 private final class SpyEffect: PostProcessEffect, @unchecked Sendable {
+    deinit {}
+
     let name: String
     var isEnabled: Bool = true
     let order: Int
@@ -140,7 +144,7 @@ private final class SpyEffect: PostProcessEffect, @unchecked Sendable {
         shader = .invalid
     }
 
-    func resize(width: Int, height: Int, renderer: any RenderBackend) {
+    func resize(width: Int, height: Int, renderer _: any RenderBackend) {
         resizeCount += 1
         lastResizeWidth = width
         lastResizeHeight = height
@@ -404,7 +408,7 @@ struct PostProcessPipelineTests {
         pipeline.initialize(renderer: renderer)
 
         // Change screen size
-        renderer._screenSize = Size(width: 1024, height: 768)
+        renderer._screenSize = Size(width: 1_024, height: 768)
 
         pipeline.beginCapture(renderer: renderer)
         pipeline.endCaptureAndApply(renderer: renderer)
@@ -415,7 +419,7 @@ struct PostProcessPipelineTests {
 
         // Effect should have been resized
         #expect(effect.resizeCount == 2) // once on init, once on resize
-        #expect(effect.lastResizeWidth == 1024)
+        #expect(effect.lastResizeWidth == 1_024)
         #expect(effect.lastResizeHeight == 768)
     }
 

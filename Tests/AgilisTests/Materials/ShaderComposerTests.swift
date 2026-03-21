@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Agilis
+import Foundation
+import Testing
 
 @Suite("ShaderComposer")
 struct ShaderComposerTests {
@@ -57,7 +57,9 @@ struct ShaderComposerTests {
         #expect(source.contains("color.rgb += 0.1;"))
 
         // First effect appears before second
+        // swiftlint:disable:next force_unwrapping
         let firstIndex = source.range(of: "color.rgb *= 0.5;")!.lowerBound
+        // swiftlint:disable:next force_unwrapping
         let secondIndex = source.range(of: "color.rgb += 0.1;")!.lowerBound
         #expect(firstIndex < secondIndex)
     }
@@ -268,7 +270,9 @@ struct ComposableEffectsTests {
         #expect(source.contains("mix(color.rgb, flashColor, flashAmount)"))
 
         // Correct order
+        // swiftlint:disable:next force_unwrapping
         let grayIdx = source.range(of: "luminance(color.rgb)")!.lowerBound
+        // swiftlint:disable:next force_unwrapping
         let flashIdx = source.range(of: "mix(color.rgb, flashColor, flashAmount)")!.lowerBound
         #expect(grayIdx < flashIdx)
     }

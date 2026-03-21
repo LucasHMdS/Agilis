@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 #if canImport(Darwin)
 import Darwin
@@ -21,7 +21,7 @@ struct CollisionShapeTests {
         let tri = ConvexPolygon(vertices: [
             Vector2(x: 0, y: -20),   // top
             Vector2(x: 17, y: 10),   // bottom-right
-            Vector2(x: -17, y: 10),  // bottom-left
+            Vector2(x: -17, y: 10)  // bottom-left
         ])
 
         #expect(tri.vertices.count == 3)
@@ -51,7 +51,7 @@ struct CollisionShapeTests {
             Vector2(x: -1, y: -1),
             Vector2(x: 1, y: -1),
             Vector2(x: 1, y: 1),
-            Vector2(x: -1, y: 1),
+            Vector2(x: -1, y: 1)
         ])
 
         #expect(square.vertices.count == 4)
@@ -68,7 +68,7 @@ struct CollisionShapeTests {
             Vector2(x: -10, y: -5),
             Vector2(x: 10, y: -5),
             Vector2(x: 10, y: 5),
-            Vector2(x: -10, y: 5),
+            Vector2(x: -10, y: 5)
         ])
 
         #expect(abs(poly.localBounds.x - (-10)) < 0.001)
@@ -126,7 +126,7 @@ struct CollisionShapeTests {
         let tri = ConvexPolygon(vertices: [
             Vector2(x: 0, y: -10),
             Vector2(x: 10, y: 10),
-            Vector2(x: -10, y: 10),
+            Vector2(x: -10, y: 10)
         ])
         #expect(tri.vertices.count == 3)
     }

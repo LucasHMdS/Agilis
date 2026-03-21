@@ -1,5 +1,3 @@
-
-
 /// ECS system that updates all particle emitters each tick.
 ///
 /// Handles emission (rate-based and burst), particle simulation (velocity,
@@ -17,6 +15,8 @@
 /// The default priority of 200 places particles after physics (priority 100)
 /// so emitter positions from `Transform2D` reflect physics-corrected values.
 public final class ParticleSystem: System, @unchecked Sendable {
+
+    deinit {}
 
     public var priority: Int { _priority }
     private let _priority: Int

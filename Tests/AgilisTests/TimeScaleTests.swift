@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 // MARK: - Time Scale Tests
 
@@ -54,6 +54,7 @@ struct TimeScaleTests {
 
         // Normal speed: 1 tick at 1/60
         world.update(deltaTime: 1.0 / 60.0)
+        // swiftlint:disable:next force_unwrapping
         var transform = world.getComponent(Transform2D.self, from: entity)!
         let normalPos = transform.position.x
 
@@ -62,6 +63,7 @@ struct TimeScaleTests {
 
         // Half speed: 1 tick at 1/120 (simulating timeScale=0.5 via half-rate ticks)
         world.update(deltaTime: 1.0 / 120.0)
+        // swiftlint:disable:next force_unwrapping
         transform = world.getComponent(Transform2D.self, from: entity)!
         let halfPos = transform.position.x
 
@@ -80,7 +82,7 @@ struct TimeScaleTests {
             frames: [
                 AnimationFrame(sourceRect: Rect(x: 0, y: 0, width: 32, height: 32), duration: 0.1),
                 AnimationFrame(sourceRect: Rect(x: 32, y: 0, width: 32, height: 32), duration: 0.1),
-                AnimationFrame(sourceRect: Rect(x: 64, y: 0, width: 32, height: 32), duration: 0.1),
+                AnimationFrame(sourceRect: Rect(x: 64, y: 0, width: 32, height: 32), duration: 0.1)
             ],
             mode: .forward
         )
@@ -92,6 +94,7 @@ struct TimeScaleTests {
         // At double deltaTime, animation should advance twice as fast
         // Normal: 1 tick at 0.05s → still on frame 0
         world.update(deltaTime: 0.05)
+        // swiftlint:disable:next force_unwrapping
         var animator = world.getComponent(SpriteAnimator.self, from: entity)!
         #expect(animator.currentFrameIndex == 0)
 
@@ -100,6 +103,7 @@ struct TimeScaleTests {
 
         // Double: 1 tick at 0.10s → should advance to frame 1
         world.update(deltaTime: 0.10)
+        // swiftlint:disable:next force_unwrapping
         animator = world.getComponent(SpriteAnimator.self, from: entity)!
         #expect(animator.currentFrameIndex == 1)
     }
@@ -124,6 +128,7 @@ struct TimeScaleTests {
 
         // At 0.1s, should emit ~10 particles
         world.update(deltaTime: 0.1)
+        // swiftlint:disable:next force_unwrapping
         var emitter = world.getComponent(ParticleEmitter.self, from: entity)!
         let countAfterNormal = emitter.particles.count
         #expect(countAfterNormal >= 9 && countAfterNormal <= 11)
@@ -141,6 +146,7 @@ struct TimeScaleTests {
 
         // At 0.05s (simulating timeScale=0.5), should emit ~5 particles
         world.update(deltaTime: 0.05)
+        // swiftlint:disable:next force_unwrapping
         emitter = world.getComponent(ParticleEmitter.self, from: entity)!
         let countAfterHalf = emitter.particles.count
         #expect(countAfterHalf >= 4 && countAfterHalf <= 6)

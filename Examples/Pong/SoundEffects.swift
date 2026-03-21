@@ -28,7 +28,7 @@ enum PongSounds {
         }
     }
 
-    private static let sampleRate = 44100
+    private static let sampleRate = 44_100
     private static let pi = Float.pi
 
     static func generate(audio: any AudioBackend) -> SoundSet {
@@ -125,7 +125,7 @@ enum PongSounds {
         let notes: [(freq: Float, duration: Float)] = [
             (523.25, 0.2),   // C5
             (659.25, 0.2),   // E5
-            (783.99, 0.4),   // G5 (held longer)
+            (783.99, 0.4)   // G5 (held longer)
         ]
         let totalDuration = notes.reduce(0) { $0 + $1.duration }
         let totalSamples = Int(Float(sampleRate) * totalDuration)
@@ -158,7 +158,7 @@ enum PongSounds {
         let notes: [(freq: Float, duration: Float)] = [
             (392.00, 0.2),   // G4
             (311.13, 0.2),   // Eb4
-            (261.63, 0.4),   // C4 (held longer)
+            (261.63, 0.4)   // C4 (held longer)
         ]
         let totalDuration = notes.reduce(0) { $0 + $1.duration }
         let totalSamples = Int(Float(sampleRate) * totalDuration)
@@ -194,7 +194,7 @@ enum PongSounds {
 
     private static func toSample(_ value: Float) -> Int16 {
         let clamped = max(-1.0, min(1.0, value))
-        return Int16(clamped * 32000)
+        return Int16(clamped * 32_000)
     }
 
     private static func lerp(_ a: Float, _ b: Float, t: Float) -> Float {

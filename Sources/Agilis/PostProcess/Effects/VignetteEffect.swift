@@ -1,5 +1,3 @@
-
-
 /// Darkens the edges of the screen for a cinematic look.
 ///
 /// ```swift
@@ -7,6 +5,8 @@
 /// postProcess.add(vignette)
 /// ```
 public final class VignetteEffect: PostProcessEffect, @unchecked Sendable {
+    deinit {}
+
     public let name = "vignette"
     public var isEnabled = true
     public var order: Int { 400 }
@@ -48,7 +48,7 @@ public final class VignetteEffect: PostProcessEffect, @unchecked Sendable {
         input: RenderTargetHandle,
         output: RenderTargetHandle,
         renderer: any RenderBackend,
-        deltaTime: Float
+        deltaTime _: Float
     ) {
         guard shader != .invalid else { return }
 
