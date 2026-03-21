@@ -264,7 +264,7 @@ public final class Renderer: @unchecked Sendable {
             EGL_NONE
         ]
 
-        var eglCfg: UnsafeMutableRawPointer? = nil
+        var eglCfg: UnsafeMutableRawPointer?
         var numConfigs: EGLint = 0
         guard eglChooseConfig(display, &attribs, &eglCfg, 1, &numConfigs) != 0,
               numConfigs > 0,

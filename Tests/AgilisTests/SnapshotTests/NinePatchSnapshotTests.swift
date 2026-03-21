@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Nine Patch Snapshots", .serialized)
 struct NinePatchSnapshotTests {
@@ -61,7 +61,10 @@ struct NinePatchSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createNinePatchTexture(
-            renderer: renderer, width: 48, height: 48, borderSize: 8,
+            renderer: renderer,
+            width: 48,
+            height: 48,
+            borderSize: 8,
             borderColor: Color(r: 200, g: 100, b: 0),
             centerColor: Color(r: 50, g: 100, b: 200)
         )
@@ -92,8 +95,12 @@ struct NinePatchSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createNinePatchTexture(
-            renderer: renderer, width: 48, height: 48, borderSize: 12,
-            borderColor: .white, centerColor: Color(r: 200, g: 200, b: 200)
+            renderer: renderer,
+            width: 48,
+            height: 48,
+            borderSize: 12,
+            borderColor: .white,
+            centerColor: Color(r: 200, g: 200, b: 200)
         )
         defer { renderer.destroyTexture(tex) }
 

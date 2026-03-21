@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Particle Snapshots", .serialized)
 struct ParticleSnapshotTests {
@@ -16,7 +16,8 @@ struct ParticleSnapshotTests {
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: entity)
 
         var emitter = ParticleEmitter(
-            emissionRate: 0, maxParticles: 20,
+            emissionRate: 0,
+            maxParticles: 20,
             lifetime: 1.0...1.0,
             speed: 100...100,
             angle: 0...0,
@@ -35,6 +36,7 @@ struct ParticleSnapshotTests {
         world.update(deltaTime: 0.016)
 
         // Read back the emitter after tick
+        // swiftlint:disable:next force_unwrapping
         let updatedEmitter = world.getComponent(ParticleEmitter.self, from: entity)!
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -56,7 +58,8 @@ struct ParticleSnapshotTests {
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: entity)
 
         var emitter = ParticleEmitter(
-            emissionRate: 0, maxParticles: 15,
+            emissionRate: 0,
+            maxParticles: 15,
             lifetime: 1.0...1.0,
             speed: 80...80,
             angle: 0...0,
@@ -73,6 +76,7 @@ struct ParticleSnapshotTests {
         world.addSystem(particleSystem)
         world.update(deltaTime: 0.016)
 
+        // swiftlint:disable:next force_unwrapping
         let updatedEmitter = world.getComponent(ParticleEmitter.self, from: entity)!
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -94,7 +98,8 @@ struct ParticleSnapshotTests {
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: entity)
 
         var emitter = ParticleEmitter(
-            emissionRate: 0, maxParticles: 20,
+            emissionRate: 0,
+            maxParticles: 20,
             lifetime: 2.0...2.0,
             speed: 60...60,
             angle: 0...0,
@@ -119,6 +124,7 @@ struct ParticleSnapshotTests {
         }
         world.update(deltaTime: 0.1)
 
+        // swiftlint:disable:next force_unwrapping
         let updatedEmitter = world.getComponent(ParticleEmitter.self, from: entity)!
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -140,7 +146,8 @@ struct ParticleSnapshotTests {
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: entity)
 
         var emitter = ParticleEmitter(
-            emissionRate: 0, maxParticles: 20,
+            emissionRate: 0,
+            maxParticles: 20,
             lifetime: 2.0...2.0,
             speed: 50...50,
             angle: 0...0,
@@ -165,6 +172,7 @@ struct ParticleSnapshotTests {
         }
         world.update(deltaTime: 0.1)
 
+        // swiftlint:disable:next force_unwrapping
         let updatedEmitter = world.getComponent(ParticleEmitter.self, from: entity)!
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))

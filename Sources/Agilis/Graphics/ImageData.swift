@@ -34,8 +34,12 @@ public struct ImageData: Sendable {
     public func save(to path: String) -> Bool {
         pixels.withUnsafeBufferPointer { ptr in
             let result = stbi_write_png(
-                path, Int32(width), Int32(height), 4,
-                ptr.baseAddress, Int32(width * 4)
+                path,
+                Int32(width),
+                Int32(height),
+                4,
+                ptr.baseAddress,
+                Int32(width * 4)
             )
             return result != 0
         }

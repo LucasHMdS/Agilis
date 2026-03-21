@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Lighting Debug Snapshots", .serialized)
 struct LightingDebugSnapshotTests {
@@ -15,10 +15,14 @@ struct LightingDebugSnapshotTests {
 
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: light)
-        world.addComponent(Light2D(
-            color: Color(r: 255, g: 200, b: 100),
-            intensity: 1.0, radius: 100
-        ), to: light)
+        world.addComponent(
+            Light2D(
+                color: Color(r: 255, g: 200, b: 100),
+                intensity: 1.0,
+                radius: 100
+            ),
+            to: light
+        )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
@@ -40,10 +44,15 @@ struct LightingDebugSnapshotTests {
 
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 100)), to: light)
-        world.addComponent(Light2D(
-            lightType: .spot(direction: .pi / 2, coneAngle: .pi / 4),
-            color: .white, intensity: 1.0, radius: 120
-        ), to: light)
+        world.addComponent(
+            Light2D(
+                lightType: .spot(direction: .pi / 2, coneAngle: .pi / 4),
+                color: .white,
+                intensity: 1.0,
+                radius: 120
+            ),
+            to: light
+        )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
@@ -66,9 +75,10 @@ struct LightingDebugSnapshotTests {
         // Light for context
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 80, y: 80)), to: light)
-        world.addComponent(Light2D(
-            color: .white, intensity: 1.0, radius: 200, castsShadows: true
-        ), to: light)
+        world.addComponent(
+            Light2D(color: .white, intensity: 1.0, radius: 200, castsShadows: true),
+            to: light
+        )
 
         // AABB shadow caster
         let wall1 = world.createEntity()

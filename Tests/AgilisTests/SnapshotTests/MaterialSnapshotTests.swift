@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Material Snapshots", .serialized)
 struct MaterialSnapshotTests {
@@ -12,7 +12,9 @@ struct MaterialSnapshotTests {
         library.initialize(renderer: renderer)
 
         let tex = SnapshotTestUtilities.createGradientTexture(
-            renderer: renderer, width: 64, height: 64,
+            renderer: renderer,
+            width: 64,
+            height: 64,
             fromColor: Color(r: 200, g: 100, b: 50),
             toColor: Color(r: 50, g: 100, b: 200)
         )
@@ -134,7 +136,8 @@ struct MaterialSnapshotTests {
             var sprite = Sprite(texture: tex)
             sprite.position = Vector2(x: 128, y: 88)
             sprite.material = library.dissolve(
-                threshold: 0.4, edgeWidth: 0.08,
+                threshold: 0.4,
+                edgeWidth: 0.08,
                 edgeColor: Color(r: 255, g: 0, b: 0)
             )
             r.drawSprite(sprite)
@@ -157,7 +160,8 @@ struct MaterialSnapshotTests {
             var sprite = Sprite(texture: tex)
             sprite.position = Vector2(x: 128, y: 88)
             sprite.material = library.outline(
-                color: .white, width: 2.0,
+                color: .white,
+                width: 2.0,
                 textureSize: Vector2(x: 64, y: 64)
             )
             r.drawSprite(sprite)
@@ -174,7 +178,9 @@ struct MaterialSnapshotTests {
 
         // Create a texture with a distinct red region
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 64, height: 64,
+            renderer: renderer,
+            width: 64,
+            height: 64,
             color: Color(r: 255, g: 0, b: 0)
         )
         let library = MaterialLibrary()

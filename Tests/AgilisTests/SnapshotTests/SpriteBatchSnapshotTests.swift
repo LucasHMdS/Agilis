@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Sprite Batch Snapshots", .serialized)
 struct SpriteBatchSnapshotTests {
@@ -12,7 +12,9 @@ struct SpriteBatchSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 32, height: 32,
+            renderer: renderer,
+            width: 32,
+            height: 32,
             color: Color(r: 0, g: 200, b: 100)
         )
         defer { renderer.destroyTexture(tex) }
@@ -36,7 +38,9 @@ struct SpriteBatchSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 24, height: 24,
+            renderer: renderer,
+            width: 24,
+            height: 24,
             color: Color(r: 255, g: 100, b: 0)
         )
         defer { renderer.destroyTexture(tex) }
@@ -62,11 +66,15 @@ struct SpriteBatchSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let redTex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 32, height: 32,
+            renderer: renderer,
+            width: 32,
+            height: 32,
             color: Color(r: 255, g: 0, b: 0)
         )
         let blueTex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 32, height: 32,
+            renderer: renderer,
+            width: 32,
+            height: 32,
             color: Color(r: 0, g: 0, b: 255)
         )
         defer { renderer.destroyTexture(redTex); renderer.destroyTexture(blueTex) }
@@ -104,11 +112,15 @@ struct SpriteBatchSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let redTex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 60, height: 60,
+            renderer: renderer,
+            width: 60,
+            height: 60,
             color: Color(r: 255, g: 0, b: 0)
         )
         let greenTex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 60, height: 60,
+            renderer: renderer,
+            width: 60,
+            height: 60,
             color: Color(r: 0, g: 255, b: 0)
         )
         defer { renderer.destroyTexture(redTex); renderer.destroyTexture(greenTex) }
@@ -139,11 +151,15 @@ struct SpriteBatchSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let redTex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 50, height: 50,
+            renderer: renderer,
+            width: 50,
+            height: 50,
             color: Color(r: 255, g: 0, b: 0)
         )
         let blueTex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 50, height: 50,
+            renderer: renderer,
+            width: 50,
+            height: 50,
             color: Color(r: 0, g: 0, b: 255)
         )
         defer { renderer.destroyTexture(redTex); renderer.destroyTexture(blueTex) }

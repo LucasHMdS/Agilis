@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Render Target Snapshots", .serialized)
 struct RenderTargetSnapshotTests {
@@ -24,7 +24,8 @@ struct RenderTargetSnapshotTests {
                 color: Color(r: 0, g: 200, b: 100)
             )
             r.drawCircle(
-                center: Vector2(x: 160, y: 120), radius: 40,
+                center: Vector2(x: 160, y: 120),
+                radius: 40,
                 color: Color(r: 255, g: 200, b: 0)
             )
             r.endRenderTarget()
@@ -88,7 +89,8 @@ struct RenderTargetSnapshotTests {
                 color: Color(r: 255, g: 0, b: 0)
             )
             r.drawCircle(
-                center: Vector2(x: 60, y: 40), radius: 15,
+                center: Vector2(x: 60, y: 40),
+                radius: 15,
                 color: Color(r: 0, g: 255, b: 0)
             )
             r.endRenderTarget()
@@ -119,7 +121,8 @@ struct RenderTargetSnapshotTests {
                 color: Color(r: 40, g: 40, b: 40)
             )
             r.drawCircle(
-                center: Vector2(x: 32, y: 32), radius: 20,
+                center: Vector2(x: 32, y: 32),
+                radius: 20,
                 color: Color(r: 255, g: 128, b: 0)
             )
             r.endRenderTarget()

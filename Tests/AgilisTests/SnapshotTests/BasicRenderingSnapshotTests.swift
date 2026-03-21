@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Basic Rendering Snapshots", .serialized)
 struct BasicRenderingSnapshotTests {
@@ -71,7 +71,8 @@ struct BasicRenderingSnapshotTests {
                 color: Color(r: 0, g: 0, b: 255)
             )
             r.drawCircle(
-                center: Vector2(x: 160, y: 180), radius: 30,
+                center: Vector2(x: 160, y: 180),
+                radius: 30,
                 color: Color(r: 255, g: 255, b: 0)
             )
         })
@@ -91,12 +92,16 @@ struct BasicRenderingSnapshotTests {
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             r.drawLine(
-                from: Vector2(x: 0, y: 0), to: Vector2(x: 320, y: 240),
-                color: Color(r: 255, g: 255, b: 255), thickness: 2
+                from: Vector2(x: 0, y: 0),
+                to: Vector2(x: 320, y: 240),
+                color: Color(r: 255, g: 255, b: 255),
+                thickness: 2
             )
             r.drawLine(
-                from: Vector2(x: 320, y: 0), to: Vector2(x: 0, y: 240),
-                color: Color(r: 0, g: 255, b: 255), thickness: 3
+                from: Vector2(x: 320, y: 0),
+                to: Vector2(x: 0, y: 240),
+                color: Color(r: 0, g: 255, b: 255),
+                thickness: 3
             )
         })
         SnapshotTestHelper.assertSnapshot(

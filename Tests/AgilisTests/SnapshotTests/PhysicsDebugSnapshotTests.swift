@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Physics Debug Snapshots", .serialized)
 struct PhysicsDebugSnapshotTests {

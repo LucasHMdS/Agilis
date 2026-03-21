@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Clipping Snapshots", .serialized)
 struct ClippingSnapshotTests {
@@ -37,7 +37,8 @@ struct ClippingSnapshotTests {
             // Clip rect that only covers half of the circle
             r.beginClip(Rect(x: 100, y: 60, width: 120, height: 120))
             r.drawCircle(
-                center: Vector2(x: 160, y: 120), radius: 80,
+                center: Vector2(x: 160, y: 120),
+                radius: 80,
                 color: Color(r: 0, g: 200, b: 100)
             )
             r.endClip()

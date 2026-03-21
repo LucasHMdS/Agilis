@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 #if canImport(Foundation)
 import Foundation
 #endif
@@ -95,7 +95,8 @@ enum SnapshotTestHelper {
 
             if actual.width == reference.width && actual.height == reference.height {
                 let diffImage = generateDiffImage(
-                    actual: actual, expected: reference,
+                    actual: actual,
+                    expected: reference,
                     tolerance: config.channelTolerance
                 )
                 diffImage.save(to: diffPath)
@@ -129,8 +130,10 @@ enum SnapshotTestHelper {
         // Dimension mismatch is an immediate failure
         guard actual.width == expected.width,
               actual.height == expected.height else {
-            let total = max(actual.width * actual.height,
-                            expected.width * expected.height)
+            let total = max(
+                actual.width * actual.height,
+                expected.width * expected.height
+            )
             return ImageComparisonResult(
                 totalPixels: total,
                 differentPixels: total,

@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Lighting Snapshots", .serialized)
 struct LightingSnapshotTests {
@@ -21,7 +21,8 @@ struct LightingSnapshotTests {
             color: Color(r: 80, g: 200, b: 80)
         )
         r.drawCircle(
-            center: Vector2(x: 160, y: 180), radius: 30,
+            center: Vector2(x: 160, y: 180),
+            radius: 30,
             color: Color(r: 80, g: 80, b: 200)
         )
     }
@@ -69,9 +70,10 @@ struct LightingSnapshotTests {
 
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: light)
-        world.addComponent(Light2D(
-            color: .white, intensity: 1.5, radius: 200
-        ), to: light)
+        world.addComponent(
+            Light2D(color: .white, intensity: 1.5, radius: 200),
+            to: light
+        )
 
         world.update(deltaTime: 0.016)
 
@@ -101,10 +103,14 @@ struct LightingSnapshotTests {
 
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: light)
-        world.addComponent(Light2D(
-            color: Color(r: 255, g: 200, b: 100),
-            intensity: 1.5, radius: 250
-        ), to: light)
+        world.addComponent(
+            Light2D(
+                color: Color(r: 255, g: 200, b: 100),
+                intensity: 1.5,
+                radius: 250
+            ),
+            to: light
+        )
 
         world.update(deltaTime: 0.016)
 
@@ -135,16 +141,18 @@ struct LightingSnapshotTests {
         // Red light on left
         let l1 = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 100, y: 120)), to: l1)
-        world.addComponent(Light2D(
-            color: Color(r: 255, g: 50, b: 50), intensity: 1.2, radius: 180
-        ), to: l1)
+        world.addComponent(
+            Light2D(color: Color(r: 255, g: 50, b: 50), intensity: 1.2, radius: 180),
+            to: l1
+        )
 
         // Blue light on right
         let l2 = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 220, y: 120)), to: l2)
-        world.addComponent(Light2D(
-            color: Color(r: 50, g: 50, b: 255), intensity: 1.2, radius: 180
-        ), to: l2)
+        world.addComponent(
+            Light2D(color: Color(r: 50, g: 50, b: 255), intensity: 1.2, radius: 180),
+            to: l2
+        )
 
         world.update(deltaTime: 0.016)
 
@@ -174,10 +182,15 @@ struct LightingSnapshotTests {
 
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 60)), to: light)
-        world.addComponent(Light2D(
-            lightType: .spot(direction: .pi / 2, coneAngle: .pi / 4),
-            color: .white, intensity: 1.5, radius: 200
-        ), to: light)
+        world.addComponent(
+            Light2D(
+                lightType: .spot(direction: .pi / 2, coneAngle: .pi / 4),
+                color: .white,
+                intensity: 1.5,
+                radius: 200
+            ),
+            to: light
+        )
 
         world.update(deltaTime: 0.016)
 
@@ -208,9 +221,10 @@ struct LightingSnapshotTests {
         // Light source
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 80, y: 80)), to: light)
-        world.addComponent(Light2D(
-            color: .white, intensity: 1.5, radius: 300, castsShadows: true
-        ), to: light)
+        world.addComponent(
+            Light2D(color: .white, intensity: 1.5, radius: 300, castsShadows: true),
+            to: light
+        )
 
         // Shadow caster
         let wall = world.createEntity()
@@ -247,16 +261,18 @@ struct LightingSnapshotTests {
         // Linear falloff (left)
         let l1 = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 80, y: 120)), to: l1)
-        world.addComponent(Light2D(
-            color: .white, intensity: 1.5, radius: 120, falloff: 1.0
-        ), to: l1)
+        world.addComponent(
+            Light2D(color: .white, intensity: 1.5, radius: 120, falloff: 1.0),
+            to: l1
+        )
 
         // Quadratic falloff (right)
         let l2 = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 240, y: 120)), to: l2)
-        world.addComponent(Light2D(
-            color: .white, intensity: 1.5, radius: 120, falloff: 2.0
-        ), to: l2)
+        world.addComponent(
+            Light2D(color: .white, intensity: 1.5, radius: 120, falloff: 2.0),
+            to: l2
+        )
 
         world.update(deltaTime: 0.016)
 
@@ -286,9 +302,10 @@ struct LightingSnapshotTests {
 
         let light = world.createEntity()
         world.addComponent(Transform2D(position: Vector2(x: 160, y: 120)), to: light)
-        world.addComponent(Light2D(
-            color: .white, intensity: 2.0, radius: 300, isEnabled: false
-        ), to: light)
+        world.addComponent(
+            Light2D(color: .white, intensity: 2.0, radius: 300, isEnabled: false),
+            to: light
+        )
 
         world.update(deltaTime: 0.016)
 

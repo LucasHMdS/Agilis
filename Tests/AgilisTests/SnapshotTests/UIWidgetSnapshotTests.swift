@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("UI Widget Snapshots", .serialized)
 struct UIWidgetSnapshotTests {
@@ -39,6 +39,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "label")
@@ -62,6 +63,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "label-center")
@@ -85,6 +87,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "label-right")
@@ -108,6 +111,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "button-normal")
@@ -136,6 +140,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 20, g: 20, b: 20))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "panel-border")
@@ -164,6 +169,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 20, g: 20, b: 20))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "panel-vertical")
@@ -192,6 +198,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 20, g: 20, b: 20))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "panel-horizontal")
@@ -215,6 +222,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "slider-half")
@@ -238,6 +246,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "slider-full")
@@ -261,6 +270,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "toggle-on")
@@ -284,6 +294,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "toggle-off")
@@ -307,6 +318,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "progress-half")
@@ -330,6 +342,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "progress-full")
@@ -353,6 +366,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "progress-empty")
@@ -376,6 +390,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "text-input-empty")
@@ -404,6 +419,7 @@ struct UIWidgetSnapshotTests {
 
         renderer.setBackgroundColor(Color(r: 30, g: 30, b: 30))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
+            // swiftlint:disable:next force_cast
             Self.layoutAndRender(renderer: r as! Renderer, root: root, font: font, theme: theme)
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "UIWidgets", name: "image-widget")

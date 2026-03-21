@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Blend Mode Snapshots", .serialized)
 struct BlendModeSnapshotTests {
@@ -147,7 +147,9 @@ struct BlendModeSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 64, height: 64,
+            renderer: renderer,
+            width: 64,
+            height: 64,
             color: Color(r: 0, g: 200, b: 255)
         )
         defer { renderer.destroyTexture(tex) }

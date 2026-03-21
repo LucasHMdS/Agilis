@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Post Process Snapshots", .serialized)
 struct PostProcessSnapshotTests {
@@ -15,11 +15,13 @@ struct PostProcessSnapshotTests {
             color: Color(r: 50, g: 255, b: 50)
         )
         r.drawCircle(
-            center: Vector2(x: 260, y: 120), radius: 40,
+            center: Vector2(x: 260, y: 120),
+            radius: 40,
             color: Color(r: 50, g: 50, b: 255)
         )
         r.drawCircle(
-            center: Vector2(x: 100, y: 180), radius: 25,
+            center: Vector2(x: 100, y: 180),
+            radius: 25,
             color: Color(r: 255, g: 255, b: 0)
         )
     }

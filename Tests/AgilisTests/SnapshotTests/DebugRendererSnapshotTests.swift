@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Debug Renderer Snapshots", .serialized)
 struct DebugRendererSnapshotTests {
@@ -17,13 +17,23 @@ struct DebugRendererSnapshotTests {
         )
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 1, firstGid: 1, tileCount: 1)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 1,
+            firstGid: 1,
+            tileCount: 1
+        )
         let tiles = [Tile](repeating: Tile(id: 1), count: 16)
         let layer = TileLayer(name: "main", width: 4, height: 4, tiles: tiles)
         let tileMap = TileMap(
-            layers: [layer], tilesets: [tileset],
-            tileWidth: 32, tileHeight: 32, width: 4, height: 4
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 32,
+            tileHeight: 32,
+            width: 4,
+            height: 4
         )
 
         let camera = Camera2D()
@@ -51,13 +61,23 @@ struct DebugRendererSnapshotTests {
         )
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 1, firstGid: 1, tileCount: 1)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 1,
+            firstGid: 1,
+            tileCount: 1
+        )
         let tiles = [Tile](repeating: Tile(id: 1), count: 64) // 8x8
         let layer = TileLayer(name: "main", width: 8, height: 8, tiles: tiles)
         let tileMap = TileMap(
-            layers: [layer], tilesets: [tileset],
-            tileWidth: 32, tileHeight: 32, width: 8, height: 8
+            layers: [layer],
+            tilesets: [tileset],
+            tileWidth: 32,
+            tileHeight: 32,
+            width: 8,
+            height: 8
         )
 
         var camera = Camera2D()
@@ -166,7 +186,8 @@ struct DebugRendererSnapshotTests {
         UILayoutEngine.performLayout(
             on: context.root,
             in: Rect(x: 0, y: 0, width: 320, height: 240),
-            renderer: renderer, font: font
+            renderer: renderer,
+            font: font
         )
 
         renderer.setBackgroundColor(Color(r: 20, g: 20, b: 20))
@@ -224,7 +245,7 @@ struct DebugRendererSnapshotTests {
 
         let infos = [
             TweenDebugInfo(entity: e1, targetType: "scale", progress: 0.7, targetPosition: nil),
-            TweenDebugInfo(entity: e2, targetType: "rotation", progress: 0.3, targetPosition: nil),
+            TweenDebugInfo(entity: e2, targetType: "rotation", progress: 0.3, targetPosition: nil)
         ]
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -245,7 +266,9 @@ struct DebugRendererSnapshotTests {
         let world = World()
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 128, height: 32,
+            renderer: renderer,
+            width: 128,
+            height: 32,
             color: Color(r: 100, g: 100, b: 200)
         )
         defer { renderer.destroyTexture(tex) }
@@ -262,7 +285,7 @@ struct DebugRendererSnapshotTests {
             name: "walk",
             frames: [
                 AnimationFrame(sourceRect: Rect(x: 0, y: 0, width: 32, height: 32), duration: 0.1),
-                AnimationFrame(sourceRect: Rect(x: 32, y: 0, width: 32, height: 32), duration: 0.1),
+                AnimationFrame(sourceRect: Rect(x: 32, y: 0, width: 32, height: 32), duration: 0.1)
             ]
         )
         world.addComponent(SpriteAnimator(clip: clip), to: entity)

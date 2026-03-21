@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Shape Drawing Snapshots", .serialized)
 struct ShapeDrawingSnapshotTests {
@@ -32,7 +32,8 @@ struct ShapeDrawingSnapshotTests {
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             r.drawRectOutline(
                 Rect(x: 40, y: 30, width: 240, height: 150),
-                color: Color(r: 255, g: 200, b: 0), thickness: 3
+                color: Color(r: 255, g: 200, b: 0),
+                thickness: 3
             )
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "ShapeDrawing", name: "rect-outline")
@@ -48,7 +49,8 @@ struct ShapeDrawingSnapshotTests {
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             r.drawCircle(
-                center: Vector2(x: 160, y: 120), radius: 60,
+                center: Vector2(x: 160, y: 120),
+                radius: 60,
                 color: Color(r: 0, g: 200, b: 100)
             )
         })
@@ -65,8 +67,10 @@ struct ShapeDrawingSnapshotTests {
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             r.drawCircleOutline(
-                center: Vector2(x: 160, y: 120), radius: 80,
-                color: Color(r: 255, g: 100, b: 200), thickness: 3
+                center: Vector2(x: 160, y: 120),
+                radius: 80,
+                color: Color(r: 255, g: 100, b: 200),
+                thickness: 3
             )
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "ShapeDrawing", name: "circle-outline")
@@ -83,18 +87,24 @@ struct ShapeDrawingSnapshotTests {
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             // Horizontal line
             r.drawLine(
-                from: Vector2(x: 20, y: 40), to: Vector2(x: 300, y: 40),
-                color: Color(r: 255, g: 0, b: 0), thickness: 1
+                from: Vector2(x: 20, y: 40),
+                to: Vector2(x: 300, y: 40),
+                color: Color(r: 255, g: 0, b: 0),
+                thickness: 1
             )
             // Vertical line
             r.drawLine(
-                from: Vector2(x: 160, y: 20), to: Vector2(x: 160, y: 220),
-                color: Color(r: 0, g: 255, b: 0), thickness: 2
+                from: Vector2(x: 160, y: 20),
+                to: Vector2(x: 160, y: 220),
+                color: Color(r: 0, g: 255, b: 0),
+                thickness: 2
             )
             // Diagonal line
             r.drawLine(
-                from: Vector2(x: 20, y: 200), to: Vector2(x: 300, y: 80),
-                color: Color(r: 0, g: 128, b: 255), thickness: 4
+                from: Vector2(x: 20, y: 200),
+                to: Vector2(x: 300, y: 80),
+                color: Color(r: 0, g: 128, b: 255),
+                thickness: 4
             )
         })
         SnapshotTestHelper.assertSnapshot(image, suite: "ShapeDrawing", name: "line-segments")
@@ -140,7 +150,8 @@ struct ShapeDrawingSnapshotTests {
             )
             // Third: blue circle (overlapping both, should be on top)
             r.drawCircle(
-                center: Vector2(x: 200, y: 140), radius: 50,
+                center: Vector2(x: 200, y: 140),
+                radius: 50,
                 color: Color(r: 0, g: 0, b: 255)
             )
         })
@@ -165,7 +176,8 @@ struct ShapeDrawingSnapshotTests {
                 color: Color(r: 0, g: 0, b: 255, a: 128)
             )
             r.drawCircle(
-                center: Vector2(x: 200, y: 100), radius: 60,
+                center: Vector2(x: 200, y: 100),
+                radius: 60,
                 color: Color(r: 0, g: 255, b: 0, a: 100)
             )
         })
@@ -183,28 +195,37 @@ struct ShapeDrawingSnapshotTests {
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             // Thin lines
             r.drawLine(
-                from: Vector2(x: 20, y: 50), to: Vector2(x: 100, y: 50),
-                color: .white, thickness: 1
+                from: Vector2(x: 20, y: 50),
+                to: Vector2(x: 100, y: 50),
+                color: .white,
+                thickness: 1
             )
             r.drawLine(
-                from: Vector2(x: 20, y: 70), to: Vector2(x: 100, y: 70),
-                color: .white, thickness: 2
+                from: Vector2(x: 20, y: 70),
+                to: Vector2(x: 100, y: 70),
+                color: .white,
+                thickness: 2
             )
             r.drawLine(
-                from: Vector2(x: 20, y: 90), to: Vector2(x: 100, y: 90),
-                color: .white, thickness: 3
+                from: Vector2(x: 20, y: 90),
+                to: Vector2(x: 100, y: 90),
+                color: .white,
+                thickness: 3
             )
             // Small circles
             r.drawCircle(
-                center: Vector2(x: 160, y: 60), radius: 3,
+                center: Vector2(x: 160, y: 60),
+                radius: 3,
                 color: Color(r: 255, g: 0, b: 0)
             )
             r.drawCircle(
-                center: Vector2(x: 180, y: 60), radius: 5,
+                center: Vector2(x: 180, y: 60),
+                radius: 5,
                 color: Color(r: 0, g: 255, b: 0)
             )
             r.drawCircle(
-                center: Vector2(x: 210, y: 60), radius: 8,
+                center: Vector2(x: 210, y: 60),
+                radius: 8,
                 color: Color(r: 0, g: 0, b: 255)
             )
             // Small rects

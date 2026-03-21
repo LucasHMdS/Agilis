@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Camera 2D Snapshots", .serialized)
 struct Camera2DSnapshotTests {
@@ -15,7 +15,8 @@ struct Camera2DSnapshotTests {
             color: Color(r: 0, g: 255, b: 0)
         )
         r.drawCircle(
-            center: Vector2(x: 160, y: 180), radius: 30,
+            center: Vector2(x: 160, y: 180),
+            radius: 30,
             color: Color(r: 0, g: 100, b: 255)
         )
     }

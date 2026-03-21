@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 #if canImport(Foundation)
 import Foundation
 #endif
@@ -76,7 +76,8 @@ enum SnapshotTestUtilities {
     /// This acquires the GPU lock (via createHeadlessRenderer), runs the test body,
     /// and ensures cleanup happens correctly (via shutdownRenderer).
     static func withRenderer(
-        width: Int = 320, height: Int = 240,
+        width: Int = 320,
+        height: Int = 240,
         body: (Renderer) throws -> Void
     ) throws {
         guard let renderer = createHeadlessRenderer(width: width, height: height) else {

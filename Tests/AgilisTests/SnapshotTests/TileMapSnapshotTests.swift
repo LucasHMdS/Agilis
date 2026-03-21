@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("TileMap Snapshots", .serialized)
 struct TileMapSnapshotTests {
@@ -32,7 +32,8 @@ struct TileMapSnapshotTests {
 
     /// Build a basic TileMap with a given grid and tileset.
     private static func buildTileMap(
-        width: Int, height: Int,
+        width: Int,
+        height: Int,
         tileSize: Int = 32,
         tileset: Tileset,
         tiles: [Tile],
@@ -42,7 +43,8 @@ struct TileMapSnapshotTests {
     ) -> TileMap {
         let layer = TileLayer(
             name: layerName,
-            width: width, height: height,
+            width: width,
+            height: height,
             tiles: tiles,
             visible: visible,
             opacity: opacity
@@ -50,8 +52,10 @@ struct TileMapSnapshotTests {
         return TileMap(
             layers: [layer],
             tilesets: [tileset],
-            tileWidth: tileSize, tileHeight: tileSize,
-            width: width, height: height
+            tileWidth: tileSize,
+            tileHeight: tileSize,
+            width: width,
+            height: height
         )
     }
 
@@ -65,8 +69,14 @@ struct TileMapSnapshotTests {
         let tex = Self.createTilesetTexture(renderer: renderer, tileSize: 32)
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 2, firstGid: 1, tileCount: 2)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 2,
+            firstGid: 1,
+            tileCount: 2
+        )
 
         // Alternating tile pattern
         var tiles = [Tile]()
@@ -78,7 +88,10 @@ struct TileMapSnapshotTests {
         }
 
         let tileMap = Self.buildTileMap(
-            width: 4, height: 4, tileset: tileset, tiles: tiles
+            width: 4,
+            height: 4,
+            tileset: tileset,
+            tiles: tiles
         )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -98,19 +111,28 @@ struct TileMapSnapshotTests {
         let tex = Self.createTilesetTexture(renderer: renderer, tileSize: 32)
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 2, firstGid: 1, tileCount: 2)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 2,
+            firstGid: 1,
+            tileCount: 2
+        )
 
         // Some empty tiles (id=0)
         let tiles: [Tile] = [
             Tile(id: 1), Tile(id: 0), Tile(id: 1), Tile(id: 0),
             Tile(id: 0), Tile(id: 2), Tile(id: 0), Tile(id: 2),
             Tile(id: 1), Tile(id: 0), Tile(id: 1), Tile(id: 0),
-            Tile(id: 0), Tile(id: 2), Tile(id: 0), Tile(id: 2),
+            Tile(id: 0), Tile(id: 2), Tile(id: 0), Tile(id: 2)
         ]
 
         let tileMap = Self.buildTileMap(
-            width: 4, height: 4, tileset: tileset, tiles: tiles
+            width: 4,
+            height: 4,
+            tileset: tileset,
+            tiles: tiles
         )
 
         renderer.setBackgroundColor(Color(r: 40, g: 40, b: 40))
@@ -129,22 +151,33 @@ struct TileMapSnapshotTests {
 
         // Use gradient texture for visible flip effect
         let tex = SnapshotTestUtilities.createGradientTexture(
-            renderer: renderer, width: 32, height: 32,
+            renderer: renderer,
+            width: 32,
+            height: 32,
             fromColor: Color(r: 255, g: 0, b: 0),
             toColor: Color(r: 0, g: 0, b: 255)
         )
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 1, firstGid: 1, tileCount: 1)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 1,
+            firstGid: 1,
+            tileCount: 1
+        )
 
         let tiles: [Tile] = [
             Tile(id: 1, flipX: false), Tile(id: 1, flipX: true),
-            Tile(id: 1, flipX: true),  Tile(id: 1, flipX: false),
+            Tile(id: 1, flipX: true), Tile(id: 1, flipX: false)
         ]
 
         let tileMap = Self.buildTileMap(
-            width: 2, height: 2, tileset: tileset, tiles: tiles
+            width: 2,
+            height: 2,
+            tileset: tileset,
+            tiles: tiles
         )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -163,22 +196,33 @@ struct TileMapSnapshotTests {
 
         // Vertical gradient
         let tex = SnapshotTestUtilities.createGradientTexture(
-            renderer: renderer, width: 32, height: 32,
+            renderer: renderer,
+            width: 32,
+            height: 32,
             fromColor: Color(r: 0, g: 255, b: 0),
             toColor: Color(r: 255, g: 0, b: 255)
         )
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 1, firstGid: 1, tileCount: 1)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 1,
+            firstGid: 1,
+            tileCount: 1
+        )
 
         let tiles: [Tile] = [
             Tile(id: 1, flipY: false), Tile(id: 1, flipY: false),
-            Tile(id: 1, flipY: true),  Tile(id: 1, flipY: true),
+            Tile(id: 1, flipY: true), Tile(id: 1, flipY: true)
         ]
 
         let tileMap = Self.buildTileMap(
-            width: 2, height: 2, tileset: tileset, tiles: tiles
+            width: 2,
+            height: 2,
+            tileset: tileset,
+            tiles: tiles
         )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -198,13 +242,23 @@ struct TileMapSnapshotTests {
         let tex = Self.createTilesetTexture(renderer: renderer, tileSize: 32)
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 2, firstGid: 1, tileCount: 2)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 2,
+            firstGid: 1,
+            tileCount: 2
+        )
 
         let tiles = [Tile](repeating: Tile(id: 1), count: 4)
 
         let tileMap = Self.buildTileMap(
-            width: 2, height: 2, tileset: tileset, tiles: tiles, opacity: 0.5
+            width: 2,
+            height: 2,
+            tileset: tileset,
+            tiles: tiles,
+            opacity: 0.5
         )
 
         renderer.setBackgroundColor(Color(r: 60, g: 60, b: 60))
@@ -224,22 +278,40 @@ struct TileMapSnapshotTests {
         let tex = Self.createTilesetTexture(renderer: renderer, tileSize: 32)
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 2, firstGid: 1, tileCount: 2)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 2,
+            firstGid: 1,
+            tileCount: 2
+        )
 
         let bottomTiles = [Tile](repeating: Tile(id: 1), count: 4)
         let topTiles = [Tile](repeating: Tile(id: 2), count: 4)
 
-        let bottomLayer = TileLayer(name: "bottom", width: 2, height: 2,
-                                    tiles: bottomTiles, visible: true)
-        let topLayer = TileLayer(name: "top", width: 2, height: 2,
-                                 tiles: topTiles, visible: false)
+        let bottomLayer = TileLayer(
+            name: "bottom",
+            width: 2,
+            height: 2,
+            tiles: bottomTiles,
+            visible: true
+        )
+        let topLayer = TileLayer(
+            name: "top",
+            width: 2,
+            height: 2,
+            tiles: topTiles,
+            visible: false
+        )
 
         let tileMap = TileMap(
             layers: [bottomLayer, topLayer],
             tilesets: [tileset],
-            tileWidth: 32, tileHeight: 32,
-            width: 2, height: 2
+            tileWidth: 32,
+            tileHeight: 32,
+            width: 2,
+            height: 2
         )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -259,8 +331,14 @@ struct TileMapSnapshotTests {
         let tex = Self.createTilesetTexture(renderer: renderer, tileSize: 32)
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 2, firstGid: 1, tileCount: 2)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 2,
+            firstGid: 1,
+            tileCount: 2
+        )
 
         // 10x10 map — larger than viewport at default zoom
         var tiles = [Tile]()
@@ -271,7 +349,10 @@ struct TileMapSnapshotTests {
         }
 
         let tileMap = Self.buildTileMap(
-            width: 10, height: 10, tileset: tileset, tiles: tiles
+            width: 10,
+            height: 10,
+            tileset: tileset,
+            tiles: tiles
         )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))
@@ -297,8 +378,14 @@ struct TileMapSnapshotTests {
         let tex = Self.createTilesetTexture(renderer: renderer, tileSize: 32)
         defer { renderer.destroyTexture(tex) }
 
-        let tileset = Tileset(texture: tex, tileWidth: 32, tileHeight: 32,
-                              columns: 2, firstGid: 1, tileCount: 2)
+        let tileset = Tileset(
+            texture: tex,
+            tileWidth: 32,
+            tileHeight: 32,
+            columns: 2,
+            firstGid: 1,
+            tileCount: 2
+        )
 
         var tiles = [Tile]()
         for row in 0..<4 {
@@ -308,7 +395,10 @@ struct TileMapSnapshotTests {
         }
 
         let tileMap = Self.buildTileMap(
-            width: 4, height: 4, tileset: tileset, tiles: tiles
+            width: 4,
+            height: 4,
+            tileset: tileset,
+            tiles: tiles
         )
 
         renderer.setBackgroundColor(Color(r: 0, g: 0, b: 0))

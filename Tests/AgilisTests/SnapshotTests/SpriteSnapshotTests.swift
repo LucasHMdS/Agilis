@@ -1,5 +1,5 @@
-import Testing
 @testable import Agilis
+import Testing
 
 @Suite("Sprite Snapshots", .serialized)
 struct SpriteSnapshotTests {
@@ -12,7 +12,9 @@ struct SpriteSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 32, height: 32,
+            renderer: renderer,
+            width: 32,
+            height: 32,
             color: Color(r: 0, g: 200, b: 100)
         )
         defer { renderer.destroyTexture(tex) }
@@ -79,7 +81,9 @@ struct SpriteSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 32, height: 32,
+            renderer: renderer,
+            width: 32,
+            height: 32,
             color: Color(r: 255, g: 128, b: 0)
         )
         defer { renderer.destroyTexture(tex) }
@@ -148,7 +152,9 @@ struct SpriteSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 40, height: 40,
+            renderer: renderer,
+            width: 40,
+            height: 40,
             color: Color(r: 100, g: 100, b: 255)
         )
         defer { renderer.destroyTexture(tex) }
@@ -157,12 +163,16 @@ struct SpriteSnapshotTests {
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             // Draw crosshair at center point
             r.drawLine(
-                from: Vector2(x: 150, y: 120), to: Vector2(x: 170, y: 120),
-                color: .white, thickness: 1
+                from: Vector2(x: 150, y: 120),
+                to: Vector2(x: 170, y: 120),
+                color: .white,
+                thickness: 1
             )
             r.drawLine(
-                from: Vector2(x: 160, y: 110), to: Vector2(x: 160, y: 130),
-                color: .white, thickness: 1
+                from: Vector2(x: 160, y: 110),
+                to: Vector2(x: 160, y: 130),
+                color: .white,
+                thickness: 1
             )
             // Sprite with center origin placed at (160, 120)
             var sprite = Sprite(texture: tex)
@@ -181,7 +191,9 @@ struct SpriteSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 40, height: 40,
+            renderer: renderer,
+            width: 40,
+            height: 40,
             color: Color(r: 255, g: 200, b: 0)
         )
         defer { renderer.destroyTexture(tex) }
@@ -190,7 +202,8 @@ struct SpriteSnapshotTests {
         let image = try #require(SnapshotTestUtilities.captureFrame(renderer: renderer) { r in
             // Draw marker at anchor point
             r.drawCircle(
-                center: Vector2(x: 160, y: 120), radius: 3,
+                center: Vector2(x: 160, y: 120),
+                radius: 3,
                 color: .white
             )
             // Origin at bottom-right: sprite should extend up-left from position
@@ -277,7 +290,9 @@ struct SpriteSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 64, height: 64,
+            renderer: renderer,
+            width: 64,
+            height: 64,
             color: .white
         )
         defer { renderer.destroyTexture(tex) }
@@ -300,7 +315,9 @@ struct SpriteSnapshotTests {
         defer { SnapshotTestUtilities.shutdownRenderer(renderer) }
 
         let tex = SnapshotTestUtilities.createSolidTexture(
-            renderer: renderer, width: 64, height: 64,
+            renderer: renderer,
+            width: 64,
+            height: 64,
             color: .white
         )
         defer { renderer.destroyTexture(tex) }
