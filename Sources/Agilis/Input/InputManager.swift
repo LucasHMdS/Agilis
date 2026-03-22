@@ -168,6 +168,26 @@ public final class InputManager: @unchecked Sendable {
         }
     }
 
+    // MARK: - Touch
+
+    /// Number of active touches this frame.
+    public var touchCount: Int {
+        backend?.touchCount() ?? 0
+    }
+
+    /// Returns the touch at the given index, or nil if out of range.
+    public func touch(at index: Int) -> TouchInfo? {
+        backend?.touch(at: index)
+    }
+
+    /// All active touches this frame.
+    public var touches: [TouchInfo] {
+        guard let backend else { return [] }
+        let count = backend.touchCount()
+        guard count > 0 else { return [] }
+        return (0..<count).compactMap { backend.touch(at: $0) }
+    }
+
     // MARK: - Keyboard
 
     /// True while the key is held down.

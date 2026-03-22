@@ -97,6 +97,33 @@ jobs:
       - name: Test
         run: swift test
 
+  build-ios:
+    name: iOS (build only)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache ANGLE iOS build
+        id: cache-angle-ios
+        uses: actions/cache@v4
+        with:
+          path: Sources/AngleC/lib/ios
+          key: angle-ios-${{ hashFiles('scripts/build_angle_ios.sh') }}
+
+      - name: Install ANGLE build dependencies
+        if: steps.cache-angle-ios.outputs.cache-hit != 'true'
+        run: |
+          brew install ninja
+
+      - name: Build ANGLE for iOS
+        if: steps.cache-angle-ios.outputs.cache-hit != 'true'
+        run: |
+          chmod +x scripts/build_angle_ios.sh
+          ./scripts/build_angle_ios.sh
+
+      - name: Build for iOS
+        run: xcodebuild build -scheme Agilis -destination 'generic/platform=iOS' -skipPackagePluginValidation
+
   build-windows:
     name: Windows
     runs-on: windows-latest

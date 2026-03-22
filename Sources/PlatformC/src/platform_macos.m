@@ -1,4 +1,6 @@
-#ifdef __APPLE__
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#if !TARGET_OS_IOS && !TARGET_OS_TV && !TARGET_OS_WATCH
 
 #include "platform.h"
 #import <Cocoa/Cocoa.h>
@@ -586,4 +588,19 @@ void platform_set_vsync(PlatformWindow* w, bool enabled) {
     if (w) w->vsync = enabled;
 }
 
+// ---- Touch (stubs — not applicable on macOS) ----
+
+int platform_touch_count(PlatformWindow* w) {
+    (void)w;
+    return 0;
+}
+
+PlatformTouch platform_touch_at(PlatformWindow* w, int index) {
+    (void)w;
+    (void)index;
+    PlatformTouch t = {0};
+    return t;
+}
+
+#endif // !TARGET_OS_IOS && !TARGET_OS_TV && !TARGET_OS_WATCH
 #endif // __APPLE__

@@ -8,6 +8,19 @@ public final class AssetManager: @unchecked Sendable {
 
     public init() {}
 
+    /// Resolves a relative asset filename to an absolute path.
+    ///
+    /// On iOS, assets live inside the app bundle, so this prepends
+    /// `Bundle.main.resourcePath`. On desktop platforms the path is
+    /// returned unchanged (assets are loaded relative to the executable).
+    public static func bundlePath(for filename: String) -> String {
+        #if os(iOS) || os(tvOS)
+        return (Bundle.main.resourcePath ?? "") + "/" + filename
+        #else
+        return filename
+        #endif
+    }
+
     /// Load an asset from a file path, returning a cached version if available.
     /// The loader closure is only called if the asset is not already cached.
     ///
