@@ -1,6 +1,6 @@
 # Agilis
 
-A cross-platform 2D game framework written in Swift, targeting Windows, Linux, and macOS.
+A cross-platform 2D game framework written in Swift, targeting Windows, Linux, macOS, and iOS.
 
 Agilis provides a lightweight, backend-agnostic architecture with native backends for rendering (ANGLE/OpenGL ES 3.0), audio (MiniAudio), and input (PlatformC). The core framework has zero external Swift dependencies — all platform code lives behind swappable backend protocols.
 
@@ -12,7 +12,7 @@ Agilis provides a lightweight, backend-agnostic architecture with native backend
 - **Animation** — Sprite animation system with forward, reverse, ping-pong, and one-shot playback; clips from sprite sheets, Aseprite, or TexturePacker; declarative animation state machine with parameter-driven transitions
 - **Particles** — 2D particle system with configurable emission shapes, colors, scaling, gravity, and sprite rendering
 - **UI System** — 12 retained-mode widgets (labels, buttons, sliders, toggles, text inputs, panels, progress bars, images, scroll containers, dropdowns, list views, modal dialogs), automatic layout, theming, configurable keyboard/gamepad navigation
-- **Input** — Keyboard, mouse, and gamepad with press/release detection, action mapping, dead zones, and up to 4 gamepads
+- **Input** — Keyboard, mouse, touch, and gamepad with press/release detection, action mapping, dead zones, and up to 4 gamepads
 - **Audio** — Sound effects (in-memory) and music (streaming) with group volumes, fading, and crossfading via AudioManager
 - **ECS** — Full Entity-Component-System with sparse-set storage, generational entity IDs, type-safe `forEach` queries, command buffers, system priorities, parent-child hierarchy, entity naming/tagging, component lifecycle events, event bus, prefabs, opt-in parallel system scheduling, and JSON serialization
 - **Physics** — Built-in 2D physics with AABB, circle, and convex polygon collision shapes (SAT), impulse-based resolution, spatial hash broad phase, collision layers/masks, triggers, collision events, ray casting, spatial queries, continuous collision detection (CCD), and 6 physics joint types (revolute, distance, weld, prismatic, rope, motor) with breaking, motors, and spring-damper constraints
@@ -67,6 +67,36 @@ app.sceneManager.push(MyScene(), app: app)
 try app.run()
 ```
 
+### iOS Quick Start
+
+On iOS, the OS owns the run loop. Use `AgilisViewController` with `CADisplayLink` instead of `app.run()`:
+
+```swift
+import UIKit
+import Agilis
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
+
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        let vc = AgilisViewController()
+        vc.application = Application(config: WindowConfig(title: "My Game", width: 0, height: 0))
+        vc.application.sceneManager.push(MyScene(), app: vc.application)
+
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = vc
+        window?.makeKeyAndVisible()
+        return true
+    }
+}
+```
+
+Touch input is available via `app.input.touches`, which returns an array of `TouchInfo` with `id`, `position`, and `phase` (began/moved/ended/cancelled). The first touch is also mapped to mouse input for compatibility with desktop code.
+
+Use `AssetManager.bundlePath(for:)` to resolve asset paths relative to the iOS app bundle.
+
 ## Using as a Dependency
 
 Add Agilis to your `Package.swift`:
@@ -90,24 +120,30 @@ targets: [
 
 Requires **Swift 6.0+**. No external Swift dependencies — third-party C libraries (ANGLE, MiniAudio, stb) are vendored, and PlatformC is our own native windowing/input layer. All build from source.
 
-```
-swift build
+```bash
+swift build              # Desktop (Windows/macOS/Linux)
 swift test
 swift run UIDemo
 swift run Pong
+```
+
+For iOS, build ANGLE first (`scripts/build_angle_ios.sh`), then build via Xcode:
+
+```bash
+xcodebuild build -scheme Agilis -destination 'generic/platform=iOS'
 ```
 
 ## Project Structure
 
 ```
 Sources/
-  PlatformC/               Native windowing and input — our own C code (Win32/Cocoa/X11)
+  PlatformC/               Native windowing and input — our own C code (Win32/Cocoa/X11/UIKit)
   AngleC/                  ANGLE — EGL + OpenGL ES 3.0 (vendored, pre-built binaries)
   MiniaudioC/              MiniAudio — cross-platform audio (vendored, single-header)
   StbC/                    stb libraries — image loading, font rasterization (vendored)
 
   Agilis/                  Main framework
-    Application/            Application, GameDelegate
+    Application/            Application, GameDelegate, AgilisViewController (iOS)
     Core/                   ECS: Entity, Component, System, World, Query,
                               CommandBuffer, Prefab, Hierarchy, Metadata,
                               Event, ComponentAccess, SystemScheduler
@@ -133,7 +169,8 @@ Sources/
     Audio/                  AudioBackend protocol, AudioManager
                               (group volumes, fading, crossfading)
     Input/                  InputBackend protocol, InputManager,
-                              action mapping (keyboard, mouse, gamepad)
+                              action mapping (keyboard, mouse, gamepad),
+                              TouchInfo, TouchPhase
     Assets/                 AssetManager, pluggable loaders
     Math/                   Vector2, Rect, Size, Matrix3, EasingFunction,
                               MathUtilities
@@ -168,6 +205,7 @@ Examples/
   SaveLoadDemo/           World serialization demonstration
   DungeonCrawler/         Grid-based dungeon exploration
   TopDownShooter/         2D top-down shooter with particles and UI
+  IOSExample/             Touch input demo for iOS
 
 Tests/
   AgilisTests/             Core framework, ECS, physics, materials, and UI tests (1600+ tests)
@@ -182,7 +220,7 @@ The framework is built around protocol-based backends:
 
 - **`RenderBackend`** — All drawing goes through this protocol. The native ANGLE backend implements it, but it can be swapped for Metal, WebGPU, or any other renderer.
 - **`AudioBackend`** — Sound and music playback abstraction. The native MiniAudio backend implements it.
-- **`InputBackend`** — Raw input polling abstraction (keyboard, mouse, gamepad). The native PlatformC backend implements it.
+- **`InputBackend`** — Raw input polling abstraction (keyboard, mouse, touch, gamepad). The native PlatformC backend implements it.
 
 Game code only touches framework types (`Sprite`, `Vector2`, `Color`, etc.) and never sees backend-specific types. This makes the core framework portable and testable without a window.
 
@@ -193,6 +231,8 @@ Agilis uses a **fixed-timestep game loop**:
 - Rendering runs at the display rate with an `interpolation` factor for smooth motion
 - Input is polled once per frame with press/release edge detection
 - Time scaling controls game speed (`app.timeScale`)
+
+On desktop, `app.run()` drives the loop in a blocking while-loop. On iOS, the loop is split into `start()` / `frame()` / `stop()` and driven by `CADisplayLink` via `AgilisViewController`.
 
 ## UI System
 
@@ -245,6 +285,9 @@ Grid-based dungeon exploration with procedural generation, player and enemy comp
 
 ### TopDownShooter
 2D top-down shooter with player, enemy, and bullet entities, particle effects, and UI scoring.
+
+### IOSExample
+Touch input demo for iOS. Tap and drag to place colorful circles that fade out over time. Demonstrates `AgilisViewController`, touch input via `app.input.touches`, and the non-blocking game loop.
 
 ## License
 
