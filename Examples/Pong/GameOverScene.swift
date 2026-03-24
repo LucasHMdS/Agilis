@@ -3,7 +3,6 @@ import Agilis
 // MARK: - Game Over Scene
 
 final class GameOverScene: Scene {
-    deinit {}
     let leftScore: Int
     let rightScore: Int
     let leftWon: Bool

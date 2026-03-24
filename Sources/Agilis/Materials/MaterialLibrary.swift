@@ -17,8 +17,6 @@
 /// materials.shutdown()
 /// ```
 public final class MaterialLibrary: @unchecked Sendable {
-    deinit {}
-
     private var shaderCache: [String: ShaderHandle] = [:]
     private var renderer: (any RenderBackend)?
 

@@ -16,8 +16,6 @@ internal protocol AnyComponentStorage: AnyObject {
 
 /// Concrete typed storage for a specific component type, backed by a `SparseSet`.
 internal final class ComponentStore<T: Component>: AnyComponentStorage {
-    deinit {}
-
     var sparseSet = SparseSet<T>()
 
     var count: Int { sparseSet.count }

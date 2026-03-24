@@ -1,7 +1,5 @@
 /// A scrollable container that clips its children to its bounds.
 public class UIScrollContainer: UIContainer, @unchecked Sendable {
-    deinit {}
-
     /// Current scroll offset (positive values scroll content upward).
     public var scrollOffset: Vector2 = .zero
 

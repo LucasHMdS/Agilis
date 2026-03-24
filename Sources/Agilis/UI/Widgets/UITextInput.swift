@@ -1,7 +1,5 @@
 /// A single-line text input field.
 public class UITextInput: UINode, @unchecked Sendable {
-    deinit {}
-
     public var text: String
     public var placeholder: String
     public var fontSize: Float

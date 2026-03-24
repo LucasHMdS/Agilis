@@ -16,8 +16,6 @@
 /// so emitter positions from `Transform2D` reflect physics-corrected values.
 public final class ParticleSystem: System, @unchecked Sendable {
 
-    deinit {}
-
     public var priority: Int { _priority }
     private let _priority: Int
 

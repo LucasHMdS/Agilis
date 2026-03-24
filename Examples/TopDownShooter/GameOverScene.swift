@@ -1,7 +1,6 @@
 import Agilis
 
 final class GameOverScene: Scene {
-    deinit {}
     let finalScore: Int
     let finalWave: Int
     let finalKills: Int

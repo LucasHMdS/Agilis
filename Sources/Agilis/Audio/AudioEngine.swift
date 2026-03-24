@@ -6,8 +6,6 @@ import MiniaudioC
 /// volume control, and the audio device lifecycle.
 public final class AudioEngine: @unchecked Sendable {
 
-    deinit {}
-
     // MARK: - Internal Types
 
     private struct SoundInfo {

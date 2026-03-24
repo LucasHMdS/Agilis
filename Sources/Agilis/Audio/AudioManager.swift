@@ -15,8 +15,6 @@
 /// ```
 public final class AudioManager: @unchecked Sendable {
 
-    deinit {}
-
     /// The underlying audio backend.
     public let backend: any AudioBackend
 

@@ -5,8 +5,6 @@
 /// postProcess.add(grading)
 /// ```
 public final class ColorGradingEffect: PostProcessEffect, @unchecked Sendable {
-    deinit {}
-
     public let name = "colorGrading"
     public var isEnabled = true
     public var order: Int { 300 }

@@ -14,12 +14,12 @@ import UIKit
 /// ```
 open class AgilisViewController: UIViewController {
     /// The Agilis application to run. Must be set before the view appears.
-    public var application: Application!
+    public var application: Application?
 
     nonisolated(unsafe) private var displayLink: CADisplayLink?
     nonisolated(unsafe) private var started = false
 
-    open override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard !started, let application else { return }
         started = true
@@ -36,7 +36,7 @@ open class AgilisViewController: UIViewController {
         application?.frame()
     }
 
-    open override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         displayLink?.invalidate()
         displayLink = nil
@@ -53,12 +53,12 @@ open class AgilisViewController: UIViewController {
         }
     }
 
-    open override var prefersStatusBarHidden: Bool { true }
+    override open var prefersStatusBarHidden: Bool { true }
 
-    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         .landscape
     }
 
-    open override var shouldAutorotate: Bool { true }
+    override open var shouldAutorotate: Bool { true }
 }
 #endif

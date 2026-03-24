@@ -1,8 +1,6 @@
 /// Base class for all UI elements. Provides bounds, visibility, and the
 /// update/render contract.
 public class UINode: @unchecked Sendable {
-    deinit {}
-
     /// Unique identifier for this node.
     public var id: String
 

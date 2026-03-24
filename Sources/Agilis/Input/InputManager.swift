@@ -19,8 +19,6 @@ private let maxGamepads = 4
 /// if app.input.isActionJustActivated("jump") { ... }
 /// ```
 public final class InputManager: @unchecked Sendable {
-    deinit {}
-
     private var backend: (any InputBackend)?
 
     // Current "held" state (updated per frame via polling)

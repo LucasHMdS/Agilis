@@ -11,7 +11,6 @@ import CRT
 // MARK: - Game Scene
 
 final class GameScene: Scene {
-    deinit {}
     private var fpsFont: FontHandle = .invalid
 
     // Entity handles

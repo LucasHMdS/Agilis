@@ -1,7 +1,5 @@
 /// A widget that displays a texture.
 public class UIImage: UINode, @unchecked Sendable {
-    deinit {}
-
     public var texture: TextureHandle
     public var tint: Color
 

@@ -7,8 +7,6 @@
 /// Registration happens during system setup (main thread, before the game loop).
 /// Index lookups during scheduling are read-only and safe.
 internal final class ComponentRegistry: @unchecked Sendable {
-    deinit {}
-
     static let shared = ComponentRegistry()
 
     private var typeToIndex: [ObjectIdentifier: Int] = [:]

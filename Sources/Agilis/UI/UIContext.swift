@@ -1,7 +1,5 @@
 /// Manages the UI tree, focus state, and input dispatch for a scene.
 public final class UIContext: @unchecked Sendable {
-    deinit {}
-
     /// The root container. All UI elements are children of this.
     public let root: UIContainer
 

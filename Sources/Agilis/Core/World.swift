@@ -8,8 +8,6 @@
 /// entity lifecycle, system orchestration, and event dispatch respectively.
 public final class World: @unchecked Sendable {
 
-    deinit {}
-
     // MARK: - Internal Managers
 
     private let entities = EntityAllocator()

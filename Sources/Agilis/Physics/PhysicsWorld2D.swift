@@ -119,8 +119,6 @@ public final class PhysicsWorld2D: System, @unchecked Sendable {
         self.tracker = ContactTracker()
     }
 
-    deinit {}
-
     // MARK: - Joint Management
 
     /// Create a physics joint connecting two entities.

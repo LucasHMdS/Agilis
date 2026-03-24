@@ -1,7 +1,5 @@
 /// A text label widget.
 public class UILabel: UINode, @unchecked Sendable {
-    deinit {}
-
     public var text: String { didSet { if text != oldValue { cachedTextSize = nil } } }
     public var fontSize: Float { didSet { if fontSize != oldValue { cachedTextSize = nil } } }
     public var color: Color?

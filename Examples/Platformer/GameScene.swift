@@ -9,7 +9,6 @@ import CRT
 #endif
 
 final class GameScene: Scene {
-    deinit {}
     // Entity handles
     private var playerEntity: Entity = .null
     private var allEntities: [Entity] = []

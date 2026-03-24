@@ -61,7 +61,7 @@ opt_in_rules:
   - redundant_nil_coalescing
   - redundant_self
   - redundant_type_annotation
-  - required_deinit
+
   - return_value_from_void_function
   - sorted_first_last
   - sorted_imports

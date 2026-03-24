@@ -1,26 +1,30 @@
 #if os(iOS)
-import UIKit
 import Agilis
+import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
+    // swiftlint:disable discouraged_optional_collection
     func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // swiftlint:enable discouraged_optional_collection
         let config = WindowConfig(
             title: "Agilis iOS Demo",
-            width: 0,     // Ignored on iOS — uses screen bounds
+            width: 0,
             height: 0,
             targetFPS: 60,
             resizable: false
         )
 
+        let app = Application(config: config)
+        app.sceneManager.push(MenuScene(), app: app)
+
         let vc = AgilisViewController()
-        vc.application = Application(config: config)
-        vc.application.sceneManager.push(MenuScene(), app: vc.application)
+        vc.application = app
 
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = vc

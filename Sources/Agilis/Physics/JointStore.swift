@@ -12,8 +12,6 @@ import CRT
 /// Used internally by `PhysicsWorld2D`.
 internal final class JointStore: @unchecked Sendable {
 
-    deinit {}
-
     /// All active joints, keyed by handle ID.
     private var joints: [UInt32: Joint2D] = [:]
 

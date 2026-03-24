@@ -1,7 +1,5 @@
 /// A display-only progress bar.
 public class UIProgressBar: UINode, @unchecked Sendable {
-    deinit {}
-
     /// Progress value from 0.0 to 1.0.
     public var value: Float
     public var fillColor: Color?

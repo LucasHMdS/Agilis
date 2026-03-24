@@ -9,8 +9,6 @@
 /// list.onChange = { index in print("Selected: \(list.items[index])") }
 /// ```
 public class UIListView: UINode, @unchecked Sendable {
-    deinit {}
-
     /// The items to display.
     public var items: [String] {
         didSet { clampSelection() }

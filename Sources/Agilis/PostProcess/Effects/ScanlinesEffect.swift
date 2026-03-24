@@ -5,8 +5,6 @@
 /// postProcess.add(scanlines)
 /// ```
 public final class ScanlinesEffect: PostProcessEffect, @unchecked Sendable {
-    deinit {}
-
     public let name = "scanlines"
     public var isEnabled = true
     public var order: Int { 500 }

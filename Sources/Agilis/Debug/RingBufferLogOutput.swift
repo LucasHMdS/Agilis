@@ -13,8 +13,6 @@
 /// ```
 public final class RingBufferLogOutput: LogOutput, @unchecked Sendable {
 
-    deinit {}
-
     public var minimumLevel: LogLevel
 
     /// Maximum number of entries stored.

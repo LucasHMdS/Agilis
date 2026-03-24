@@ -9,7 +9,6 @@ import CRT
 #endif
 
 final class VictoryScene: Scene {
-    deinit {}
     let finalScore: Int
     let totalCoins: Int
     private var font: FontHandle = .invalid

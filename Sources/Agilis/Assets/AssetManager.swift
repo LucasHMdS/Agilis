@@ -2,8 +2,6 @@ import Foundation
 
 /// Manages loading, caching, and unloading of game assets.
 public final class AssetManager: @unchecked Sendable {
-    deinit {}
-
     private var cache: [String: (typeId: ObjectIdentifier, asset: Any)] = [:]
 
     public init() {}

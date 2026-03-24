@@ -1,7 +1,5 @@
 /// A node that contains child nodes and manages their layout.
 public class UIContainer: UINode, @unchecked Sendable {
-    deinit {}
-
     public private(set) var children: [UINode] = []
 
     /// The layout strategy for arranging children.

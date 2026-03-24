@@ -12,8 +12,6 @@ import Foundation
 /// render targets, and blend modes.
 public final class Renderer: @unchecked Sendable {
 
-    deinit {}
-
     private var bgColor = Color(r: 40, g: 40, b: 40)
     private var _screenSize: Size = .zero
 

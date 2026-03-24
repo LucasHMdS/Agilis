@@ -5,8 +5,6 @@
 /// postProcess.add(chromatic)
 /// ```
 public final class ChromaticAberrationEffect: PostProcessEffect, @unchecked Sendable {
-    deinit {}
-
     public let name = "chromaticAberration"
     public var isEnabled = true
     public var order: Int { 200 }

@@ -12,8 +12,6 @@ import WinSDK
 
 /// A high-resolution clock for timing game loops.
 public final class Clock: @unchecked Sendable {
-    deinit {}
-
     #if os(Windows)
     private var frequency = LARGE_INTEGER()
     private var startTime = LARGE_INTEGER()

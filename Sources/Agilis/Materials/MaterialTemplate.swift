@@ -21,8 +21,6 @@
 /// ])
 /// ```
 public final class MaterialTemplate: @unchecked Sendable {
-    deinit {}
-
     /// Human-readable name for debugging and identification.
     public let name: String
 
