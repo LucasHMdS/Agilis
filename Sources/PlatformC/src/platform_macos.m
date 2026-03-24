@@ -213,6 +213,11 @@ PlatformWindow* platform_create_window(const PlatformWindowConfig* config) {
         [w->ns_window setDelegate:g_delegate];
 
         w->ns_view = [w->ns_window contentView];
+        // Use point dimensions for GL so the coordinate system matches the window size.
+        // Without this, ANGLE/Metal creates a 2x framebuffer on Retina but GL viewport
+        // is set in points, causing content to render in the bottom-left quarter.
+        [w->ns_view setWantsLayer:YES];
+        w->ns_view.layer.contentsScale = 1.0;
         w->width = config->width;
         w->height = config->height;
         w->target_fps = config->target_fps;

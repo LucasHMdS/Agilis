@@ -16,8 +16,8 @@ open class AgilisViewController: UIViewController {
     /// The Agilis application to run. Must be set before the view appears.
     public var application: Application!
 
-    private var displayLink: CADisplayLink?
-    private var started = false
+    nonisolated(unsafe) private var displayLink: CADisplayLink?
+    nonisolated(unsafe) private var started = false
 
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let vc = AgilisViewController()
         vc.application = Application(config: config)
-        vc.application.sceneManager.push(TouchScene(), app: vc.application)
+        vc.application.sceneManager.push(MenuScene(), app: vc.application)
 
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = vc

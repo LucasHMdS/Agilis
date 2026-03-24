@@ -41,6 +41,9 @@ final class GameScene: Scene {
     // Rally tracking (driven by event bus)
     private var rallyCount = 0
 
+    // Touch input (iOS)
+    private var lastTouchY: Float?
+
     // Audio
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: PongSounds.SoundSet!
@@ -49,6 +52,7 @@ final class GameScene: Scene {
     private var showPhysicsDebug = false
 
     func didEnter(app: Application) {
+        Pong.configure(screenSize: app.renderer.screenSize)
         app.renderer.setBackgroundColor(.black)
         fpsFont = app.renderer.loadDefaultFont()
         sounds = PongSounds.generate(audio: app.audio)
@@ -164,14 +168,33 @@ final class GameScene: Scene {
     func update(app: Application, deltaTime: Double) {
         let world = app.world
 
-        // --- Player input (left paddle: W/S, Up/Down, or gamepad) ---
+        // --- Player input (left paddle) ---
         var paddleVelY: Float = 0
+
+        #if os(iOS)
+        // Touch: drag paddle using mouse emulation (platform maps first touch to mouse)
+        if app.input.isMouseButtonDown(.left) {
+            let mouseY = app.input.mousePosition.y
+            if let lastY = lastTouchY {
+                let delta = mouseY - lastY
+                world.updateComponent(Transform2D.self, on: leftPaddle) { t in
+                    t.position.y += delta
+                    t.position.y = clamp(t.position.y, min: Pong.paddleHeight / 2, max: Pong.screenHeight - Pong.paddleHeight / 2)
+                }
+            }
+            lastTouchY = mouseY
+        } else {
+            lastTouchY = nil
+        }
+        #else
+        // Keyboard: W/S or Up/Down
         if app.input.isKeyDown(.w) || app.input.isKeyDown(.up) {
             paddleVelY -= Pong.paddleSpeed
         }
         if app.input.isKeyDown(.s) || app.input.isKeyDown(.down) {
             paddleVelY += Pong.paddleSpeed
         }
+        #endif
 
         // Gamepad: left stick (analog) or D-pad (digital)
         if app.input.isGamepadConnected(0) {
@@ -204,10 +227,16 @@ final class GameScene: Scene {
             world.updateComponent(PreviousTransform2D.self, on: ball) { prev in
                 prev.position = Vector2(x: Pong.screenWidth / 2, y: Pong.screenHeight / 2)
             }
+            #if !os(iOS)
             if app.input.isKeyPressed(.escape)
                 || app.input.isGamepadButtonPressed(0, .start) {
                 app.sceneManager.replace(with: MenuScene(), app: app)
             }
+            #else
+            if app.input.isGamepadButtonPressed(0, .start) {
+                app.sceneManager.replace(with: MenuScene(), app: app)
+            }
+            #endif
             return
         }
 
@@ -229,17 +258,29 @@ final class GameScene: Scene {
             }
         }
 
-        // --- Debug toggle (D key or gamepad Y button) ---
+        // --- Debug toggle ---
+        #if !os(iOS)
         if app.input.isKeyPressed(.d)
             || app.input.isGamepadButtonPressed(0, .faceUp) {
             showPhysicsDebug.toggle()
         }
+        #else
+        if app.input.isGamepadButtonPressed(0, .faceUp) {
+            showPhysicsDebug.toggle()
+        }
+        #endif
 
         // --- Escape / Start ---
+        #if !os(iOS)
         if app.input.isKeyPressed(.escape)
             || app.input.isGamepadButtonPressed(0, .start) {
             app.sceneManager.replace(with: MenuScene(), app: app)
         }
+        #else
+        if app.input.isGamepadButtonPressed(0, .start) {
+            app.sceneManager.replace(with: MenuScene(), app: app)
+        }
+        #endif
     }
 
     func render(app: Application, interpolation: Double) {
@@ -276,8 +317,9 @@ final class GameScene: Scene {
         )
 
         // Scores
-        drawScore(leftScore, centerX: screen.width / 4, y: 30, scale: 1.5, color: .white, renderer: app.renderer)
-        drawScore(rightScore, centerX: screen.width * 3 / 4, y: 30, scale: 1.5, color: .white, renderer: app.renderer)
+        let scoreScale: Float = 1.5 * Pong.uiScale
+        drawScore(leftScore, centerX: screen.width / 4, y: 30 * Pong.uiScale, scale: scoreScale, color: .white, renderer: app.renderer)
+        drawScore(rightScore, centerX: screen.width * 3 / 4, y: 30 * Pong.uiScale, scale: scoreScale, color: .white, renderer: app.renderer)
 
         // Paddles
         app.renderer.drawRect(
@@ -316,7 +358,7 @@ final class GameScene: Scene {
                 "Rally: \(rallyCount)",
                 position: Vector2(x: screen.width / 2 - 30, y: screen.height - 18),
                 font: fpsFont,
-                size: 14,
+                size: Pong.fontSize(14),
                 color: rallyColor
             )
         }
@@ -345,7 +387,7 @@ final class GameScene: Scene {
                 "[D] Debug ON",
                 position: Vector2(x: screen.width - 120, y: screen.height - 18),
                 font: fpsFont,
-                size: 14,
+                size: Pong.fontSize(14),
                 color: .cyan
             )
         }

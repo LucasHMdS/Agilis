@@ -1,0 +1,164 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug UIDemo",
+            "target": "UIDemo",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug UIDemo"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release UIDemo",
+            "target": "UIDemo",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release UIDemo"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug Pong",
+            "target": "Pong",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug Pong"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release Pong",
+            "target": "Pong",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release Pong"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug Platformer",
+            "target": "Platformer",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug Platformer"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release Platformer",
+            "target": "Platformer",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release Platformer"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug TweenShowcase",
+            "target": "TweenShowcase",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug TweenShowcase"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release TweenShowcase",
+            "target": "TweenShowcase",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release TweenShowcase"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug PhysicsSandbox",
+            "target": "PhysicsSandbox",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug PhysicsSandbox"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release PhysicsSandbox",
+            "target": "PhysicsSandbox",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release PhysicsSandbox"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug SaveLoadDemo",
+            "target": "SaveLoadDemo",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SaveLoadDemo"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release SaveLoadDemo",
+            "target": "SaveLoadDemo",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SaveLoadDemo"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug DungeonCrawler",
+            "target": "DungeonCrawler",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug DungeonCrawler"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release DungeonCrawler",
+            "target": "DungeonCrawler",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release DungeonCrawler"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Debug TopDownShooter",
+            "target": "TopDownShooter",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug TopDownShooter"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Agilis}",
+            "name": "Release TopDownShooter",
+            "target": "TopDownShooter",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release TopDownShooter"
+        }
+    ]
+}

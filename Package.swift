@@ -60,7 +60,8 @@ var angleCLinkerSettings: [LinkerSetting] {
         "-L", "Sources/AngleC/lib/linux", "-lEGL", "-lGLESv2"
     ], .when(platforms: [.linux])))
     settings.append(.unsafeFlags([
-        "-L", "Sources/AngleC/lib/ios", "-lEGL", "-lGLESv2",
+        "-F", "Sources/AngleC/lib/ios",
+        "-framework", "libEGL", "-framework", "libGLESv2",
         "-Xlinker", "-rpath", "-Xlinker", "@executable_path/Frameworks"
     ], .when(platforms: [.iOS])))
     return settings

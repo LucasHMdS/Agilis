@@ -78,11 +78,12 @@ static PlatformWindow* g_window = NULL;
     for (UITouch* touch in allTouches) {
         if (count >= AGILIS_MAX_TOUCHES) break;
 
+        CGFloat scale = self.contentScaleFactor;
         CGPoint loc = [touch locationInView:self];
         PlatformTouch* pt = &w->touches[count];
         pt->id = (int32_t)(uintptr_t)touch;  // Use pointer as unique ID
-        pt->x = (float)loc.x;
-        pt->y = (float)loc.y;
+        pt->x = (float)(loc.x * scale);
+        pt->y = (float)(loc.y * scale);
 
         switch (touch.phase) {
             case UITouchPhaseBegan:     pt->phase = AGILIS_TOUCH_BEGAN; break;
@@ -215,10 +216,11 @@ PlatformWindow* platform_create_window(const PlatformWindowConfig* config) {
         // Force layout so the GL view's layer is ready
         [vc loadViewIfNeeded];
 
-        // Update size from the actual view (accounts for safe area, scale)
+        // Update size from the actual view in pixels (accounts for Retina scale)
+        CGFloat scale = [UIScreen mainScreen].scale;
         CGRect viewBounds = vc.view.bounds;
-        w->width = (int)(viewBounds.size.width);
-        w->height = (int)(viewBounds.size.height);
+        w->width = (int)(viewBounds.size.width * scale);
+        w->height = (int)(viewBounds.size.height * scale);
 
         g_window = w;
         return w;
@@ -277,11 +279,12 @@ void platform_poll_events(PlatformWindow* w) {
         }
         w->touch_count = live;
 
-        // Update window size (may change on rotation)
+        // Update window size in pixels (may change on rotation)
         if (w->gl_view) {
+            CGFloat scale = [UIScreen mainScreen].scale;
             CGRect bounds = w->gl_view.bounds;
-            int newW = (int)bounds.size.width;
-            int newH = (int)bounds.size.height;
+            int newW = (int)(bounds.size.width * scale);
+            int newH = (int)(bounds.size.height * scale);
             if (newW != w->width || newH != w->height) {
                 w->width = newW;
                 w->height = newH;

@@ -222,11 +222,24 @@ public final class Renderer: @unchecked Sendable {
         // VSync
         eglSwapInterval(display, config.vsync ? 1 : 0)
 
-        // Store screen size
-        _screenSize = Size(width: Float(config.width), height: Float(config.height))
+        // Store screen size — use config dimensions when specified,
+        // fall back to actual window dimensions (iOS passes 0×0 in config)
+        let initWidth: Int
+        let initHeight: Int
+        if config.width > 0 && config.height > 0 {
+            initWidth = config.width
+            initHeight = config.height
+        } else if let w = window {
+            initWidth = Int(platform_window_width(w))
+            initHeight = Int(platform_window_height(w))
+        } else {
+            initWidth = config.width
+            initHeight = config.height
+        }
+        _screenSize = Size(width: Float(initWidth), height: Float(initHeight))
 
         // Initial GL state
-        glViewport(0, 0, GLsizei(config.width), GLsizei(config.height))
+        glViewport(0, 0, GLsizei(initWidth), GLsizei(initHeight))
         glEnable(GLenum(GL_BLEND))
         glBlendFunc(GLenum(GL_SRC_ALPHA), GLenum(GL_ONE_MINUS_SRC_ALPHA))
         applyClearColor()
