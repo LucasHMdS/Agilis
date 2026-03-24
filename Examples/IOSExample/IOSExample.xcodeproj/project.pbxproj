@@ -1,0 +1,323 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1000001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* AppDelegate.swift */; };
+		A1000003 /* Agilis in Frameworks */ = {isa = PBXBuildFile; productRef = A5000001 /* Agilis */; };
+		A1000004 /* libEGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000003 /* libEGL.framework */; };
+		A1000005 /* libGLESv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000004 /* libGLESv2.framework */; };
+		A1000006 /* libEGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A2000003 /* libEGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A1000007 /* libGLESv2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A2000004 /* libGLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A1100001 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100001 /* Constants.swift */; };
+		A1100002 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100002 /* Components.swift */; };
+		A1100003 /* Systems.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100003 /* Systems.swift */; };
+		A1100004 /* RenderingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100004 /* RenderingHelpers.swift */; };
+		A1100005 /* SoundEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100005 /* SoundEffects.swift */; };
+		A1100006 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100006 /* MenuScene.swift */; };
+		A1100007 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100007 /* GameScene.swift */; };
+		A1100008 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100008 /* GameOverScene.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A6000001 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A1000006 /* libEGL.framework in Embed Frameworks */,
+				A1000007 /* libGLESv2.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A2000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A2000003 /* libEGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libEGL.framework; path = ../../Sources/AngleC/lib/ios/libEGL.framework; sourceTree = "<group>"; };
+		A2000004 /* libGLESv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libGLESv2.framework; path = ../../Sources/AngleC/lib/ios/libGLESv2.framework; sourceTree = "<group>"; };
+		A2000010 /* IOSExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IOSExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2100001 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = ../Pong/Constants.swift; sourceTree = "<group>"; };
+		A2100002 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Components.swift; path = ../Pong/Components.swift; sourceTree = "<group>"; };
+		A2100003 /* Systems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Systems.swift; path = ../Pong/Systems.swift; sourceTree = "<group>"; };
+		A2100004 /* RenderingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RenderingHelpers.swift; path = ../Pong/RenderingHelpers.swift; sourceTree = "<group>"; };
+		A2100005 /* SoundEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SoundEffects.swift; path = ../Pong/SoundEffects.swift; sourceTree = "<group>"; };
+		A2100006 /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MenuScene.swift; path = ../Pong/MenuScene.swift; sourceTree = "<group>"; };
+		A2100007 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GameScene.swift; path = ../Pong/GameScene.swift; sourceTree = "<group>"; };
+		A2100008 /* GameOverScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GameOverScene.swift; path = ../Pong/GameOverScene.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A3000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000003 /* Agilis in Frameworks */,
+				A1000004 /* libEGL.framework in Frameworks */,
+				A1000005 /* libGLESv2.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A4000001 /* = mainGroup */ = {
+			isa = PBXGroup;
+			children = (
+				A2000001 /* AppDelegate.swift */,
+				A4000004 /* Pong */,
+				A4000002 /* Frameworks */,
+				A4000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A4000002 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A2000003 /* libEGL.framework */,
+				A2000004 /* libGLESv2.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A4000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2000010 /* IOSExample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A4000004 /* Pong */ = {
+			isa = PBXGroup;
+			children = (
+				A2100001 /* Constants.swift */,
+				A2100002 /* Components.swift */,
+				A2100003 /* Systems.swift */,
+				A2100004 /* RenderingHelpers.swift */,
+				A2100005 /* SoundEffects.swift */,
+				A2100006 /* MenuScene.swift */,
+				A2100007 /* GameScene.swift */,
+				A2100008 /* GameOverScene.swift */,
+			);
+			name = Pong;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A7000001 /* IOSExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9000003 /* Build configuration list for PBXNativeTarget "IOSExample" */;
+			buildPhases = (
+				A8000001 /* Sources */,
+				A3000001 /* Frameworks */,
+				A6000001 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IOSExample;
+			packageProductDependencies = (
+				A5000001 /* Agilis */,
+			);
+			productName = IOSExample;
+			productReference = A2000010 /* IOSExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A0000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = A9000001 /* Build configuration list for PBXProject "IOSExample" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A4000001;
+			packageReferences = (
+				A5000002 /* XCLocalSwiftPackageReference "../.." */,
+			);
+			productRefGroup = A4000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A7000001 /* IOSExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A8000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001 /* AppDelegate.swift in Sources */,
+				A1100001 /* Constants.swift in Sources */,
+				A1100002 /* Components.swift in Sources */,
+				A1100003 /* Systems.swift in Sources */,
+				A1100004 /* RenderingHelpers.swift in Sources */,
+				A1100005 /* SoundEffects.swift in Sources */,
+				A1100006 /* MenuScene.swift in Sources */,
+				A1100007 /* GameScene.swift in Sources */,
+				A1100008 /* GameOverScene.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A9100001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A9100002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A9200001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../Sources/AngleC/lib/ios",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.agilis.IOSExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A9200002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../Sources/AngleC/lib/ios",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.agilis.IOSExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A9000001 /* Build configuration list for PBXProject "IOSExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9100001 /* Debug */,
+				A9100002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9000003 /* Build configuration list for PBXNativeTarget "IOSExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9200001 /* Debug */,
+				A9200002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A5000002 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../..";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A5000001 /* Agilis */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Agilis;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A0000001 /* Project object */;
+}

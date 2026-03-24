@@ -32,8 +32,6 @@ public enum SpriteSortMode: Sendable {
 /// ```
 public final class SpriteBatch: @unchecked Sendable {
 
-    deinit {}
-
     /// How sprites are sorted before drawing.
     public var sortMode: SpriteSortMode
 

@@ -6,8 +6,6 @@
 /// ```
 public final class ConsoleLogOutput: LogOutput, @unchecked Sendable {
 
-    deinit {}
-
     public var minimumLevel: LogLevel
 
     public init(minimumLevel: LogLevel = .info) {

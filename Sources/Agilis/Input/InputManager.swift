@@ -19,8 +19,6 @@ private let maxGamepads = 4
 /// if app.input.isActionJustActivated("jump") { ... }
 /// ```
 public final class InputManager: @unchecked Sendable {
-    deinit {}
-
     private var backend: (any InputBackend)?
 
     // Current "held" state (updated per frame via polling)
@@ -166,6 +164,26 @@ public final class InputManager: @unchecked Sendable {
             pendingGamepadPresses[i].removeAll(keepingCapacity: true)
             pendingGamepadReleases[i].removeAll(keepingCapacity: true)
         }
+    }
+
+    // MARK: - Touch
+
+    /// Number of active touches this frame.
+    public var touchCount: Int {
+        backend?.touchCount() ?? 0
+    }
+
+    /// Returns the touch at the given index, or nil if out of range.
+    public func touch(at index: Int) -> TouchInfo? {
+        backend?.touch(at: index)
+    }
+
+    /// All active touches this frame.
+    public var touches: [TouchInfo] {
+        guard let backend else { return [] }
+        let count = backend.touchCount()
+        guard count > 0 else { return [] }
+        return (0..<count).compactMap { backend.touch(at: $0) }
     }
 
     // MARK: - Keyboard

@@ -11,7 +11,6 @@ import CRT
 // MARK: - Enemy AI System (priority 0)
 
 final class EnemyAISystem: System {
-    deinit {}
     var priority: Int { 0 }
 
     var componentAccess: ComponentAccess {
@@ -34,7 +33,6 @@ final class EnemyAISystem: System {
 // MARK: - Gameplay System (priority 10)
 
 final class GameplaySystem: System {
-    deinit {}
     var priority: Int { 10 }
 
     var componentAccess: ComponentAccess {
@@ -93,7 +91,6 @@ final class GameplaySystem: System {
 // MARK: - Post-Physics System (priority 110)
 
 final class PostPhysicsSystem: System {
-    deinit {}
     var priority: Int { 110 }
 
     var componentAccess: ComponentAccess {

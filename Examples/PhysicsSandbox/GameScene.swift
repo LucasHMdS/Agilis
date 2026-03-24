@@ -9,7 +9,6 @@ import CRT
 #endif
 
 final class GameScene: Scene {
-    deinit {}
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var physics: PhysicsWorld2D!
     private var font: FontHandle = .invalid

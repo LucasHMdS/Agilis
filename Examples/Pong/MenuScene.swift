@@ -3,12 +3,12 @@ import Agilis
 // MARK: - Menu Scene
 
 final class MenuScene: Scene {
-    deinit {}
     private var font: FontHandle = .invalid
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
 
     func didEnter(app: Application) {
+        Pong.configure(screenSize: app.renderer.screenSize)
         font = app.renderer.loadDefaultFont()
         var theme = UITheme.dark(font: font)
         theme.buttonColor = Color(r: 40, g: 40, b: 40, a: 200)
@@ -17,26 +17,28 @@ final class MenuScene: Scene {
         ui = UIContext(font: font, theme: theme)
 
         let menu = UIContainer(id: "menu")
-        menu.layout = .vertical(spacing: 16, alignment: .center)
+        menu.layout = .vertical(spacing: 16 * Pong.uiScale, alignment: .center)
 
-        let title = UILabel("PONG", fontSize: 48)
+        let title = UILabel("PONG", fontSize: Pong.fontSize(48))
         title.color = .white
         menu.add(title)
 
-        let subtitle = UILabel("A Classic Arcade Game", fontSize: 16)
+        let subtitle = UILabel("A Classic Arcade Game", fontSize: Pong.fontSize(16))
         subtitle.color = Color(r: 150, g: 150, b: 150)
         menu.add(subtitle)
 
-        let playButton = UIButton("Play", fontSize: 24) { [weak app] in
+        let playButton = UIButton("Play", fontSize: Pong.fontSize(24)) { [weak app] in
             guard let app else { return }
             app.sceneManager.replace(with: GameScene(), app: app)
         }
         menu.add(playButton)
 
-        let quitButton = UIButton("Quit", fontSize: 24) { [weak app] in
+        #if !os(iOS)
+        let quitButton = UIButton("Quit", fontSize: Pong.fontSize(24)) { [weak app] in
             app?.quit()
         }
         menu.add(quitButton)
+        #endif
 
         ui.add(menu)
         let screen = app.renderer.screenSize
@@ -52,9 +54,11 @@ final class MenuScene: Scene {
             app.sceneManager.replace(with: GameScene(), app: app)
         }
 
+        #if !os(iOS)
         if app.input.isKeyPressed(.escape) {
             app.quit()
         }
+        #endif
     }
 
     func render(app: Application, interpolation _: Double) {
@@ -94,7 +98,7 @@ final class MenuScene: Scene {
             "\(app.fps) FPS",
             position: Vector2(x: 4, y: screen.height - 18),
             font: ui.font,
-            size: 14,
+            size: Pong.fontSize(14),
             color: fpsColor
         )
     }

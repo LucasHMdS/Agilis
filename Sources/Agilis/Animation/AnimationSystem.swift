@@ -31,8 +31,6 @@
 /// then physics runs on the updated state.
 public final class AnimationSystem: System, @unchecked Sendable {
 
-    deinit {}
-
     // MARK: - System Conformance
 
     public var priority: Int { _priority }

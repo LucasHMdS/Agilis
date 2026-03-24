@@ -1,7 +1,5 @@
 /// The main application class. Owns the game loop and all engine subsystems.
 public final class Application: @unchecked Sendable {
-    deinit {}
-
     public let config: WindowConfig
     public let renderer: any RenderBackend
     public let audio: any AudioBackend
@@ -14,6 +12,7 @@ public final class Application: @unchecked Sendable {
     private let clock = Clock()
     private var running = false
     private var plugins: [Plugin] = []
+    private var accumulator: Double = 0
 
     /// Time scale multiplier for game logic. Default `1.0`.
     ///
@@ -67,16 +66,19 @@ public final class Application: @unchecked Sendable {
 
     // MARK: - Plugins
 
-    /// Install a plugin. Call before `run()`.
+    /// Install a plugin. Call before `run()` or `start()`.
     public func install(_ plugin: Plugin) {
         plugins.append(plugin)
         plugin.install(in: self)
     }
 
-    // MARK: - Main Loop
+    // MARK: - Lifecycle (Non-Blocking)
 
-    /// Start the game loop. This blocks until the window is closed.
-    public func run() throws {
+    /// Initialize all engine subsystems. Call once before ``frame()``.
+    ///
+    /// On iOS, call this from your view controller's `viewDidAppear` and
+    /// drive frames via `CADisplayLink` calling ``frame()``.
+    public func start() throws {
         try renderer.initialize(config: config)
         try audio.initialize()
 
@@ -89,58 +91,84 @@ public final class Application: @unchecked Sendable {
         sceneManager.currentScene?.didEnter(app: self)
 
         running = true
-        var accumulator: Double = 0
-        let fixedDT = config.fixedTimestep
+        accumulator = 0
 
         // Prime the clock so the first elapsed() call returns ~0
         _ = clock.elapsed()
+    }
 
-        while running && !renderer.shouldClose() {
-            // Poll platform events + clear framebuffer
-            renderer.beginFrame()
+    /// Execute a single frame: poll input, run fixed-timestep updates, render.
+    ///
+    /// On iOS, call this from a `CADisplayLink` callback. On desktop, use
+    /// ``run()`` which calls this in a loop.
+    public func frame() {
+        guard running else { return }
 
-            let elapsed = clock.elapsed()
-            let frameTime = min(elapsed, config.maxFrameTime)
-            self.frameTime = elapsed
-            accumulator += frameTime * max(timeScale, 0)
-            updateFPSCounter(elapsed: elapsed)
+        let fixedDT = config.fixedTimestep
 
-            // Read input state (after platform events are polled in beginFrame)
-            input.update()
+        // Poll platform events + clear framebuffer
+        renderer.beginFrame()
 
-            // Advance audio fades and update music streams
-            audioManager.update(deltaTime: Float(elapsed))
+        let elapsed = clock.elapsed()
+        let frameTime = min(elapsed, config.maxFrameTime)
+        self.frameTime = elapsed
+        accumulator += frameTime * max(timeScale, 0)
+        updateFPSCounter(elapsed: elapsed)
 
-            // Fixed-timestep logic updates
-            while accumulator >= fixedDT {
-                sceneManager.currentScene?.update(app: self, deltaTime: fixedDT)
-                delegate?.gameDidUpdate(self, deltaTime: fixedDT)
-                world.update(deltaTime: fixedDT)
+        // Read input state (after platform events are polled in beginFrame)
+        input.update()
 
-                for plugin in plugins {
-                    plugin.update(deltaTime: fixedDT)
-                }
+        // Advance audio fades and update music streams
+        audioManager.update(deltaTime: Float(elapsed))
 
-                // Advance scene transitions after all updates
-                sceneManager.updateTransition(deltaTime: Float(fixedDT), app: self)
+        // Fixed-timestep logic updates
+        while accumulator >= fixedDT {
+            sceneManager.currentScene?.update(app: self, deltaTime: fixedDT)
+            delegate?.gameDidUpdate(self, deltaTime: fixedDT)
+            world.update(deltaTime: fixedDT)
 
-                // Clear press/release transitions so they don't fire on subsequent ticks
-                input.consumeTransitions()
-
-                accumulator -= fixedDT
+            for plugin in plugins {
+                plugin.update(deltaTime: fixedDT)
             }
 
-            let interpolation = accumulator / fixedDT
+            // Advance scene transitions after all updates
+            sceneManager.updateTransition(deltaTime: Float(fixedDT), app: self)
 
-            // Render (framebuffer was cleared in beginFrame)
-            sceneManager.currentScene?.render(app: self, interpolation: interpolation)
-            delegate?.gameWillRender(self, interpolation: interpolation)
-            sceneManager.renderTransitionOverlay(renderer: renderer)
+            // Clear press/release transitions so they don't fire on subsequent ticks
+            input.consumeTransitions()
 
-            renderer.endFrame()
+            accumulator -= fixedDT
         }
 
+        let interpolation = accumulator / fixedDT
+
+        // Render (framebuffer was cleared in beginFrame)
+        sceneManager.currentScene?.render(app: self, interpolation: interpolation)
+        delegate?.gameWillRender(self, interpolation: interpolation)
+        sceneManager.renderTransitionOverlay(renderer: renderer)
+
+        renderer.endFrame()
+    }
+
+    /// Shut down all engine subsystems. Call after the last ``frame()``.
+    ///
+    /// On iOS, call this when your view controller is being deallocated.
+    public func stop() {
+        running = false
         shutdown()
+    }
+
+    // MARK: - Main Loop (Blocking)
+
+    /// Start the game loop. This blocks until the window is closed.
+    public func run() throws {
+        try start()
+
+        while running && !renderer.shouldClose() {
+            frame()
+        }
+
+        stop()
     }
 
     /// Async game loop. Enables parallel system scheduling when
@@ -150,25 +178,11 @@ public final class Application: @unchecked Sendable {
     /// `TaskGroup` inside `world.updateParallel` dispatches system work to the
     /// cooperative thread pool.
     public func runAsync() async throws {
-        try renderer.initialize(config: config)
-        try audio.initialize()
-
-        // Bind input backend now that the platform window exists
-        if let nativeRenderer = renderer as? Renderer, let window = nativeRenderer.window {
-            input.bind(NativeInput(window: window))
-        }
-
-        delegate?.gameDidStart(self)
-        sceneManager.currentScene?.didEnter(app: self)
-
-        running = true
-        var accumulator: Double = 0
-        let fixedDT = config.fixedTimestep
-
-        _ = clock.elapsed()
+        try start()
 
         while running && !renderer.shouldClose() {
-            // Poll platform events + clear framebuffer
+            let fixedDT = config.fixedTimestep
+
             renderer.beginFrame()
 
             let elapsed = clock.elapsed()
@@ -203,14 +217,13 @@ public final class Application: @unchecked Sendable {
 
             let interpolation = accumulator / fixedDT
 
-            // Render (framebuffer was cleared in beginFrame)
             sceneManager.currentScene?.render(app: self, interpolation: interpolation)
             delegate?.gameWillRender(self, interpolation: interpolation)
             sceneManager.renderTransitionOverlay(renderer: renderer)
             renderer.endFrame()
         }
 
-        shutdown()
+        stop()
     }
 
     /// Request the application to stop.

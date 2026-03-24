@@ -5,8 +5,6 @@
 /// Used internally by `TweenSystem`.
 internal final class TweenStore: @unchecked Sendable {
 
-    deinit {}
-
     /// All active tweens, keyed by handle ID.
     private var tweens: [UInt32: Tween] = [:]
 

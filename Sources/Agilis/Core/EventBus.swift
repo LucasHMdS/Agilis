@@ -8,8 +8,6 @@
 /// don't fire for the current call.
 internal final class EventBus: @unchecked Sendable {
 
-    deinit {}
-
     /// Type-erased event handler storage. Key = event type, Value = array of optional closures.
     /// Nil entries are slots where handlers were removed via `removeSubscription`.
     private var handlers: [ObjectIdentifier: [((Any) -> Void)?]] = [:]

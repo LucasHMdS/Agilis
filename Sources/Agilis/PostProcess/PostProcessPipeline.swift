@@ -25,8 +25,6 @@
 /// postProcess.shutdown(renderer: app.renderer)
 /// ```
 public final class PostProcessPipeline: @unchecked Sendable {
-    deinit {}
-
     private var effects: [any PostProcessEffect] = []
     private var sceneRT: RenderTargetHandle = .invalid
     private var pingRT: RenderTargetHandle = .invalid

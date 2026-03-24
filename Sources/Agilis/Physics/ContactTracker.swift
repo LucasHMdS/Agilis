@@ -5,8 +5,6 @@
 /// At the end, `endFrame()` compares current pairs against previous pairs to
 /// produce `CollisionEvent`s.
 internal final class ContactTracker: @unchecked Sendable {
-    deinit {}
-
     /// Pairs that were colliding last frame.
     private var previousPairs: Set<CollisionPair> = []
 

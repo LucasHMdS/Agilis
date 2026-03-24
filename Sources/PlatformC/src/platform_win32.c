@@ -588,4 +588,18 @@ void platform_set_vsync(PlatformWindow* w, bool enabled) {
     // VSync is controlled via EGL, not here
 }
 
+// ---- Touch (stubs — not applicable on Windows) ----
+
+int platform_touch_count(PlatformWindow* w) {
+    (void)w;
+    return 0;
+}
+
+PlatformTouch platform_touch_at(PlatformWindow* w, int index) {
+    (void)w;
+    (void)index;
+    PlatformTouch t = {0};
+    return t;
+}
+
 #endif // _WIN32

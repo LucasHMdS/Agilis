@@ -22,6 +22,10 @@ protocol InputBackend: AnyObject, Sendable {
     func setMouseCaptured(_ captured: Bool)
     func isMouseCaptured() -> Bool
 
+    // Touch
+    func touchCount() -> Int
+    func touch(at index: Int) -> TouchInfo?
+
     // Gamepad
     func isGamepadAvailable(_ gamepad: Int) -> Bool
     func isGamepadButtonDown(_ gamepad: Int, _ button: GamepadButton) -> Bool
@@ -34,6 +38,8 @@ protocol InputBackend: AnyObject, Sendable {
 // MARK: - Default Implementations
 
 extension InputBackend {
+    func touchCount() -> Int { 0 }
+    func touch(at _: Int) -> TouchInfo? { nil }
     func keyPressed(_: Key) -> Bool { false }
     func mouseButtonPressed(_: MouseButton) -> Bool { false }
     func setCursorVisible(_: Bool) {}

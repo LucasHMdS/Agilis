@@ -14,8 +14,6 @@
 /// uiContext.presentModal(modal)
 /// ```
 public class UIModalDialog: UINode, @unchecked Sendable {
-    deinit {}
-
     /// The dialog title text.
     public var title: String
 

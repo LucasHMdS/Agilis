@@ -1,7 +1,6 @@
 import Agilis
 
 final class MenuScene: Scene {
-    deinit {}
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!
     // swiftlint:disable:next implicitly_unwrapped_optional

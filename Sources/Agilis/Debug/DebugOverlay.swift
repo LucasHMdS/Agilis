@@ -77,8 +77,6 @@ public struct DebugOverlayOptions: Sendable {
 /// ```
 public final class DebugOverlay: @unchecked Sendable {
 
-    deinit {}
-
     /// Font used for text rendering.
     public let font: FontHandle
 

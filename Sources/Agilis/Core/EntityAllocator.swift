@@ -5,8 +5,6 @@
 /// operations to this type.
 internal final class EntityAllocator: @unchecked Sendable {
 
-    deinit {}
-
     /// Per-slot state for generational entity allocation.
     private struct EntitySlot {
         var generation: UInt32 = 0

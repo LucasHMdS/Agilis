@@ -4,8 +4,6 @@
 /// component management. World delegates system operations to this type.
 internal final class SystemManager: @unchecked Sendable {
 
-    deinit {}
-
     var systems: [SystemEntry] = []
 
     /// Per-system timing info from the most recent `update()` call.

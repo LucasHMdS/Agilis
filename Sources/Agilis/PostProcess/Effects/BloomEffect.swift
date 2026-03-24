@@ -9,8 +9,6 @@
 /// postProcess.add(bloom)
 /// ```
 public final class BloomEffect: PostProcessEffect, @unchecked Sendable {
-    deinit {}
-
     public let name = "bloom"
     public var isEnabled = true
     public var order: Int { 100 }

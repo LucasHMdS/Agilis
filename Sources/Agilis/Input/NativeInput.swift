@@ -5,8 +5,6 @@ import PlatformC
 /// Provides the same interface that InputManager expects for polling
 /// keyboard, mouse, and gamepad state each frame.
 final class NativeInput: @unchecked Sendable {
-    deinit {}
-
     private let window: OpaquePointer  // PlatformWindow*
 
     init(window: OpaquePointer) {
@@ -27,6 +25,19 @@ final class NativeInput: @unchecked Sendable {
         let codepoint = platform_char_pressed(window)
         guard codepoint != 0, let scalar = Unicode.Scalar(codepoint) else { return nil }
         return Character(scalar)
+    }
+
+    // MARK: - Touch
+
+    func touchCount() -> Int {
+        Int(platform_touch_count(window))
+    }
+
+    func touch(at index: Int) -> TouchInfo? {
+        guard index >= 0 && index < touchCount() else { return nil }
+        let t = platform_touch_at(window, Int32(index))
+        guard let phase = TouchPhase(rawValue: Int(t.phase)) else { return nil }
+        return TouchInfo(id: Int(t.id), position: Vector2(x: t.x, y: t.y), phase: phase)
     }
 
     // MARK: - Mouse

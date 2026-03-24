@@ -21,8 +21,6 @@
 /// 3. `AnimationSystem` (50) advances frames on the new/current clip
 public final class AnimationStateMachineSystem: System, @unchecked Sendable {
 
-    deinit {}
-
     // MARK: - System Conformance
 
     public var priority: Int { _priority }

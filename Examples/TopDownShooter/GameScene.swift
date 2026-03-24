@@ -9,7 +9,6 @@ import CRT
 #endif
 
 final class GameScene: Scene {
-    deinit {}
     private var font: FontHandle = .invalid
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var sounds: ShooterSounds.SoundSet!

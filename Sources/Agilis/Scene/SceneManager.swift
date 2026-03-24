@@ -9,8 +9,6 @@
 /// app.sceneManager.replace(with: nextScene, transition: .fade(), app: app)
 /// ```
 public final class SceneManager: @unchecked Sendable {
-    deinit {}
-
     private var sceneStack: [Scene] = []
     private var activeTransition: TransitionState?
 

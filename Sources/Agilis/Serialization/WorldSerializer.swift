@@ -28,8 +28,6 @@ import Foundation
 /// - **SpriteAnimator.lastEvent** is transient and not serialized.
 public final class WorldSerializer: @unchecked Sendable {
 
-    deinit {}
-
     // MARK: - Type-Erased Registration
 
     private struct Registration {

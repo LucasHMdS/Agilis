@@ -7,30 +7,11 @@ import Foundation
 let packageDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 
 // MARK: - PlatformC build configuration
-
-var platformCSources: [String] {
-#if os(Windows)
-    return ["src/platform_win32.c"]
-#elseif os(macOS)
-    return ["src/platform_macos.m"]
-#elseif os(Linux)
-    return ["src/platform_linux.c"]
-#else
-    return []
-#endif
-}
-
-var platformCExclude: [String] {
-    var list: [String] = []
-#if os(Windows)
-    list += ["src/platform_macos.m", "src/platform_linux.c"]
-#elseif os(macOS)
-    list += ["src/platform_win32.c", "src/platform_linux.c"]
-#elseif os(Linux)
-    list += ["src/platform_win32.c", "src/platform_macos.m"]
-#endif
-    return list
-}
+//
+// All platform source files are included; each file uses C preprocessor guards
+// (#ifdef _WIN32, #ifdef __linux__, TARGET_OS_IOS, etc.) to compile to an empty
+// translation unit on non-matching platforms. This avoids SPM's #if os() limitation
+// where the host OS is evaluated instead of the cross-compilation target.
 
 var platformCSettings: [CSetting] {
     var settings: [CSetting] = []
@@ -48,6 +29,10 @@ var platformCLinkerSettings: [LinkerSetting] {
     settings.append(.linkedLibrary("X11", .when(platforms: [.linux])))
     // macOS: GameController framework for gamepad support
     settings.append(.linkedFramework("GameController", .when(platforms: [.macOS])))
+    // iOS: UIKit + GameController + QuartzCore (for CADisplayLink/CAEAGLLayer)
+    settings.append(.linkedFramework("UIKit", .when(platforms: [.iOS])))
+    settings.append(.linkedFramework("GameController", .when(platforms: [.iOS])))
+    settings.append(.linkedFramework("QuartzCore", .when(platforms: [.iOS])))
     return settings
 }
 
@@ -74,6 +59,11 @@ var angleCLinkerSettings: [LinkerSetting] {
     settings.append(.unsafeFlags([
         "-L", "Sources/AngleC/lib/linux", "-lEGL", "-lGLESv2"
     ], .when(platforms: [.linux])))
+    settings.append(.unsafeFlags([
+        "-F", "Sources/AngleC/lib/ios",
+        "-framework", "libEGL", "-framework", "libGLESv2",
+        "-Xlinker", "-rpath", "-Xlinker", "@executable_path/Frameworks"
+    ], .when(platforms: [.iOS])))
     return settings
 }
 
@@ -130,11 +120,10 @@ let package = Package(
         .executable(name: "TopDownShooter", targets: ["TopDownShooter"]),
     ],
     targets: [
-        // Native platform windowing and input (Win32/Cocoa/X11)
+        // Native platform windowing and input (Win32/Cocoa/X11/UIKit)
+        // All platform files included; preprocessor guards select the right one.
         .target(
             name: "PlatformC",
-            exclude: platformCExclude,
-            sources: platformCSources,
             publicHeadersPath: "include",
             cSettings: platformCSettings,
             linkerSettings: platformCLinkerSettings

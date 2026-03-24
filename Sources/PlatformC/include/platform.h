@@ -132,6 +132,23 @@ const char* platform_gamepad_name(int index);
 // Gamepad rumble/vibration (0.0–1.0 for each motor)
 void platform_gamepad_set_vibration(int index, float leftMotor, float rightMotor);
 
+// --- Touch Input (iOS) ---
+
+#define AGILIS_MAX_TOUCHES      10
+#define AGILIS_TOUCH_BEGAN      0
+#define AGILIS_TOUCH_MOVED      1
+#define AGILIS_TOUCH_ENDED      2
+#define AGILIS_TOUCH_CANCELLED  3
+
+typedef struct PlatformTouch {
+    int32_t id;         // Unique touch identifier
+    float x, y;         // Position in view coordinates (origin top-left)
+    int32_t phase;      // AGILIS_TOUCH_BEGAN/MOVED/ENDED/CANCELLED
+} PlatformTouch;
+
+int  platform_touch_count(PlatformWindow* w);
+PlatformTouch platform_touch_at(PlatformWindow* w, int index);
+
 // --- Frame Timing ---
 
 void platform_set_target_fps(PlatformWindow* w, int fps);

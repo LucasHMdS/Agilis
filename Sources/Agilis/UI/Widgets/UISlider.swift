@@ -1,7 +1,5 @@
 /// A horizontal slider for adjusting a float value within a range.
 public class UISlider: UINode, @unchecked Sendable {
-    deinit {}
-
     public var label: String
     public var value: Float
     public var range: ClosedRange<Float>

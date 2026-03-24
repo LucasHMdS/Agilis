@@ -9,7 +9,6 @@ import CRT
 #endif
 
 final class SequenceScene: Scene, @unchecked Sendable {
-    deinit {}
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var tweens: TweenSystem!
     private var font: FontHandle = .invalid

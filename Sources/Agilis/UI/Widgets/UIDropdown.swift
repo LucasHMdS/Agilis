@@ -10,8 +10,6 @@
 /// dropdown.onChange = { index in print("Selected: \(dropdown.options[index])") }
 /// ```
 public class UIDropdown: UINode, @unchecked Sendable {
-    deinit {}
-
     /// The available options to choose from.
     public var options: [String] {
         didSet { cachedTextSize = nil; clampSelection() }

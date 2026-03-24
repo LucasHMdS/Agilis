@@ -57,8 +57,6 @@ public final class TweenSystem: System, @unchecked Sendable {
         self._priority = priority
     }
 
-    deinit {}
-
     // MARK: - System Update
 
     public func update(context: SystemContext) {

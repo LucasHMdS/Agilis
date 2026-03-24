@@ -5,8 +5,6 @@
 /// postProcess.add(vignette)
 /// ```
 public final class VignetteEffect: PostProcessEffect, @unchecked Sendable {
-    deinit {}
-
     public let name = "vignette"
     public var isEnabled = true
     public var order: Int { 400 }

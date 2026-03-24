@@ -13,8 +13,6 @@
 /// }
 /// ```
 public final class CommandBuffer: @unchecked Sendable {
-    deinit {}
-
     private enum Command {
         case createEntity(Entity)
         case destroyEntity(Entity)

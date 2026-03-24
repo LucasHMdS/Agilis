@@ -1,7 +1,5 @@
 /// A clickable button with text.
 public class UIButton: UINode, @unchecked Sendable {
-    deinit {}
-
     public var text: String { didSet { if text != oldValue { cachedTextSize = nil } } }
     public var fontSize: Float { didSet { if fontSize != oldValue { cachedTextSize = nil } } }
     public var action: () -> Void

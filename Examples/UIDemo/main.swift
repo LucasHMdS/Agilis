@@ -1,7 +1,6 @@
 import Agilis
 
 final class UIDemoScene: Scene {
-    deinit {}
     private var font: FontHandle = .invalid
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var ui: UIContext!

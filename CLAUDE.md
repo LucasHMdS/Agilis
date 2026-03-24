@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Agilis is a cross-platform 2D game framework written in Swift 6.0+, targeting Windows, Linux, and macOS. It uses a backend-agnostic architecture with native backends (ANGLE for rendering, MiniAudio for audio, PlatformC for windowing/input). Zero external Swift package dependencies.
+Agilis is a cross-platform 2D game framework written in Swift 6.0+, targeting Windows, Linux, macOS, and iOS. It uses a backend-agnostic architecture with native backends (ANGLE for rendering, MiniAudio for audio, PlatformC for windowing/input). Zero external Swift package dependencies.
 
 ## Build & Test
 
@@ -27,21 +27,21 @@ Tests use Swift Testing (`import Testing`, `@Suite`, `@Test`, `#expect`), not XC
 
 ## CI & Linting
 
-- **CI platforms**: Linux (Ubuntu), macOS (macos-26), Windows — all run `swift build` + `swift test`
+- **CI platforms**: Linux (Ubuntu), macOS (macos-26), Windows — all run `swift build` + `swift test`; iOS — build-only via `xcodebuild`
 - **SwiftLint**: v0.64.0-rc.1, runs on PRs to `main`/`develop`, `--strict` mode
 - **SwiftLint config**: `.swiftlint.yml` — disabled rules: `file_length`, `function_body_length`, `large_tuple`, `type_body_length`
-- **ANGLE pre-built libs**: Required before first build. Use `scripts/build_angle_macos.sh` (macOS), `scripts/build_angle_linux.sh` (Linux), `scripts/build_angle.bat` (Windows). CI caches these.
+- **ANGLE pre-built libs**: Required before first build. Use `scripts/build_angle_macos.sh` (macOS), `scripts/build_angle_linux.sh` (Linux), `scripts/build_angle.bat` (Windows), `scripts/build_angle_ios.sh` (iOS). CI caches these.
 - **PR branches**: Target `main` or `develop`
 
 ## Project Structure
 
 ```
-Sources/PlatformC/            Native windowing and input — our own C code (Win32/Cocoa/X11)
+Sources/PlatformC/            Native windowing and input — our own C code (Win32/Cocoa/X11/UIKit)
 Sources/AngleC/               ANGLE — EGL + OpenGL ES 3.0 (vendored, pre-built binaries)
 Sources/MiniaudioC/           MiniAudio — cross-platform audio (vendored, single-header)
 Sources/StbC/                 stb libraries — image loading, font rasterization (vendored)
 Sources/Agilis/               Main framework (depends on all C targets above)
-  Application/               Application, GameDelegate
+  Application/               Application, GameDelegate, AgilisViewController (iOS)
   Core/                      ECS: Entity, Component, System, World, Query,
                                SparseSet, ComponentStorage, CommandBuffer,
                                SystemContext, Prefab, EntityHierarchy, EntityMetadata,
@@ -74,7 +74,7 @@ Sources/Agilis/               Main framework (depends on all C targets above)
                                AudioManager (group volumes, fading, crossfading)
   Input/                     InputBackend protocol, NativeInput (PlatformC),
                                InputManager, action mapping (keyboard,
-                               mouse, gamepad)
+                               mouse, gamepad), TouchInfo, TouchPhase
   Assets/                    AssetManager, pluggable loaders
   Math/                      Vector2, Rect, Size, Matrix3, MathUtilities,
                                EasingFunction

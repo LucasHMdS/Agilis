@@ -1,7 +1,6 @@
 import Agilis
 
 final class GameOverScene: Scene {
-    deinit {}
     let finalScore: Int
     private var font: FontHandle = .invalid
     // swiftlint:disable:next implicitly_unwrapped_optional

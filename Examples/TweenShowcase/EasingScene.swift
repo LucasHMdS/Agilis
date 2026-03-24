@@ -9,7 +9,6 @@ import CRT
 #endif
 
 final class EasingScene: Scene {
-    deinit {}
     // swiftlint:disable:next implicitly_unwrapped_optional
     private var tweens: TweenSystem!
     private var font: FontHandle = .invalid

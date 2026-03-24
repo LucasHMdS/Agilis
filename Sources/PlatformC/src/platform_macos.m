@@ -1,4 +1,6 @@
-#ifdef __APPLE__
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#if !TARGET_OS_IOS && !TARGET_OS_TV && !TARGET_OS_WATCH
 
 #include "platform.h"
 #import <Cocoa/Cocoa.h>
@@ -211,6 +213,11 @@ PlatformWindow* platform_create_window(const PlatformWindowConfig* config) {
         [w->ns_window setDelegate:g_delegate];
 
         w->ns_view = [w->ns_window contentView];
+        // Use point dimensions for GL so the coordinate system matches the window size.
+        // Without this, ANGLE/Metal creates a 2x framebuffer on Retina but GL viewport
+        // is set in points, causing content to render in the bottom-left quarter.
+        [w->ns_view setWantsLayer:YES];
+        w->ns_view.layer.contentsScale = 1.0;
         w->width = config->width;
         w->height = config->height;
         w->target_fps = config->target_fps;
@@ -586,4 +593,19 @@ void platform_set_vsync(PlatformWindow* w, bool enabled) {
     if (w) w->vsync = enabled;
 }
 
+// ---- Touch (stubs — not applicable on macOS) ----
+
+int platform_touch_count(PlatformWindow* w) {
+    (void)w;
+    return 0;
+}
+
+PlatformTouch platform_touch_at(PlatformWindow* w, int index) {
+    (void)w;
+    (void)index;
+    PlatformTouch t = {0};
+    return t;
+}
+
+#endif // !TARGET_OS_IOS && !TARGET_OS_TV && !TARGET_OS_WATCH
 #endif // __APPLE__

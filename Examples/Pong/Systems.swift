@@ -12,7 +12,6 @@ import CRT
 
 /// Updates AI paddle targeting based on ball trajectory prediction.
 final class PongAISystem: System {
-    deinit {}
     var priority: Int { -10 }
 
     var componentAccess: ComponentAccess {
@@ -66,7 +65,6 @@ final class PongAISystem: System {
 /// collision response with Pong's angle-based paddle reflection and speed increase.
 /// Wall bounces are handled entirely by the physics system (restitution = 1).
 final class PongPhysicsSystem: System {
-    deinit {}
     var priority: Int { 110 }
 
     var componentAccess: ComponentAccess {

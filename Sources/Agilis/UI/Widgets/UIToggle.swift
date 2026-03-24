@@ -1,7 +1,5 @@
 /// A toggle (checkbox/switch) widget.
 public class UIToggle: UINode, @unchecked Sendable {
-    deinit {}
-
     public var label: String
     public var isOn: Bool
     public var onChange: ((Bool) -> Void)?

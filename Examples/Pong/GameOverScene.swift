@@ -3,7 +3,6 @@ import Agilis
 // MARK: - Game Over Scene
 
 final class GameOverScene: Scene {
-    deinit {}
     let leftScore: Int
     let rightScore: Int
     let leftWon: Bool
@@ -20,6 +19,7 @@ final class GameOverScene: Scene {
     }
 
     func didEnter(app: Application) {
+        Pong.configure(screenSize: app.renderer.screenSize)
         sounds = PongSounds.generate(audio: app.audio)
         let endSound = leftWon ? sounds.winFanfare : sounds.gameOver
         app.audio.playSound(endSound, volume: 0.6, pitch: 1.0, looping: false)
@@ -32,24 +32,24 @@ final class GameOverScene: Scene {
         ui = UIContext(font: font, theme: theme)
 
         let menu = UIContainer(id: "gameOverMenu")
-        menu.layout = .vertical(spacing: 12, alignment: .center)
+        menu.layout = .vertical(spacing: 12 * Pong.uiScale, alignment: .center)
 
         let winnerText = leftWon ? "Player Wins!" : "CPU Wins!"
-        let winLabel = UILabel(winnerText, fontSize: 36)
+        let winLabel = UILabel(winnerText, fontSize: Pong.fontSize(36))
         winLabel.color = .yellow
         menu.add(winLabel)
 
-        let scoreLabel = UILabel("\(leftScore) - \(rightScore)", fontSize: 28)
+        let scoreLabel = UILabel("\(leftScore) - \(rightScore)", fontSize: Pong.fontSize(28))
         scoreLabel.color = .white
         menu.add(scoreLabel)
 
-        let rematchButton = UIButton("Rematch", fontSize: 24) { [weak app] in
+        let rematchButton = UIButton("Rematch", fontSize: Pong.fontSize(24)) { [weak app] in
             guard let app else { return }
             app.sceneManager.replace(with: GameScene(), app: app)
         }
         menu.add(rematchButton)
 
-        let menuButton = UIButton("Menu", fontSize: 24) { [weak app] in
+        let menuButton = UIButton("Menu", fontSize: Pong.fontSize(24)) { [weak app] in
             guard let app else { return }
             app.sceneManager.replace(with: MenuScene(), app: app)
         }
@@ -99,7 +99,7 @@ final class GameOverScene: Scene {
             "\(app.fps) FPS",
             position: Vector2(x: 4, y: screen.height - 18),
             font: ui.font,
-            size: 14,
+            size: Pong.fontSize(14),
             color: fpsColor
         )
     }

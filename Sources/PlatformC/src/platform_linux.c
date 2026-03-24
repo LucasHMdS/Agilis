@@ -606,4 +606,18 @@ void platform_set_vsync(PlatformWindow* w, bool enabled) {
     if (w) w->vsync = enabled;
 }
 
+// ---- Touch (stubs — not applicable on Linux) ----
+
+int platform_touch_count(PlatformWindow* w) {
+    (void)w;
+    return 0;
+}
+
+PlatformTouch platform_touch_at(PlatformWindow* w, int index) {
+    (void)w;
+    (void)index;
+    PlatformTouch t = {0};
+    return t;
+}
+
 #endif // __linux__

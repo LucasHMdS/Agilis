@@ -5,8 +5,6 @@
 /// postProcess.add(pixelate)
 /// ```
 public final class PixelateEffect: PostProcessEffect, @unchecked Sendable {
-    deinit {}
-
     public let name = "pixelate"
     public var isEnabled = true
     public var order: Int { 600 }
